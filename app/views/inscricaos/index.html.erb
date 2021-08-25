@@ -1,0 +1,44 @@
+<h1>Inscrições <small>(<%= Inscricao.all.count %>)</small></h1>
+
+<table class="table table-holver">
+  <thead>
+    <tr>
+      <th>Nº</th>
+      <th>Nome</th>
+      <th>Sexo</th>
+      <th>CPF</th>
+      <th>Tel. fixo</th>
+      <th>Tel. celular</th>
+      <th>Email</th>
+      <th>Data do envio</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @inscricaos.each do |inscricao| %>
+      <% if inscricao.recurso_solicitado? %>
+        <tr style="background-color: #caffbf;">
+      <% else %>
+        <tr>
+      <% end %>
+        <td><%= inscricao.id %></td>
+        <td><%= inscricao.nome_completo %></td>
+        <td><%= inscricao.sexo %></td>
+        <td><%= inscricao.cpf %></td>
+        <td><%= inscricao.telefone_fixo %></td>
+        <td><%= inscricao.telefone_celular %></td>
+        <td><%= inscricao.email %></td>
+        <td><%= l(inscricao.created_at) %></td>
+        <td><%= link_to '+', inscricao, class: 'btn btn-sm btn-info' %></td>
+        <!-- <td><%#= link_to 'Edit', edit_inscricao_path(inscricao) %></td>
+        <td><%#= link_to 'Destroy', inscricao, method: :delete, data: { confirm: 'Are you sure?' } %></td> -->
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+<br>
+
+<%#= link_to 'New Inscricao', new_inscricao_path %>

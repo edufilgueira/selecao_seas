@@ -1,0 +1,235 @@
+<h3 id="visualize_dados">Dados Pessoais</h3>
+<hr>
+<table width="100%">
+  <tr>
+    <td colspan="2">
+      <p>
+        <strong>Cargo selecionado:</strong>
+        <%= @inscricao_servidor.cargo.descricao %>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <p>
+        <strong>Nº inscrição:</strong>
+        <%= @inscricao_servidor.id %>
+      </p>
+    </td>
+    <td>
+      <p>
+        <strong>Nome completo:</strong>
+        <%= @inscricao_servidor.nome_completo %>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <p>
+        <strong>Naturalidade:</strong>
+        <%= @inscricao_servidor.naturalidade %>
+      </p>
+    </td>
+    <td>
+      <p>
+        <strong>Nacionalidade:</strong>
+        <%= @inscricao_servidor.nacionalidade %>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <p>
+        <strong>Nome da mãe:</strong>
+        <%= @inscricao_servidor.nome_mae %>
+      </p>
+    </td>
+    <td>
+      <p>
+        <strong>Sexo:</strong>
+        <%= @inscricao_servidor.sexo %>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <p>
+        <strong>Estado civil:</strong>
+        <%= @inscricao_servidor.estado_civil %>
+      </p>
+    </td>
+    <td>
+      <p>
+        <strong>Data de nascimento:</strong>
+        <%= l(@inscricao_servidor.data_nascimento.to_date, format: :short3) %>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <p>
+        <strong>CPF:</strong>
+        <%= @inscricao_servidor.cpf %>
+      </p>
+    </td>
+    <td>
+      <p>
+        <strong>RG:</strong>
+        <%= @inscricao_servidor.rg %>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <p>
+        <strong>Órgão emissor:</strong>
+        <%= @inscricao_servidor.orgao_emissor %>
+      </p>
+    </td>
+    <td>
+      <p>
+        <strong>Endereço:</strong>
+        <%= @inscricao_servidor.endereco %>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <p>
+        <strong>Complemento:</strong>
+        <%= @inscricao_servidor.complemento %>
+      </p>
+    </td>
+    <td>
+      <p>
+        <strong>Bairro:</strong>
+        <%= @inscricao_servidor.bairro %>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <p>
+        <strong>Cidade:</strong>
+        <%= @inscricao_servidor.cidade %>
+      </p>
+    </td>
+    <td>
+      <p>
+        <strong>UF:</strong>
+        <%= @inscricao_servidor.uf %>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <p>
+        <strong>CEP:</strong>
+        <%= @inscricao_servidor.cep %>
+      </p>
+    </td>
+    <td>
+      <p>
+        <strong>Telefone fixo:</strong>
+        <%= @inscricao_servidor.telefone_fixo %>
+      </p>
+  </tr>
+  <tr>
+    <td>
+      <p>
+        <strong>Telefone celular:</strong>
+        <%= @inscricao_servidor.telefone_celular %>
+      </p>
+    </td>
+    <td>
+      <p>
+        <strong>Email:</strong>
+        <%= @inscricao_servidor.email %>
+      </p>
+    </td>  
+  </tr>
+  <tr>
+    <td>
+      <p>
+        <strong>Órgão representação de classe:</strong>
+        <%= @inscricao_servidor.orgao_representacao_classe %>
+      </p>
+    </td>
+    <td>
+      <p>
+        <strong>Número registro:</strong>
+        <%= @inscricao_servidor.numero_registro %>
+      </p>
+    </td>
+  </tr>
+  <% if(!@inscricao_servidor.documentos.blank?) %>
+    <tr>
+      <td>
+        <p>
+            <br>
+            <strong>Anexo dos documento pessoais:</strong><br>
+            <a target="blank" href="<%= @inscricao_servidor.documentos %>">
+              <%= @inscricao_servidor.documentos.content_type.include?('image') ? image_tag("img.png", size: "35x35") : image_tag("pdf.png", size: "35x42") %>
+              <%= @inscricao_servidor.documentos.identifier.gsub("_"," ") %>
+            </a>
+        </p>
+      </td>
+    </tr>
+  <% end %>
+  <% if(!@inscricao_servidor.deficiente_anexo.blank?) %>
+    <tr>
+      <td>
+        <p>
+            <br>
+            <strong>Deficiente físico:</strong><br>
+            <a target="blank" href="<%= @inscricao_servidor.deficiente_anexo %>">
+              <%= @inscricao_servidor.deficiente_anexo.content_type.include?('image') ? image_tag("img.png", size: "35x35") : image_tag("pdf.png", size: "35x42") %>
+              <%= @inscricao_servidor.deficiente_anexo.identifier.gsub("_"," ") %>
+            </a>
+        </p>
+      </td>
+    </tr>
+  <% end %>
+  <% if(!@inscricao_servidor.certificado_ensino_medio.blank?) %>
+    <tr>
+      <td>
+        <p>
+            <br>
+            <strong>Diploma de conclusão de ensino médio:</strong><br>
+            <a target="blank" href="<%= @inscricao_servidor.certificado_ensino_medio %>">
+              <%= @inscricao_servidor.certificado_ensino_medio.content_type.include?('image') ? image_tag("img.png", size: "35x35") : image_tag("pdf.png", size: "35x42") %>
+              <%= @inscricao_servidor.certificado_ensino_medio.identifier.gsub("_"," ") %>
+            </a>
+        </p>
+      </td>
+    </tr>
+  <% end %>
+  <% if(!@inscricao_servidor.certificado_ensino_superior.blank?) %>
+    <tr>
+      <td>
+        <p>
+            <br>
+            <strong>Diploma de conclusão de ensino superior:</strong><br>
+            <a target="blank" href="<%= @inscricao_servidor.certificado_ensino_superior %>">
+              <%= @inscricao_servidor.certificado_ensino_superior.content_type.include?('image') ? image_tag("img.png", size: "35x35") : image_tag("pdf.png", size: "35x42") %>
+              <%= @inscricao_servidor.certificado_ensino_superior.identifier.gsub("_"," ") %>
+            </a>
+        </p>
+      </td>
+    </tr>
+  <% end %>
+  <% if(!@inscricao_servidor.represetacao_classe.blank?) %>
+    <tr>
+      <td>
+        <p>
+            <br>
+            <strong>Documento comprobatório órgão representação de classe:</strong><br>
+            <a target="blank" href="<%= @inscricao_servidor.represetacao_classe %>">
+              <%= @inscricao_servidor.represetacao_classe.content_type.include?('image') ? image_tag("img.png", size: "35x35") : image_tag("pdf.png", size: "35x42") %>
+              <%= @inscricao_servidor.represetacao_classe.identifier.gsub("_"," ") %>
+            </a>
+        </p>
+      </td>
+    </tr>
+  <% end %>
+</table>

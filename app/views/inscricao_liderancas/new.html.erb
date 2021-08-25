@@ -1,0 +1,15 @@
+<%= image_tag('logo-seas.png') %>
+
+<h2 class="text-center">Formulário Eletrônico de Inscrição - Seleção 2021</h2>
+
+<% unless notice.blank? %>
+	<div class="alert alert-info" role="alert">
+		<%= notice.html_safe %>
+	</div>
+<% end %>
+
+<br>
+
+<%= render 'form', inscricao_lideranca: @inscricao_lideranca %>
+
+<%#= link_to 'Back', inscricao_servidors_path %>

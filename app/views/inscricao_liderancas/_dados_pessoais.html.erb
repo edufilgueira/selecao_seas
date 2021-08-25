@@ -1,0 +1,235 @@
+<h3 id="visualize_dados">Dados Pessoais</h3>
+<hr>
+<table width="100%">
+  <tr>
+    <td colspan="2">
+      <p>
+        <strong>Cargo selecionado:</strong>
+        <%= @inscricao_lideranca.cargo.descricao %>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <p>
+        <strong>Nº inscrição:</strong>
+        <%= @inscricao_lideranca.id %>
+      </p>
+    </td>
+    <td>
+      <p>
+        <strong>Nome completo:</strong>
+        <%= @inscricao_lideranca.nome_completo %>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <p>
+        <strong>Naturalidade:</strong>
+        <%= @inscricao_lideranca.naturalidade %>
+      </p>
+    </td>
+    <td>
+      <p>
+        <strong>Nacionalidade:</strong>
+        <%= @inscricao_lideranca.nacionalidade %>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <p>
+        <strong>Nome da mãe:</strong>
+        <%= @inscricao_lideranca.nome_mae %>
+      </p>
+    </td>
+    <td>
+      <p>
+        <strong>Sexo:</strong>
+        <%= @inscricao_lideranca.sexo %>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <p>
+        <strong>Estado civil:</strong>
+        <%= @inscricao_lideranca.estado_civil %>
+      </p>
+    </td>
+    <td>
+      <p>
+        <strong>Data de nascimento:</strong>
+        <%= l(@inscricao_lideranca.data_nascimento.to_date, format: :short3) %>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <p>
+        <strong>CPF:</strong>
+        <%= @inscricao_lideranca.cpf %>
+      </p>
+    </td>
+    <td>
+      <p>
+        <strong>RG:</strong>
+        <%= @inscricao_lideranca.rg %>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <p>
+        <strong>Órgão emissor:</strong>
+        <%= @inscricao_lideranca.orgao_emissor %>
+      </p>
+    </td>
+    <td>
+      <p>
+        <strong>Endereço:</strong>
+        <%= @inscricao_lideranca.endereco %>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <p>
+        <strong>Complemento:</strong>
+        <%= @inscricao_lideranca.complemento %>
+      </p>
+    </td>
+    <td>
+      <p>
+        <strong>Bairro:</strong>
+        <%= @inscricao_lideranca.bairro %>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <p>
+        <strong>Cidade:</strong>
+        <%= @inscricao_lideranca.cidade %>
+      </p>
+    </td>
+    <td>
+      <p>
+        <strong>UF:</strong>
+        <%= @inscricao_lideranca.uf %>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <p>
+        <strong>CEP:</strong>
+        <%= @inscricao_lideranca.cep %>
+      </p>
+    </td>
+    <td>
+      <p>
+        <strong>Telefone fixo:</strong>
+        <%= @inscricao_lideranca.telefone_fixo %>
+      </p>
+  </tr>
+  <tr>
+    <td>
+      <p>
+        <strong>Telefone celular:</strong>
+        <%= @inscricao_lideranca.telefone_celular %>
+      </p>
+    </td>
+    <td>
+      <p>
+        <strong>Email:</strong>
+        <%= @inscricao_lideranca.email %>
+      </p>
+    </td>  
+  </tr>
+  <tr>
+    <td>
+      <p>
+        <strong>Órgão representação de classe:</strong>
+        <%= @inscricao_lideranca.orgao_representacao_classe %>
+      </p>
+    </td>
+    <td>
+      <p>
+        <strong>Número registro:</strong>
+        <%= @inscricao_lideranca.numero_registro %>
+      </p>
+    </td>
+  </tr>
+  <% if(!@inscricao_lideranca.documentos.blank?) %>
+    <tr>
+      <td>
+        <p>
+            <br>
+            <strong>Anexo dos documento pessoais:</strong><br>
+            <a target="blank" href="<%= @inscricao_lideranca.documentos %>">
+              <%= @inscricao_lideranca.documentos.content_type.include?('image') ? image_tag("img.png", size: "35x35") : image_tag("pdf.png", size: "35x42") %>
+              <%= @inscricao_lideranca.documentos.identifier.gsub("_"," ") %>
+            </a>
+        </p>
+      </td>
+    </tr>
+  <% end %>
+  <% if(!@inscricao_lideranca.deficiente_anexo.blank?) %>
+    <tr>
+      <td>
+        <p>
+            <br>
+            <strong>Deficiente físico:</strong><br>
+            <a target="blank" href="<%= @inscricao_lideranca.deficiente_anexo %>">
+              <%= @inscricao_lideranca.deficiente_anexo.content_type.include?('image') ? image_tag("img.png", size: "35x35") : image_tag("pdf.png", size: "35x42") %>
+              <%= @inscricao_lideranca.deficiente_anexo.identifier.gsub("_"," ") %>
+            </a>
+        </p>
+      </td>
+    </tr>
+  <% end %>
+  <% if(!@inscricao_lideranca.certificado_ensino_medio.blank?) %>
+    <tr>
+      <td>
+        <p>
+            <br>
+            <strong>Diploma de conclusão de ensino médio:</strong><br>
+            <a target="blank" href="<%= @inscricao_lideranca.certificado_ensino_medio %>">
+              <%= @inscricao_lideranca.certificado_ensino_medio.content_type.include?('image') ? image_tag("img.png", size: "35x35") : image_tag("pdf.png", size: "35x42") %>
+              <%= @inscricao_lideranca.certificado_ensino_medio.identifier.gsub("_"," ") %>
+            </a>
+        </p>
+      </td>
+    </tr>
+  <% end %>
+  <% if(!@inscricao_lideranca.certificado_ensino_superior.blank?) %>
+    <tr>
+      <td>
+        <p>
+            <br>
+            <strong>Diploma de conclusão de ensino superior:</strong><br>
+            <a target="blank" href="<%= @inscricao_lideranca.certificado_ensino_superior %>">
+              <%= @inscricao_lideranca.certificado_ensino_superior.content_type.include?('image') ? image_tag("img.png", size: "35x35") : image_tag("pdf.png", size: "35x42") %>
+              <%= @inscricao_lideranca.certificado_ensino_superior.identifier.gsub("_"," ") %>
+            </a>
+        </p>
+      </td>
+    </tr>
+  <% end %>
+  <% if(!@inscricao_lideranca.represetacao_classe.blank?) %>
+    <tr>
+      <td>
+        <p>
+            <br>
+            <strong>Documento comprobatório órgão representação de classe:</strong><br>
+            <a target="blank" href="<%= @inscricao_lideranca.represetacao_classe %>">
+              <%= @inscricao_lideranca.represetacao_classe.content_type.include?('image') ? image_tag("img.png", size: "35x35") : image_tag("pdf.png", size: "35x42") %>
+              <%= @inscricao_lideranca.represetacao_classe.identifier.gsub("_"," ") %>
+            </a>
+        </p>
+      </td>
+    </tr>
+  <% end %>
+</table>

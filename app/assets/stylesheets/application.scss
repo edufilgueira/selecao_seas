@@ -1,0 +1,92 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, or any plugin's
+ * vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS/SCSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *
+ *= require_tree .
+ *= require_self
+ */
+
+
+@import "bootstrap";
+@import "font-awesome-sprockets";
+@import "font-awesome";
+
+label.required {
+  font-weight: bold;
+}
+label.required:after {
+  color: #e32;
+  content: ' *';
+  display:inline;
+}
+.div_borda {
+  border: solid 1px #ced4da;
+  border-radius: 5px;
+  padding: 10px 10px 3px 10px;
+}
+
+.file{
+  float: left;
+  width: calc(100% - 48px);
+}
+
+.file_clear:link{
+  float: right;
+  margin-top: -5px;
+}
+
+.file_clear:hover{
+  float: right;
+  margin-top: -4px;
+}
+
+.file_clear:active{
+  float: right;
+  margin-top: -2px;
+}
+
+.display{
+  display: none;
+  border: solid 3px #ec7373;
+  height: 0;
+  position: relative;
+  margin-top: 0;
+  background-color: #fff;
+  box-shadow: 2px 4px 18px rgba(0,0,0,0.5);
+  border-radius: 7px;
+}
+
+.close_display{
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  right: 0;
+}
+
+.linha_hr{
+  border: 2px dashed rgba(0, 0, 0, 0.1);
+}
+.topic_docs{
+  float: left;
+  border: 2px solid #e4e4e4;
+  height: 30px;
+  width: 30px;
+  background: #FFF;
+  border-radius: 100%;
+  margin-top: -12px;
+  padding: 1px 0 0 8px;
+  font: bold 20px arial;
+  color: #f75249;
+}
+
+.aviso_form{
+  color: rgb(153, 0, 0); font: 12px arial; display: none; margin-top: 5px;
+}

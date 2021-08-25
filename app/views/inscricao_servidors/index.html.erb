@@ -1,0 +1,202 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Total de inscrições <span class="badge badge-secondary"><%= @inscricao_servidors.length %></span></h1>
+<%= form_for(:frm, :url => {controller: :inscricao_servidors, action: :listar_index}, method: 'POST') do |f| %>
+  <div class="row">
+    <div class="col-sm-3">
+      <%= f.label "Cargo" %>
+      <%= f.collection_select :cargo_id, Cargo.all, :id, :descricao, {include_blank: '--selecione--', selected: @cargo_id}, class: 'form-control' %>
+    </div>
+    <div class="col-sm-2">
+      <%= f.label "Sexo" %>
+      <%= f.select :sexo, options_for_select(["Feminino", "Masculino"], selected: @sexo), {prompt: 'selecione' }, class: 'form-control'%>
+    </div>
+    <div class="col-sm-2">
+      <%= f.label "Deficiente?" %>
+      <%= f.select :deficiente, options_for_select(["Sim", "Não"], selected: @deficiente), {prompt: 'selecione' }, class: 'form-control'%>
+    </div>
+    <div class="col-sm-3">
+      <%= f.label "Status" %> <div style="float: right;">
+      <% if @cota_negro == "1" %>
+        <%= f.check_box :cota_negro, checked: "checked" %>
+      <% else %>
+         <%= f.check_box :cota_negro %>
+      <% end %>
+      <label for="frm_cota_negro">Cota para Negro</label></div>
+      <%= f.select :status_acompanhamento, options_for_select([
+          ["1.Inscrito", "Finalizado"],
+          ["2.1.Inscrito Deferido", "inscrito_deferido"],
+          ["2.2.Inscrito Indeferido", "inscrito_indeferido"],
+          ["3.Recurso de Inscrição Apresentado", "recurso_inscricao_apresentado"],
+          ["4.1.Recurso de Inscrição Deferido", "recurso_inscricao_deferido"],
+          ["4.2.Recurso de Inscricao Indeferido", "recurso_inscricao_indeferido"],
+          ["5.Análise de Currículo", "analise_curriculo"],
+          ["6.Currículo Analisado", "curriculo_analisado"],
+          ["7.Recurso de Currículo Apresentado","recurso_curriculo_apresentado"],
+          ["8.1.Recurso de Currículo Deferido","recurso_curriculo_deferido"],
+          ["8.2.Recurso de Currículo Indeferido","recurso_curriculo_indeferido"],
+          ["9.Resultado Final","resultado_final"]
+      ], selected: @status_acompanhamento), {prompt: 'selecione' }, class: 'form-control'%>
+    </div>
+    <div class="col-sm-2">
+      <br>
+      <%= f.submit 'Buscar', class: "btn btn-primary" %>
+      <%= link_to image_tag('pdf_preview.png', border: 0, height: '36', width: '36'), inscricao_servidors_path(format: 'pdf'), target: "_blank", class: 'float-right', id: "gerar_pdf" %>   
+    </div>
+  </div>
+<% end %>
+
+<div class="form-group">
+  <div class="col-sm-12"></div>
+</div>
+<table>
+  <tr>
+    <td><div style="background-color: #273243; width: 23px;height: 23px;border-radius: 5px;"></div></td>
+    <td style="width: 85px;">Inscritos</td>
+    <td><div style="background-color: #c1c1c1; width: 23px;height: 23px;border-radius: 5px;"></div></td>
+    <td style="width: 155px;color: #c1c1c1; text-decoration: line-through;">Inscrito Indeferido</td>
+    <td><div style="background-color: #127689; width: 23px;height: 23px;border-radius: 5px;"></div></td>
+    <td style="width: 155px;color: #127689;font-weight: bold;">Inscrito Deferido</td>
+    <td><div style="background-color: #e4b015; width: 23px;height: 23px;border-radius: 5px;"></div></td>
+    <td style="width: 192px;color: #e4b015;font-weight: bold;">Recurso Apresentado</td>
+    <td><div style="background-color: #5eaf3c; width: 23px;height: 23px;border-radius: 5px;"></div></td>
+    <td style="width: 310px;color: #5eaf3c;font-weight: bold;">Currículo Analisado / Resultado Final</td>
+  </tr>
+</table>
+<br>
+<%= link_to 'Lista dos não inscritos'.html_safe, nao_finalizados_inscricao_servidors_path, class:"btn btn-sm btn-danger", target: "_blank" %>
+<br><br>
+<table class="table table-holver sortable">
+  <thead>
+    <tr>
+      <th style="width: 33px;">#</th>
+      <th style="width: 85px;">Insc</th>
+      <th style="width: 165px;">Cargos</th>
+      <th>Nome</th>
+      <th>CPF</th>
+      <th style="width: 85px;">Sexo</th>
+      <th style="width: 100px;">Envio</th>
+      <th style="width: 85px;">Pont</th>
+      <th style="width: 85px;">Edit</th>
+      <th style="width: 125px;" colspan="3">Ação</th>
+    </tr>
+  </thead>
+
+<tbody>
+    <% cont = 0 %>
+    <% @inscricao_servidors.each do |inscricao_servidor| %>
+      <% cont += 1 %>
+      <% if inscricao_servidor.status_acompanhamento == "Correção de dados" %>
+        <tr style="color: #127689;font-weight: bold;">
+      <% elsif inscricao_servidor.status_acompanhamento == "Desclassificado" %>
+        <% if (!inscricao_servidor.recurso_candidato.blank? and inscricao_servidor.resposta_recurso_candidato.blank?) %>
+          <tr style="color: #e4b015;font-weight: bold;">
+        <% else %>
+          <tr style="color: #c1c1c1; text-decoration: line-through;">
+        <% end %>
+      <% elsif inscricao_servidor.status_acompanhamento == "Correção de pontuação" %>
+        <% if (!inscricao_servidor.recurso_pontuacao.blank? and inscricao_servidor.resposta_recurso_pontuacao.blank?) %>
+          <tr style="color: #e4b015;font-weight: bold;">
+        <% else %>
+          <tr style="color: #539c35;font-weight: bold;">
+        <% end %>
+      <% else %>
+        <tr>
+      <% end %>
+        <td><%= cont %></td>
+        <td><%= "%.5i" %inscricao_servidor.id %></td>
+        <td><%= inscricao_servidor.nome_cargo %></td>
+        <td><%= inscricao_servidor.nome_completo %></td>
+        <td><%= inscricao_servidor.cpf %></td>
+        <td>
+          <% if inscricao_servidor&.sexo == "Masculino" %>
+            <span style="display:none">M</span><span class="btn btn-sm btn-circle" style="background-color:#2785d4;border-radius: 20px;width: 30px;height: 30px;"><i class="fa fa-male" aria-hidden="true" style="color: white;"></i></span>
+          <% elsif inscricao_servidor&.sexo == "Feminino" %>
+            <span style="display:none">F</span><span class="btn btn-sm btn-circle" style="background-color:#e86cff;border-radius: 20px;width: 30px;height: 30px;"><i class="fa fa-female" aria-hidden="true" style="color: white;"></i></span>
+          <% end %>
+      </td>
+        <td>
+          <% if !inscricao_servidor.created_at.nil? %>
+            <%= inscricao_servidor.created_at.strftime('%d/%m/%Y') %>
+          <% end %>
+        </td>
+        <!--<td><%#= l(inscricao_servidor.created_at.strftime('%d/%m/%Y')) %></td> -->
+        <td><%= inscricao_servidor.total_geral_candidato %></td>
+        <td><%= inscricao_servidor.total_geral_correcao %></td>
+        <td>
+          <% if inscricao_servidor.status_acompanhamento != "Desclassificado" %>
+            <%= link_to '<i class="fas fa-file-medical-alt"></i>'.html_safe, inscricao_servidor, class: 'btn btn-sm btn-info' %>
+            <% if inscricao_servidor.status_acompanhamento == "Correção de dados" or inscricao_servidor.status_acompanhamento == "Correção de pontuação" %>
+              <%= link_to '<i class="fas fa-check-square"></i>'.html_safe, edit_correcao_inscricao_servidors_path(id: inscricao_servidor.slug), class: 'btn btn-sm btn-danger', style: "background-color: #5eaf3c; border-color: #5eaf3c;" %>
+            <% end %>
+          <% else %>
+            <%= link_to '<i class="fas fa-file-medical-alt"></i>'.html_safe, inscricao_servidor, class: 'btn btn-sm btn-light', style: "background-color: #d5d8da;" %>
+          <% end %>
+        </td>
+        <!-- <td><%#= link_to 'Edit', edit_inscricao_path(inscricao) %></td>
+        <td><%#= link_to 'Destroy', inscricao, method: :delete, data: { confirm: 'Are you sure?' } %></td> -->
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%#= link_to 'New Inscricao Servidor', new_inscricao_servidor_path %>
+
+<script>
+
+$(document).ready(function(){
+  var cargo_id = "";
+  var sexo = "";
+  var deficiente = "";
+  var status_acompanhamento = "";
+  var cota_negro = "0";
+
+  if($('#frm_cota_negro').is(':checked'))
+    cota_negro = 1;
+  else
+    cota_negro = 0;
+  
+  var href = $("#gerar_pdf").attr("href");
+  $("#gerar_pdf").attr("href","/inscricao_servidors.pdf?cargo_id="+$("#frm_cargo_id").val()+"&sexo="+$("#frm_sexo").val()+"&deficiente="+$("#frm_deficiente").val()+"&status_acompanhamento="+$("#frm_status_acompanhamento").val()+"&cota_negro="+cota_negro);
+
+  $("#frm_cargo_id").change(function(){
+    cargo_id = $(this).val();
+    href_final = href+"?cargo_id="+cargo_id+"&sexo="+sexo+"&deficiente="+deficiente+"&status_acompanhamento="+status_acompanhamento;
+    $("#gerar_pdf").attr("href",href_final);
+  });
+
+  $("#frm_sexo").change(function(){
+    sexo = $(this).val();
+    href_final = href+"?cargo_id="+cargo_id+"&sexo="+sexo+"&deficiente="+deficiente+"&status_acompanhamento="+status_acompanhamento;
+    $("#gerar_pdf").attr("href",href_final);
+  });
+
+  $("#frm_deficiente").change(function(){
+    deficiente = $(this).val();
+    href_final = href+"?cargo_id="+cargo_id+"&sexo="+sexo+"&deficiente="+deficiente+"&status_acompanhamento="+status_acompanhamento;
+    $("#gerar_pdf").attr("href",href_final);
+  });
+
+  $("#frm_status_acompanhamento").change(function(){
+    status_acompanhamento = $(this).val();
+    href_final = href+"?cargo_id="+cargo_id+"&sexo="+sexo+"&deficiente="+deficiente+"&status_acompanhamento="+status_acompanhamento;
+    $("#gerar_pdf").attr("href",href_final);
+  });
+
+  $("#frm_cota_negro").change(function(){
+    if($('#frm_cota_negro').is(':checked'))
+      cota_negro = 1;
+    else
+      cota_negro = 0;
+    href_final = href+"?cargo_id="+cargo_id+"&sexo="+sexo+"&deficiente="+deficiente+"&status_acompanhamento="+status_acompanhamento+"&cota_negro="+cota_negro;
+    $("#gerar_pdf").attr("href",href_final);
+  });
+  
+  <% if (!params[:fase].nil? and params[:fase]=="revisao") %>
+    window.close();
+  <% end %>  
+});
+
+</script>

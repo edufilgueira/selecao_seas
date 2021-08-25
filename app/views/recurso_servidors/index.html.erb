@@ -1,0 +1,47 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Recursos</h1>
+
+<%= link_to image_tag('pdf_preview.png', border: 0, height: '36', width: '36'), recurso_servidors_path(format: 'pdf'), target: "_blank", class: 'float-right', id: "gerar_pdf" %>
+<%= link_to image_tag('csv.png', border: 0, height: '36', width: '36'), exportar_csv_recurso_servidors_path, target: "_blank", class: 'float-right' %>
+
+<br>
+<br>
+
+<table class="table table-holver">
+  <thead>
+    <tr>
+      <th>Nº Inscrição</th>
+      <th>Nome</th>
+      <th>E-mail</th>
+      <th width="40%">Texto</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @recurso_servidors.each do |recurso_servidor| %>
+      <tr>
+        <td><%= recurso_servidor.inscricao_servidor.id %></td>
+        <td><%= recurso_servidor.inscricao_servidor.nome_completo %></td>
+        <td><%= recurso_servidor.inscricao_servidor.email %></td>
+        <td><%= recurso_servidor.texto %></td>
+        <!--
+        <td><%#= link_to 'Show', recurso_servidor %></td>
+        <td><%#= link_to 'Edit', edit_recurso_servidor_path(recurso_servidor) %></td>
+        <td><%#= link_to 'Destroy', recurso_servidor, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        -->
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%#= link_to 'New Recurso Servidor', new_recurso_servidor_path %>
+
+<script>
+$(document).ready(function(){
+  var href = $("#gerar_pdf").attr("href");
+  $("#gerar_pdf").attr("href","/recurso_servidors.pdf");
+});
+</script>

@@ -1,0 +1,22 @@
+<%= form_with(model: local_contratacao, local: true) do |form| %>
+  <% if local_contratacao.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(local_contratacao.errors.count, "error") %> prohibited this local_contratacao from being saved:</h2>
+
+      <ul>
+      <% local_contratacao.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :descricao %>
+    <%= form.text_field :descricao %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>

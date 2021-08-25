@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  inscricao_lideranca: one
+  descricao: MyString
+  ordem: 1
+
+two:
+  inscricao_lideranca: two
+  descricao: MyString
+  ordem: 1

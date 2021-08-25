@@ -1,0 +1,1848 @@
+<%= form_with(model: inscricao_servidor, local: true, html: { multipart: true }) do |form| %>
+  <% configuracao = Configuracao.where(status: true).last %>
+  <% if Time.now.to_date < configuracao.data_inicio_selecao %>
+    <%= render partial: 'abertura' %>
+  <% elsif Time.now.to_date >= configuracao.data_termino_selecao.to_date %>
+    <%= render partial: 'encerramento' %>
+  <% end %>
+
+  <div id="alerta_anexo_sem_pontuacao" role="alert" class="alert alert-danger" style="display:none">
+    <ul style="color: #990000;">
+      <li>Pontuação Obrigatória! Informe a pontuação relacionada ao arquivo anexado</li>
+    </ul>
+  </div>
+  <div id="alerta_idade" role="alert" class="alert alert-danger" style="display:none">
+    <ul style="color: #990000;">
+      <li>Não é permitido candidato com idade inferior a 18 anos</li>
+    </ul>
+  </div>
+
+  <% unless params[:mensagem_erro].blank? %>
+    <br>
+    <div class="alert alert-danger" role="alert">
+      <% params[:mensagem_erro].each do |mensagem| %>
+      <ul style="color: #990000;">
+        <li><%= mensagem %></li>
+      </ul>
+      <% end %>
+    </div>
+  <% end %>
+  <br>
+
+  <% if inscricao_servidor.errors.any? %>
+    <div id="error_explanation">
+      <!--<h2><%#= pluralize(inscricao_servidor.errors.count, "error") %> prohibited this inscricao_servidor from being saved:</h2>-->
+      <div class="alert alert-danger" role="alert">
+        <ul style="color: #990000;">
+        <% inscricao_servidor.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <% if(params[:id].nil?) %>
+    <div style="width: 100%;text-align: center;"><%= image_tag('progresso_inicio.jpg') %></div><br>
+  <% elsif(!params[:id].nil? and !form.object.finalizar? ) %>
+    <div style="width: 100%;text-align: center;"><%= image_tag('progresso_conferencia.jpg') %></div><br>
+  <% elsif(!params[:id].nil? and form.object.finalizar? ) %>
+    <div style="width: 100%;text-align: center;">
+      <%= image_tag('progresso_final.jpg') %>
+      <div style="height: 35px;width: 144px;display: inline-block;padding-top: 15px;background-image: url(/assets/tracos.jpg);margin-left: -24px;"></div>
+      <a href="#" onClick="window.print()" class="link"> <%= image_tag('print.png',style:"width: 52px;margin-top: -32px;", title:"Clique aqui para imprimir sua página de inscrição")  %></a>
+      
+    </div><br>
+  <% end %>
+
+  <% if(!params[:id].nil?) %>
+    <% inscricao_servidor = InscricaoServidor.find_by(slug: params[:id]) %>
+    <% if(inscricao_servidor.finalizar?) %>
+      <div style="border: 1px solid #cdcdcd; padding: 5px 10px 0px 10px; text-align: center; background-color: #48bb6b; color: #FFF; font-weight: bold; margin: 20px 29% 20px 29%; border-radius: 10px;">
+        <div>Nº Inscrição</div>
+        <div style="font-size: 40px;margin: -10px 0 0 0;"><%= "%.5i" %inscricao_servidor.id %></div>
+      </div>
+    <% end %>
+  <% end %>
+  <% if(!inscricao_servidor.finalizar?) %>
+    <div id="error_explanation">
+      <div class="alert alert-info" role="alert" style="center;color:#2b2b2b;background-color:#fff7db;border-color: #f2dd88;">
+        <h1><i class="fas fa-exclamation-triangle"  style="color: #2b2b2b;"></i> Atenção</h1>
+        <p>Prezado candidato, somente finalize sua inscrição, clicando no botão de cor verde ("Finalizar Inscrição"), localizado no final deste formulário, após realizar a conferência dos seus dados.</p>
+      </div>
+    </div><br>
+  <% end %>
+
+  <% if(!form.object.finalizar? ) %>
+    <h2>Dados Pessoais</h2>
+    <div class="row">
+      <div class="col-md-12">
+        <%= form.label :cargo_id, class: 'required' %>
+        <%= form.collection_select :cargo_id, Cargo.where(tipo_cargo:"Servidor"), :id, :descricao, {include_blank: '--selecione--'}, class: 'form-control', required: true %>
+      </div>
+	  </div>
+    <br>
+    <div class="row">
+      <div class="col-md-3">
+        <%= form.label :cpf, class: 'required' %>
+        <% if (params[:cpf].nil?)%>
+          <%= form.text_field :cpf, class: 'form-control mask-cpf', required: true %>
+        <% else %>
+          <%= form.text_field :cpf, value: params[:cpf], class: 'form-control mask-cpf', required: true %>
+        <% end %>
+        <span id="val_cpf" class="requerido"></span>
+      </div>
+      <div class="col-md-9">
+        <%= form.label :nome_completo, class: 'required' %>
+        <%= form.text_field :nome_completo, class: 'form-control', required: true %>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-md-6">
+        <%= form.label :naturalidade, class: 'required' %>
+        <%= form.text_field :naturalidade, class: 'form-control', required: true %>
+      </div>
+      <div class="col-md-6">
+        <%= form.label :nacionalidade, class: 'required' %>
+        <%= form.text_field :nacionalidade, class: 'form-control', required: true %>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-md-8">
+        <%= form.label :nome_mae, class: 'required' %>
+        <%= form.text_field :nome_mae, class: 'form-control', required: true %>
+      </div>
+      <div class="col-md-4">
+        <%= form.label :data_nascimento, class: 'required' %>
+        <% if(form.object.new_record?) %>
+          <%= form.text_field :data_nascimento, class: 'form-control mask-date', required: true, onblur: "verificar_data_nascimento(this)" %>
+        <% else %>
+          <%= form.text_field :data_nascimento, value: form&.object&.data_nascimento&.strftime('%d/%m/%Y'), class: 'form-control mask-date', required: true, onblur: "verificar_data_nascimento(this)" %>
+        <% end %>
+        <label id="validador_data_nascimento" style="color: #990000;font: normal 12px arial;display: none;margin-top: 5px;"></label>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-md-6">
+        <%= form.label :sexo, class: 'required' %>
+        <%= form.select :sexo, ["Feminino", "Masculino"], {prompt: 'selecione'}, class: 'form-control', required: true %>
+      </div>
+      <div class="col-md-6">
+        <%= form.label :estado_civil, class: 'required' %>
+        <%= form.select :estado_civil, ["Solteiro(a)", "Casado(a)", "Separado(a)", "Divorciado(a)", 'Viúvo(a)', "União Estável", "Outros"], {prompt: 'selecione'}, class: 'form-control', required: true %>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-md-6">
+        <%= form.label :rg, class: 'required' %>
+        <%= form.text_field :rg, class: 'form-control', type: :number, required: true %>
+      </div>
+      <div class="col-md-6">
+        <%= form.label :orgao_emissor, class: 'required' %>
+        <%= form.text_field :orgao_emissor, class: 'form-control', required: true %>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-md-12">
+        <%= form.label :endereco, class: 'required' %>
+        <%= form.text_field :endereco, class: 'form-control', required: true %>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-md-6">
+        <%= form.label :complemento %>
+        <%= form.text_field :complemento, class: 'form-control' %>
+      </div>
+      <div class="col-md-6">
+        <%= form.label :bairro, class: 'required' %>
+        <%= form.text_field :bairro, class: 'form-control', required: true %>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-md-4">
+        <%= form.label :cidade, class: 'required' %>
+        <%= form.text_field :cidade, class: 'form-control', required: true %>
+      </div>
+      <div class="col-md-4">
+        <%= form.label :uf, class: 'required' %>
+        <%= form.select :uf, InscricaoServidor.uf, { prompt: 'Selecione' }, class: 'form-control' %>
+      </div>
+      <div class="col-md-4">
+        <%= form.label :cep, class: 'required' %>
+        <%= form.text_field :cep, class: 'form-control mask-cep', required: true %>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-md-6">
+        <%= form.label :telefone_fixo %>
+        <%= form.telephone_field :telefone_fixo, class: 'form-control mask-phone-fix' %>
+      </div>
+      <div class="col-md-6">
+        <%= form.label :telefone_celular, class: 'required' %>
+        <%= form.telephone_field :telefone_celular, class: 'form-control mask-phone-cel', required: true %>
+        <small id="valid_telefone_celular" class="text-danger" style="text-transform: none; display: none;">Favor informe o número do celular completo de acordo com o padrão <b>(85) 9.9999-9999</b></small>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-md-12">
+        <%= form.label :email, class: 'required' %>
+        <%= form.email_field :email, class: 'form-control', required: true %>
+      </div>
+    </div>
+
+    <br>
+    <div class="row">
+      <div class="col-md-12">
+        <%= form.check_box :cota_negro %>
+        <label for="inscricao_servidor_cota_negro"><b>Candidato Negro?</b></label>
+        <p style="font: italic 13px arial;margin-left: 20px;color: #585858;">
+          5.10. Os candidatos negros (pretos ou pardos) concorrerão concomitantemente às vagas reservadas para negros e às vagas destinadas à ampla concorrência, de acordo com a sua classificação na Seleção.
+          <br>
+          5.8. Será eliminado da Seleção o candidato que:
+          a) não for considerado negro pela comissão de heteroidentificação;
+          b) se recusar a ser filmado;
+          c) prestar declaração falsa;
+        </p>
+      </div>
+    </div>
+
+    <%= form.check_box :deficiente %>
+    <% if(!form.object.deficiente_anexo.blank?) %>
+      <label for="inscricao_servidor_deficiente" class="required"><b>Pessoa com deficiência? (PDF máximo 5Mb)</b></label>
+    <% else %>
+      <label for="inscricao_servidor_deficiente"><b>Pessoa com deficiência (PDF máximo 5Mb)</b></label>
+    <% end %>
+    <div id="inscricao_servidor_deficiente_fl" style="display:none">
+      <%= form.file_field :deficiente_anexo, class: 'form-control' %>
+      <%= form.hidden_field :deficiente_anexo_cache %>
+    </div>
+    <% if(!form.object.deficiente_anexo.blank?) %>
+      <br><a target="blank" href="<%= form.object.deficiente_anexo %>"><%= form.object.deficiente_anexo.content_type.include?('image') ? image_tag("img.png", size: "28x35") : image_tag("pdf.png", size: "28x35") %></a>
+      <a target="blank" href="<%= form.object.deficiente_anexo %>"><%= form.object.deficiente_anexo.identifier %></a>
+    <% end %>
+    <br>
+    <h2>Documentos</h2>
+
+    <div>
+      <div class="topic_docs">1</div>
+      <hr class="linha_hr">
+    </div>
+    <br>
+
+    <% if(!form.object.documentos.blank?) %>
+      <label class='required'>Anexar Documento Pessoal com foto, conforme item 8.1 do Edital (PDF máximo 5Mb)</label>
+      <br><small>Em caso de dois ou mais documentos, escaneie e anexe-os em um único arquivo.</small>
+      <%= form.file_field :documentos, class: 'form-control' %><br>
+      <%= form.hidden_field :documentos_cache %>
+      <a target="blank" href="<%= form.object.documentos %>"><%= form.object.documentos.content_type.include?('image') ? image_tag("img.png", size: "28x35") : image_tag("pdf.png", size: "28x35") %></a>
+      <a target="blank" href="<%= form.object.documentos %>"><%= form.object.documentos.identifier %></a><br>
+    <% else %>
+      <label for="inscricao_servidor_documentos" class="required"><b>Anexar Documento Pessoal com foto, conforme item 8.1 do Edital (PDF máximo 5Mb)</b></label>
+      <br><small>Em caso de dois ou mais documentos, escaneie e anexe-os em um único arquivo.</small>
+      <%= form.file_field :documentos, class: 'form-control', required: true %><br>
+      <%= form.hidden_field :documentos_cache %>
+    <% end %>
+
+    <br>
+    <div>
+      <div class="topic_docs">2</div>
+      <hr class="linha_hr">
+    </div>
+    <br>
+
+    <div id="nivel_superior" class="alert alert-info" role="alert" style="background-color: #dfe4ea;border: 0px solid #000;color: #212529;">
+      <div class="col-md-12">
+        <b><label>Informar os campos abaixo somente para os cargos de Assistente Social, Psicólogo e Pedagogo</label></b><hr>
+        <div class="row">
+          <div class="col-md-6">
+            <%= form.label :orgao_representacao_classe %>
+            <%= form.select :orgao_representacao_classe, ["Conselho Regional de Serviço Social - CRESS", "Conselho Regional de Psicologia - CRP", "Conselho Federal de Educadores e Pedagogos - CFEP"], {prompt: "selecione"}, class: 'form-control' %> <br>
+          </div>
+          <div class="col-md-6">
+            <%= form.label :numero_registro %>
+            <%= form.text_field :numero_registro, class: 'form-control' %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <label class="required">Anexar documento comprobatório órgão representação de classe (PDF máximo 5Mb)</label>
+            <% if(!form.object.represetacao_classe.blank?) %>
+              <%= form.file_field :represetacao_classe, class: 'form-control' %><br>
+              <%= form.hidden_field :represetacao_classe_cache %>
+              <a target="blank" href="<%= form.object.represetacao_classe %>"><%= form.object.represetacao_classe.content_type.include?('image') ? image_tag("img.png", size: "28x35") : image_tag("pdf.png", size: "28x35") %></a>
+              <a target="blank" href="<%= form.object.represetacao_classe %>"><%= form.object.represetacao_classe.identifier %></a>
+            <% else %>
+              <%= form.file_field :represetacao_classe, class: 'form-control', required: true %><br>
+              <%= form.hidden_field :represetacao_classe_cache %>
+            <% end %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <% if(!form.object.certificado_ensino_superior.blank?) %>
+              <b>Anexar diploma de conclusão de ensino superior (PDF máximo 5Mb)</b>
+              <br><small>Em caso de dois ou mais documentos, escaneie e anexe-os em um único arquivo.</small>
+            <% else %>
+              <label for="inscricao_servidor_certificado_ensino_superior" class="required"><b>Anexar diploma de conclusão de ensino superior (PDF máximo 5Mb)</b></label>
+              <br><small>Em caso de dois ou mais documentos, escaneie e anexe-os em um único arquivo.</small>
+            <% end %>
+            
+            <% if(!form.object.certificado_ensino_superior.blank?) %>
+              <%= form.file_field :certificado_ensino_superior, class: 'form-control' %>
+              <%= form.hidden_field :certificado_ensino_superior_cache %>
+              <br><a target="blank" href="<%= form.object.certificado_ensino_superior %>"><%= form.object.certificado_ensino_superior.content_type.include?('image') ? image_tag("img.png", size: "28x35") : image_tag("pdf.png", size: "28x35") %></a>
+              <a target="blank" href="<%= form.object.certificado_ensino_superior %>"><%= form.object.certificado_ensino_superior.identifier %></a>
+            <% else %>
+              <%= form.file_field :certificado_ensino_superior, class: 'form-control', required: true %>
+              <%= form.hidden_field :certificado_ensino_superior_cache %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="nivel_ensino_medio" class="alert alert-info" role="alert" style="background-color: #dfe4ea;border: 0px solid #000;color: #212529;">
+      <div class="col-md-12">
+        <% if(!form.object.certificado_ensino_medio.blank?) %>
+          <b>Anexar diploma de conclusão de ensino médio (PDF máximo 5Mb)</b>
+          <br><small>Em caso de dois ou mais documentos, escaneie e anexe-os em um único arquivo.</small>
+          <%= form.file_field :certificado_ensino_medio, class: 'form-control' %><br>
+          <%= form.hidden_field :certificado_ensino_medio_cache %>
+          <a target="blank" href="<%= form.object.certificado_ensino_medio %>"><%= form.object.certificado_ensino_medio.content_type.include?('image') ? image_tag("img.png", size: "28x35") : image_tag("pdf.png", size: "28x35") %></a>
+          <a target="blank" href="<%= form.object.certificado_ensino_medio %>"><%= form.object.certificado_ensino_medio.identifier %></a>
+        <% else%>
+          <label for="inscricao_servidor_certificado_ensino_medio" class="required">
+            <b>Anexar diploma de conclusão de ensino médio (PDF máximo 5Mb)</b>
+            <br><small>Em caso de dois ou mais documentos, escaneie e anexe-os em um único arquivo.</small>
+          </label>
+          <%= form.file_field :certificado_ensino_medio, class: 'form-control', required: true %>
+          <%= form.hidden_field :certificado_ensino_medio_cache %>
+        <% end %>
+      </div>
+    </div>
+    <br><br>
+    <div id="error_explanation">
+      <div class="alert alert-info" role="alert" style="center;color:#2b2b2b;background-color:#fff7db;border-color: #f2dd88;">
+        <h1><i class="fas fa-exclamation-triangle" style="color: #2b2b2b;"></i> Atenção</h1>
+        <p>Prezado candidato, somente finalize sua inscrição, clicando no botão de cor verde ("Finalizar Inscrição"), localizado no final deste formulário, após realizar a conferência dos seus dados.</p>
+      </div>
+    </div><br>    
+    <h2 style="text-align: center;">Itens de Avaliação</h2>
+    <table class="table">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col" style="width: 33px;color: #1e2124;border-color: #93b46f; background-color: #b2d190;">#</th>
+          <th scope="col" style="width: 350px;color: #1e2124;border-color: #93b46f; background-color: #b2d190;">Formação Acadêmica</th>
+          <th scope="col" style="width: 175px;color: #1e2124;border-color: #93b46f; background-color: #b2d190;">Pontuação Máxima</th>
+          <th scope="col" style="width: 130px;color: #1e2124;border-color: #93b46f; background-color: #b2d190;">Pontuação</th>
+          <th scope="col" style="color: #1e2124;border-color: #93b46f; background-color: #b2d190;"><div class="tamanho_mb">Tamanho do PDF 5MB</div></th>
+        </tr>
+      </thead>   
+
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Doutorado (em área correlata a Socioeducação)</td>
+          <td><span id="formacao_academica_01"></span></td>
+          <td>
+            <%= form.select :formacao_academica_01_candidato, ["0.0", "7.0"], {}, class: 'form-control', onchange:"calcular_formacao_academica();validar_pontuacao_formacao_academica(this);",  onblur:"calcular_formacao_academica();validar_pontuacao_formacao_academica(this);", "data-html":"true", "data-toggle":"tooltip", "data-placement":"top", title:"<b>Exemplo:</b><br>1 Curso = 7 pontos" %>
+          </td>
+          <td>
+            <% if(!form.object.formacao_academica_01_file.blank?) %>
+              <div id="display_formacao_academica_01" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :formacao_academica_01_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_formacao_academica(this)", tem_anexo:"SIM",  onmouseover:"exibir_display(this)" %>
+              <%= link_to image_tag("clear.png").html_safe, remover_file_inscricao_servidors_path(slug: form.object.slug, file: "formacao_academica_01_file"), class: 'file_clear', onclick:"return confirm('Deseja realmente remover o arquivo?');" %>
+              <%= form.hidden_field :formacao_academica_01_file_cache %>
+              <% form.object.formacao_academica_01_file.each do |file| %>
+                <span class="font_anexo">
+                  <a target="blank" href="<%= file %>">
+                    <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                    <%= file.identifier.gsub("_"," ").gsub(" .",".") %>
+                  </a><br>
+                </span>
+              <% end %>
+            <% elsif %>
+              <div id="display_formacao_academica_01" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :formacao_academica_01_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_formacao_academica(this)", tem_anexo:"NAO",  onmouseover:"exibir_display(this)" %>
+              <a id="formacao_academica_01_link" href="#" class="link file_clear" onclick="remover(this)"><%= image_tag("clear.png") %></a>
+              <%= form.hidden_field :formacao_academica_01_file_cache %>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Doutorado (em qualquer área)</td>
+          <td><span id="formacao_academica_02"></span></td>
+          <td>
+            <%= form.select :formacao_academica_02_candidato, ["0.0", "5.0"], {}, class: 'form-control', onchange:"calcular_formacao_academica();validar_pontuacao_formacao_academica(this);",  onblur:"calcular_formacao_academica();validar_pontuacao_formacao_academica(this);", "data-html":"true", "data-toggle":"tooltip", "data-placement":"top", title:"<b>Exemplo:</b><br>1 Curso = 5 pontos" %>
+          </td>
+          <td>
+            <% if(!form.object.formacao_academica_02_file.blank?) %>
+              <div id="display_formacao_academica_02" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :formacao_academica_02_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_formacao_academica(this)", tem_anexo:"SIM",  onmouseover:"exibir_display(this)" %>
+              <%= link_to image_tag("clear.png").html_safe, remover_file_inscricao_servidors_path(slug: form.object.slug, file: "formacao_academica_02_file"), class: 'file_clear', onclick:"return confirm('Deseja realmente remover o arquivo?');" %>
+              <%= form.hidden_field :formacao_academica_02_file_cache %>
+              <% form.object.formacao_academica_02_file.each do |file| %>
+                <span class="font_anexo">
+                  <a target="blank" href="<%= file %>">
+                    <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                    <%= file.identifier %>
+                  </a><br>
+                </span>
+              <% end %>
+            <% elsif %>
+              <div id="display_formacao_academica_02" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :formacao_academica_02_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_formacao_academica(this)", tem_anexo:"NAO",  onmouseover:"exibir_display(this)" %>
+              <a id="formacao_academica_02_link" href="#" class="link file_clear" onclick="remover(this)"><%= image_tag("clear.png") %></a>
+              <%= form.hidden_field :formacao_academica_02_file_cache %>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Mestrado (em área correlata a Socioeducação)</td>
+          <td><span id="formacao_academica_03"></span></td>
+          <td>
+            <%= form.select :formacao_academica_03_candidato, ["0.0", "4.0"], {}, class: 'form-control', onchange:"calcular_formacao_academica();validar_pontuacao_formacao_academica(this);",  onblur:"calcular_formacao_academica();validar_pontuacao_formacao_academica(this);", "data-html":"true", "data-toggle":"tooltip", "data-placement":"top", title:"<b>Exemplo:</b><br>1 Curso = 4 pontos" %>
+          </td>
+          <td>
+            <% if(!form.object.formacao_academica_03_file.blank?) %>
+              <div id="display_formacao_academica_03" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :formacao_academica_03_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_formacao_academica(this)", tem_anexo:"SIM",  onmouseover:"exibir_display(this)" %>
+              <%= link_to image_tag("clear.png").html_safe, remover_file_inscricao_servidors_path(slug: form.object.slug, file: "formacao_academica_03_file"), class: 'file_clear', onclick:"return confirm('Deseja realmente remover o arquivo?');" %>
+              <%= form.hidden_field :formacao_academica_03_file_cache %>
+              <% form.object.formacao_academica_03_file.each do |file| %>
+                <span class="font_anexo">
+                  <a target="blank" href="<%= file %>">
+                    <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                    <%= file.identifier %>
+                  </a><br>
+                </span>
+              <% end %>
+            <% elsif %>
+              <div id="display_formacao_academica_03" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :formacao_academica_03_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_formacao_academica(this)", tem_anexo:"NAO",  onmouseover:"exibir_display(this)" %>
+              <a id="formacao_academica_03_link" href="#" class="link file_clear" onclick="remover(this)"><%= image_tag("clear.png") %></a>
+              <%= form.hidden_field :formacao_academica_03_file_cache %>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Mestrado (em qualquer área)</td>
+          <td><span id="formacao_academica_04"></span></td>
+          <td>
+            <%= form.select :formacao_academica_04_candidato, ["0.0", "3.0"], {}, class: 'form-control', onchange:"calcular_formacao_academica();validar_pontuacao_formacao_academica(this);",  onblur:"calcular_formacao_academica();validar_pontuacao_formacao_academica(this);", "data-html":"true", "data-toggle":"tooltip", "data-placement":"top", title:"<b>Exemplo:</b><br>1 Curso = 3 pontos" %>
+          </td>
+          <td>
+            <% if(!form.object.formacao_academica_04_file.blank?) %>
+              <div id="display_formacao_academica_04" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :formacao_academica_04_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_formacao_academica(this)", tem_anexo:"SIM",  onmouseover:"exibir_display(this)" %>
+              <%= link_to image_tag("clear.png").html_safe, remover_file_inscricao_servidors_path(slug: form.object.slug, file: "formacao_academica_04_file"), class: 'file_clear', onclick:"return confirm('Deseja realmente remover o arquivo?');" %>
+              <%= form.hidden_field :formacao_academica_04_file_cache %>
+              <% form.object.formacao_academica_04_file.each do |file| %>
+                <span class="font_anexo">
+                  <a target="blank" href="<%= file %>">
+                    <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                    <%= file.identifier %>
+                  </a><br>
+                </span>
+              <% end %>
+            <% elsif %>
+              <div id="display_formacao_academica_04" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :formacao_academica_04_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_formacao_academica(this)", tem_anexo:"NAO",  onmouseover:"exibir_display(this)" %>
+              <a id="formacao_academica_04_link" href="#" class="link file_clear" onclick="remover(this)"><%= image_tag("clear.png") %></a>
+              <%= form.hidden_field :formacao_academica_04_file_cache %>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Especialização/Pós-Graduação (em área correlata a Socioeducação)</td>
+          <td><span id="formacao_academica_05"></span></td>
+          <td>
+            <%= form.select :formacao_academica_05_candidato, ["0.0", "2.0", "4.0"], {}, class: 'form-control', onchange:"calcular_formacao_academica();validar_pontuacao_formacao_academica(this);",  onblur:"calcular_formacao_academica();validar_pontuacao_formacao_academica(this);", "data-html":"true", "data-toggle":"tooltip", "data-placement":"top", title:"<b>Exemplo:</b><br>1 Curso = 2 pontos<br>2 Cursos = 4 pontos" %>
+          </td>
+          <td>
+            <% if(!form.object.formacao_academica_05_file.blank?) %>
+              <div id="display_formacao_academica_05" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :formacao_academica_05_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_formacao_academica(this)", tem_anexo:"SIM",  onmouseover:"exibir_display(this)" %>
+              <%= link_to image_tag("clear.png").html_safe, remover_file_inscricao_servidors_path(slug: form.object.slug, file: "formacao_academica_05_file"), class: 'file_clear', onclick:"return confirm('Deseja realmente remover o arquivo?');" %>
+              <%= form.hidden_field :formacao_academica_05_file_cache %>
+              <% form.object.formacao_academica_05_file.each do |file| %>
+                <span class="font_anexo">
+                  <a target="blank" href="<%= file %>">
+                    <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                    <%= file.identifier %>
+                  </a><br>
+                </span>
+              <% end %>
+            <% elsif %>
+              <div id="display_formacao_academica_05" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :formacao_academica_05_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_formacao_academica(this)", tem_anexo:"NAO",  onmouseover:"exibir_display(this)" %>
+              <a id="formacao_academica_05_link" href="#" class="link file_clear" onclick="remover(this)"><%= image_tag("clear.png") %></a>
+              <%= form.hidden_field :formacao_academica_05_file_cache %>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Especialização/Pós-Graduação (em qualquer área, com carga horária mínima de 360h/a)</td>
+          <td><span id="formacao_academica_06"></span></td>
+          <td>
+            <%= form.select :formacao_academica_06_candidato, ["0.0", "1.0", "2.0"], {}, class: 'form-control', onchange:"calcular_formacao_academica();validar_pontuacao_formacao_academica(this);",  onblur:"calcular_formacao_academica();validar_pontuacao_formacao_academica(this);", "data-html":"true", "data-toggle":"tooltip", "data-placement":"top", title:"<b>Exemplo:</b><br>1 Curso = 1 ponto<br>2 Cursos = 2 pontos" %>
+          </td>
+          <td>
+            <% if(!form.object.formacao_academica_06_file.blank?) %>
+              <div id="display_formacao_academica_06" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :formacao_academica_06_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_formacao_academica(this)", tem_anexo:"SIM",  onmouseover:"exibir_display(this)" %>
+              <%= link_to image_tag("clear.png").html_safe, remover_file_inscricao_servidors_path(slug: form.object.slug, file: "formacao_academica_06_file"), class: 'file_clear', onclick:"return confirm('Deseja realmente remover o arquivo?');" %>
+              <%= form.hidden_field :formacao_academica_06_file_cache %>
+              <% form.object.formacao_academica_06_file.each do |file| %>
+                <span class="font_anexo">
+                  <a target="blank" href="<%= file %>">
+                    <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                    <%= file.identifier %>
+                  </a><br>
+                </span>
+              <% end %>
+            <% elsif %>
+              <div id="display_formacao_academica_06" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :formacao_academica_06_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_formacao_academica(this)", tem_anexo:"NAO",  onmouseover:"exibir_display(this)" %>
+              <a id="formacao_academica_06_link" href="#" class="link file_clear" onclick="remover(this)"><%= image_tag("clear.png") %></a>
+              <%= form.hidden_field :formacao_academica_06_file_cache %>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Graduação</td>
+          <td><span id="formacao_academica_07"></span></td>
+          <td>
+            <%= form.select :formacao_academica_07_candidato, ["0.0"], {}, class: 'form-control', onchange:"calcular_formacao_academica();validar_pontuacao_formacao_academica(this);",  onblur:"calcular_formacao_academica();validar_pontuacao_formacao_academica(this);" %>
+          </td>
+          <td>
+            <% if(!form.object.formacao_academica_07_file.blank?) %>
+              <div id="display_formacao_academica_07" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :formacao_academica_07_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_formacao_academica(this)", tem_anexo:"SIM",  onmouseover:"exibir_display(this)" %>
+              <%= link_to image_tag("clear.png").html_safe, remover_file_inscricao_servidors_path(slug: form.object.slug, file: "formacao_academica_07_file"), class: 'file_clear', onclick:"return confirm('Deseja realmente remover o arquivo?');" %>
+              <%= form.hidden_field :formacao_academica_07_file_cache %>
+              <% form.object.formacao_academica_07_file.each do |file| %>
+                <span class="font_anexo">
+                  <a target="blank" href="<%= file %>">
+                    <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                    <%= file.identifier %>
+                  </a><br>
+                </span>
+              <% end %>
+            <% elsif %>
+              <div id="display_formacao_academica_07" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :formacao_academica_07_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_formacao_academica(this)", tem_anexo:"NAO",  onmouseover:"exibir_display(this)" %>
+              <a id="formacao_academica_07_link" href="#" class="link file_clear" onclick="remover(this)"><%= image_tag("clear.png") %></a>
+              <%= form.hidden_field :formacao_academica_07_file_cache %>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="6"style="text-align: center; font-weight: bold; background-color: #ddd; font-size: 20px;">
+            Você informou <span id="formacao_academica_total"></span> do total de <span id="formacao_academica_maximo"></span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table class="table">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col" style="width: 33px;color: #1e2124;border-color: #93b46f; background-color: #b2d190;">#</th>
+          <th scope="col" style="width: 350px;color: #1e2124;border-color: #93b46f; background-color: #b2d190;">Qualificação Profissional</th>
+          <th scope="col" style="width: 175px;color: #1e2124;border-color: #93b46f; background-color: #b2d190;">Pontuação Máxima</th>
+          <th scope="col" style="width: 130px;color: #1e2124;border-color: #93b46f; background-color: #b2d190;">Pontuação</th>
+          <th scope="col" style="color: #1e2124;border-color: #93b46f; background-color: #b2d190;"><div class="tamanho_mb">Tamanho do PDF 5MB</div></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Cursos de Extensão realizadas na área da Socioeducação (com carga horária mínima de 80h/a)</td>
+          <td><span id="qualificacao_profissional_01"></span></td>
+          <td>
+            <%= form.select :qualificacao_profissional_01_candidato, ["0.0","2.0","4.0","6.0","8.0","10.0"], {}, class: 'form-control', onchange:"calcular_qualificacao_profissional();validar_pontuacao_qualificacao_profissional(this);",  onblur:"calcular_qualificacao_profissional();validar_pontuacao_qualificacao_profissional(this);", "data-html":"true", "data-toggle":"tooltip", "data-placement":"top", title:"<b>Exemplo:</b><br>1 Curso = 2 ponto<br>2 Cursos = 4 pontos" %>
+          </td>
+          <td>
+            <% if(!form.object.qualificacao_profissional_01_file.blank?) %>
+              <div id="display_qualificacao_profissional_01" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :qualificacao_profissional_01_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_qualificacao_profissional(this)", tem_anexo:"SIM",  onmouseover:"exibir_display(this)" %>
+              <%= link_to image_tag("clear.png").html_safe, remover_file_inscricao_servidors_path(slug: form.object.slug, file: "qualificacao_profissional_01_file"), class: 'file_clear', onclick:"return confirm('Deseja realmente remover o arquivo?');" %>
+              <%= form.hidden_field :qualificacao_profissional_01_file_cache %>
+              <% form.object.qualificacao_profissional_01_file.each do |file| %>
+                <span class="font_anexo">
+                  <a target="blank" href="<%= file %>">
+                    <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                    <%= file.identifier %>
+                  </a><br>
+                </span>
+              <% end %>
+            <% elsif %>
+              <div id="display_qualificacao_profissional_01" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :qualificacao_profissional_01_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_qualificacao_profissional(this)", tem_anexo:"NAO",  onmouseover:"exibir_display(this)" %>
+              <a id="qualificacao_profissional_01_link" href="#" class="link file_clear" onclick="remover(this)"><%= image_tag("clear.png") %></a>
+              <%= form.hidden_field :qualificacao_profissional_01_file_cache %>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Cursos de Extensão realizadas na área da Socioeducação (com carga horária mínima de 24h/a)</td>
+          <td><span id="qualificacao_profissional_02"></span></td>
+          <td>
+            <%= form.select :qualificacao_profissional_02_candidato, ["0.0","1.5","3.0","4.5","6.0","7.5"], {}, class: 'form-control', onchange:"calcular_qualificacao_profissional();validar_pontuacao_qualificacao_profissional(this);",  onblur:"calcular_qualificacao_profissional();validar_pontuacao_qualificacao_profissional(this);", "data-html":"true", "data-toggle":"tooltip", "data-placement":"top", title:"<b>Exemplo:</b><br>1 Curso = 1,5 ponto<br>2 Cursos = 3,0 pontos" %>
+          </td>
+          <td>
+            <% if(!form.object.qualificacao_profissional_02_file.blank?) %>
+              <div id="display_qualificacao_profissional_02" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :qualificacao_profissional_02_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_qualificacao_profissional(this)", tem_anexo:"SIM",  onmouseover:"exibir_display(this)" %>
+              <%= link_to image_tag("clear.png").html_safe, remover_file_inscricao_servidors_path(slug: form.object.slug, file: "qualificacao_profissional_02_file"), class: 'file_clear', onclick:"return confirm('Deseja realmente remover o arquivo?');" %>
+              <%= form.hidden_field :qualificacao_profissional_02_file_cache %>
+              <% form.object.qualificacao_profissional_02_file.each do |file| %>
+                <span class="font_anexo">
+                  <a target="blank" href="<%= file %>">
+                    <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                    <%= file.identifier %>
+                  </a><br>
+                </span>
+              <% end %>
+            <% elsif %>
+              <div id="display_qualificacao_profissional_02" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :qualificacao_profissional_02_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_qualificacao_profissional(this)", tem_anexo:"NAO",  onmouseover:"exibir_display(this)" %>
+              <a id="qualificacao_profissional_02_link" href="#" class="link file_clear" onclick="remover(this)"><%= image_tag("clear.png") %></a>
+              <%= form.hidden_field :qualificacao_profissional_02_file_cache %>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Cursos de Extensão realizados em qualquer área horária mínima de 24h/a</td>
+          <td><span id="qualificacao_profissional_03"></span></td>
+          <td>
+            <%= form.select :qualificacao_profissional_03_candidato, ["0.0","0.5","1.0","1.5","2.0"], {}, class: 'form-control', onchange:"calcular_qualificacao_profissional();validar_pontuacao_qualificacao_profissional(this);",  onblur:"calcular_qualificacao_profissional();validar_pontuacao_qualificacao_profissional(this);", "data-html":"true", "data-toggle":"tooltip", "data-placement":"top", title:"<b>Exemplo:</b><br>1 Curso = 0,5 ponto<br>2 Cursos = 1,0 ponto" %>
+          </td>
+          <td>
+            <% if(!form.object.qualificacao_profissional_03_file.blank?) %>
+              <div id="display_qualificacao_profissional_03" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :qualificacao_profissional_03_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_qualificacao_profissional(this)", tem_anexo:"SIM",  onmouseover:"exibir_display(this)" %>
+              <%= link_to image_tag("clear.png").html_safe, remover_file_inscricao_servidors_path(slug: form.object.slug, file: "qualificacao_profissional_03_file"), class: 'file_clear', onclick:"return confirm('Deseja realmente remover o arquivo?');" %>
+              <%= form.hidden_field :qualificacao_profissional_03_file_cache %>
+              <% form.object.qualificacao_profissional_03_file.each do |file| %>
+                <span class="font_anexo">
+                  <a target="blank" href="<%= file %>">
+                    <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                    <%= file.identifier %>
+                  </a><br>
+                </span>
+              <% end %>
+            <% elsif %>
+              <div id="display_qualificacao_profissional_03" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :qualificacao_profissional_03_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_qualificacao_profissional(this)", tem_anexo:"NAO",  onmouseover:"exibir_display(this)" %>
+              <a id="qualificacao_profissional_03_link" href="#" class="link file_clear" onclick="remover(this)"><%= image_tag("clear.png") %></a>
+              <%= form.hidden_field :qualificacao_profissional_03_file_cache %>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Instrutor(a) em cursos ou similares na área Socioeducação (com carga horária mínima de 16h/a)</td>
+          <td><span id="qualificacao_profissional_04"></span></td>
+          <td>
+            <%= form.select :qualificacao_profissional_04_candidato, ["0.0","1.0","2.0","3.0","4.0"], {}, class: 'form-control', onchange:"calcular_qualificacao_profissional();validar_pontuacao_qualificacao_profissional(this);",  onblur:"calcular_qualificacao_profissional();validar_pontuacao_qualificacao_profissional(this);", "data-html":"true", "data-toggle":"tooltip", "data-placement":"top", title:"<b>Exemplo:</b><br>1 Curso = 1 ponto<br>2 Cursos = 2 pontos" %>
+          </td>
+          <td>
+            <% if(!form.object.qualificacao_profissional_04_file.blank?) %>
+              <div id="display_qualificacao_profissional_04" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :qualificacao_profissional_04_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_qualificacao_profissional(this)", tem_anexo:"SIM",  onmouseover:"exibir_display(this)" %>
+              <%= link_to image_tag("clear.png").html_safe, remover_file_inscricao_servidors_path(slug: form.object.slug, file: "qualificacao_profissional_04_file"), class: 'file_clear', onclick:"return confirm('Deseja realmente remover o arquivo?');" %>
+              <%= form.hidden_field :qualificacao_profissional_04_file_cache %>
+              <% form.object.qualificacao_profissional_04_file.each do |file| %>
+                <span class="font_anexo">
+                  <a target="blank" href="<%= file %>">
+                    <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                    <%= file.identifier %>
+                  </a><br>
+                </span>
+              <% end %>
+            <% elsif %>
+              <div id="display_qualificacao_profissional_04" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :qualificacao_profissional_04_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_qualificacao_profissional(this)", tem_anexo:"NAO",  onmouseover:"exibir_display(this)" %>
+              <a id="qualificacao_profissional_04_link" href="#" class="link file_clear" onclick="remover(this)"><%= image_tag("clear.png") %></a>
+              <%= form.hidden_field :qualificacao_profissional_04_file_cache %>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="6"style="text-align: center; font-weight: bold; background-color: #ddd; font-size: 20px;">
+            Você informou <span id="qualificacao_profissional_total"></span> do total de <span id="qualificacao_profissional_maximo"></span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table class="table">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col" style="width: 33px;color: #1e2124;border-color: #93b46f; background-color: #b2d190;">#</th>
+          <th scope="col" style="width: 350px;color: #1e2124;border-color: #93b46f; background-color: #b2d190;">Experiência Profissional</th>
+          <th scope="col" style="width: 175px;color: #1e2124;border-color: #93b46f; background-color: #b2d190;">Pontuação Máxima</th>
+          <th scope="col" style="width: 130px;color: #1e2124;border-color: #93b46f; background-color: #b2d190;">Pontuação</th>
+          <th scope="col" style="color: #1e2124;border-color: #93b46f; background-color: #b2d190;"><div class="tamanho_mb">Tamanho do PDF 5MB</div></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Exercício da atividade em Centros Socioeducativos nos Últimos 4 anos (atuação com medidas socieoducativas de privação e restrição de liberdade)</td>
+          <td><span id="experiencia_profissional_01"></span></td>
+          <td>
+            <%= form.select :experiencia_profissional_01_candidato, ["0.0","5.0","10.0","15.0","20.0"], {}, class: 'form-control', onchange:"calcular_experiencia_profissional();validar_pontuacao_experiencia_profissional(this);",  onblur:"calcular_experiencia_profissional();validar_pontuacao_experiencia_profissional(this);", "data-html":"true", "data-toggle":"tooltip", "data-placement":"top", title:"<b>Exemplo:</b><br>1 Curso = 5 ponto<br>2 Cursos = 10 pontos" %>
+          </td>
+          <td>
+            <% if(!form.object.experiencia_profissional_01_file.blank?) %>
+              <div id="display_experiencia_profissional_01" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :experiencia_profissional_01_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_experiencia_profissional(this)", tem_anexo:"SIM",  onmouseover:"exibir_display(this)" %>
+              <%= link_to image_tag("clear.png").html_safe, remover_file_inscricao_servidors_path(slug: form.object.slug, file: "experiencia_profissional_01_file"), class: 'file_clear', onclick:"return confirm('Deseja realmente remover o arquivo?');" %>
+              <%= form.hidden_field :experiencia_profissional_01_file_cache %>
+              <% form.object.experiencia_profissional_01_file.each do |file| %>
+                <span class="font_anexo">
+                  <a target="blank" href="<%= file %>">
+                    <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                    <%= file.identifier %>
+                  </a><br>
+                </span>
+              <% end %>
+            <% elsif %>
+              <div id="display_experiencia_profissional_01" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :experiencia_profissional_01_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_experiencia_profissional(this)", tem_anexo:"NAO",  onmouseover:"exibir_display(this)" %>
+              <a id="experiencia_profissional_01_link" href="#" class="link file_clear" onclick="remover(this)"><%= image_tag("clear.png") %></a>
+              <%= form.hidden_field :experiencia_profissional_01_file_cache %>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Exercício da atividade em Centros Socioeducativos em período anterior a 4 anos (atuação com medidas socieoducativas de privação e restrição de liberdade)</td>
+          <td><span id="experiencia_profissional_02"></span></td>
+          <td>
+            <%= form.select :experiencia_profissional_02_candidato, ["0.0","2.0","4.0","6.0","8.0"], {}, class: 'form-control', onchange:"calcular_experiencia_profissional();validar_pontuacao_experiencia_profissional(this);",  onblur:"calcular_experiencia_profissional();validar_pontuacao_experiencia_profissional(this);", "data-html":"true", "data-toggle":"tooltip", "data-placement":"top", title:"<b>Exemplo:</b><br>1 Curso = 2 pontos<br>2 Cursos = 4 pontos" %>
+          </td>
+          <td>
+            <% if(!form.object.experiencia_profissional_02_file.blank?) %>
+              <div id="display_experiencia_profissional_02" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :experiencia_profissional_02_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_experiencia_profissional(this)", tem_anexo:"SIM",  onmouseover:"exibir_display(this)" %>
+              <%= link_to image_tag("clear.png").html_safe, remover_file_inscricao_servidors_path(slug: form.object.slug, file: "experiencia_profissional_02_file"), class: 'file_clear', onclick:"return confirm('Deseja realmente remover o arquivo?');" %>
+              <%= form.hidden_field :experiencia_profissional_02_file_cache %>
+              <% form.object.experiencia_profissional_02_file.each do |file| %>
+                <span class="font_anexo">
+                  <a target="blank" href="<%= file %>">
+                    <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                    <%= file.identifier %>
+                  </a><br>
+                </span>
+              <% end %>
+            <% elsif %>
+              <div id="display_experiencia_profissional_02" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :experiencia_profissional_02_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_experiencia_profissional(this)", tem_anexo:"NAO",  onmouseover:"exibir_display(this)" %>
+              <a id="experiencia_profissional_02_link" href="#" class="link file_clear" onclick="remover(this)"><%= image_tag("clear.png") %></a>
+              <%= form.hidden_field :experiencia_profissional_02_file_cache %>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Exercício da atividade com adolescentes nos Últimos 4 anos</td>
+          <td><span id="experiencia_profissional_03"></span></td>
+          <td>
+            <%= form.select :experiencia_profissional_03_candidato, ["0.0","1.5","3.0","4.5","6.0"], {}, class: 'form-control', onchange:"calcular_experiencia_profissional();validar_pontuacao_experiencia_profissional(this);",  onblur:"calcular_experiencia_profissional();validar_pontuacao_experiencia_profissional(this);", "data-html":"true", "data-toggle":"tooltip", "data-placement":"top", title:"<b>Exemplo:</b><br>1 Curso = 1,5 pontos<br>2 Cursos = 3.0 pontos" %>
+          </td>
+          <td>
+            <% if(!form.object.experiencia_profissional_03_file.blank?) %>
+              <div id="display_experiencia_profissional_03" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :experiencia_profissional_03_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_experiencia_profissional(this)", tem_anexo:"SIM",  onmouseover:"exibir_display(this)" %>
+              <%= link_to image_tag("clear.png").html_safe, remover_file_inscricao_servidors_path(slug: form.object.slug, file: "experiencia_profissional_03_file"), class: 'file_clear', onclick:"return confirm('Deseja realmente remover o arquivo?');" %>
+              <%= form.hidden_field :experiencia_profissional_03_file_cache %>
+              <% form.object.experiencia_profissional_03_file.each do |file| %>
+                <span class="font_anexo">
+                  <a target="blank" href="<%= file %>">
+                    <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                    <%= file.identifier %>
+                  </a><br>
+                </span>
+              <% end %>
+            <% elsif %>
+              <div id="display_experiencia_profissional_03" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :experiencia_profissional_03_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_experiencia_profissional(this)", tem_anexo:"NAO",  onmouseover:"exibir_display(this)" %>
+              <a id="experiencia_profissional_03_link" href="#" class="link file_clear" onclick="remover(this)"><%= image_tag("clear.png") %></a>
+              <%= form.hidden_field :experiencia_profissional_03_file_cache %>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Exercício da atividade com adolescentes em período anterior aos 4 anos</td>
+          <td><span id="experiencia_profissional_04"></span></td>
+          <td>
+            <%= form.select :experiencia_profissional_04_candidato, ["0.0","1.0","2.0","3.0","4.0"], {}, class: 'form-control', onchange:"calcular_experiencia_profissional();validar_pontuacao_experiencia_profissional(this);",  onblur:"calcular_experiencia_profissional();validar_pontuacao_experiencia_profissional(this);", "data-html":"true", "data-toggle":"tooltip", "data-placement":"top", title:"<b>Exemplo:</b><br>1 Curso = 1 pontos<br>2 Cursos = 2 pontos" %>
+          </td>
+          <td>
+            <% if(!form.object.experiencia_profissional_04_file.blank?) %>
+              <div id="display_experiencia_profissional_04" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :experiencia_profissional_04_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_experiencia_profissional(this)", tem_anexo:"SIM",  onmouseover:"exibir_display(this)" %>
+              <%= link_to image_tag("clear.png").html_safe, remover_file_inscricao_servidors_path(slug: form.object.slug, file: "experiencia_profissional_04_file"), class: 'file_clear', onclick:"return confirm('Deseja realmente remover o arquivo?');" %>
+              <%= form.hidden_field :experiencia_profissional_04_file_cache %>
+              <% form.object.experiencia_profissional_04_file.each do |file| %>
+                <span class="font_anexo">
+                  <a target="blank" href="<%= file %>">
+                    <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                    <%= file.identifier %>
+                  </a><br>
+                </span>
+              <% end %>
+            <% elsif %>
+              <div id="display_experiencia_profissional_04" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :experiencia_profissional_04_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_experiencia_profissional(this)", tem_anexo:"NAO",  onmouseover:"exibir_display(this)" %>
+              <a id="experiencia_profissional_04_link" href="#" class="link file_clear" onclick="remover(this)"><%= image_tag("clear.png") %></a>
+              <%= form.hidden_field :experiencia_profissional_04_file_cache %>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Exercício Profissional na Carreira Específica do Edital (outras áreas)</td>
+          <td><span id="experiencia_profissional_05"></span></td>
+          <td>
+            <%= form.select :experiencia_profissional_05_candidato, [""], {}, class: 'form-control', onchange:"calcular_experiencia_profissional();validar_pontuacao_experiencia_profissional(this);",  onblur:"calcular_experiencia_profissional();validar_pontuacao_experiencia_profissional(this);" %>
+          </td>
+          <td>
+            <% if(!form.object.experiencia_profissional_05_file.blank?) %>
+              <div id="display_experiencia_profissional_05" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :experiencia_profissional_05_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_experiencia_profissional(this)", tem_anexo:"SIM",  onmouseover:"exibir_display(this)" %>
+              <%= link_to image_tag("clear.png").html_safe, remover_file_inscricao_servidors_path(slug: form.object.slug, file: "experiencia_profissional_05_file"), class: 'file_clear', onclick:"return confirm('Deseja realmente remover o arquivo?');" %>
+              <%= form.hidden_field :experiencia_profissional_05_file_cache %>
+              <% form.object.experiencia_profissional_05_file.each do |file| %>
+                <span class="font_anexo">
+                  <a target="blank" href="<%= file %>">
+                    <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                    <%= file.identifier %>
+                  </a><br>
+                </span>
+              <% end %>
+            <% elsif %>
+              <div id="display_experiencia_profissional_05" class="display"><div onclick="close_display()" class="close_display"><%= image_tag("close.png", size: "20x20") %></div><%= video_tag "video_anexo.mp4", width: "100%", height:"100%", controls: true, autoplay: true, loop: true %></div>
+              <%= form.file_field :experiencia_profissional_05_file, multiple: true, class: 'form-control file', onchange:"validar_anexo_experiencia_profissional(this)", tem_anexo:"NAO",  onmouseover:"exibir_display(this)" %>
+              <a id="experiencia_profissional_05_link" href="#" class="link file_clear" onclick="remover(this)"><%= image_tag("clear.png") %></a>
+              <%= form.hidden_field :experiencia_profissional_05_file_cache %>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="6"style="text-align: center; font-weight: bold; background-color: #ddd; font-size: 20px;">
+            Você informou <span id="experiencia_profissional_total"></span> do total de <span id="experiencia_profissional_maximo"></span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table class="table">
+      <tr>
+        <td colspan="6"style="text-align: center; font-weight: bold; background-color: #ddd; font-size: 20px;">
+          Sua pontuação final é <span id="total_geral"></span> do total de <span id="total_maximo"></span>
+        </td>
+      </tr>
+    </table>
+    <%= form.check_box :termo_aceito, required: true %>
+    <%= form.label :termo_aceito, class: 'required' %>
+    <br>
+    <div class="text-justify">
+      Declaro que atendo todas as exigências contidas no Edital nº 002/2021 - SEAS, e que estou de acordo com a regulamentação nele contida, bem como estou ciente de que a inscrição implicará a completa ciência e a tácita aceitação das normas e condições estabelecidas no Edital, sobre as quais não poderei alegar qualquer espécie de desconhecimento. Constatada a inexatidão das afirmativas ou irregularidades de documentos, ainda que comprovadas posteriormente, serei eliminado da Seleção, anulando-se todos os atos decorrentes de minha inscrição. Declaro, ainda, que deverei apresentar os documentos exigidos no item 4 do Edital simplificado, na forma e prazos previstos.
+    </div>
+    <br>
+    <% configuracao = Configuracao.where(status: true).last %>
+    <% if Time.now.to_date < configuracao.data_inicio_selecao %>
+      <%= render partial: 'abertura' %>
+    <% elsif Time.now.to_date >= configuracao.data_termino_selecao.to_date %>
+      <%= render partial: 'encerramento' %>
+    <% else %>
+      <div class="actions" style="text-align: center">
+      <% if !form.object.new_record? %>
+        <%= link_to '<i class="fas fa-edit"></i> Editar Inscrição'.html_safe, edit_inscricao_servidor_path(inscricao_servidor.slug), class: 'btn btn-lg btn-warning', id:"botao_editar_inscricao_servidor", disabled: true %>
+      <% end %>
+      <% if params[:action] == "edit" %>
+        <%= form.submit "Salvar Inscrição", class: 'btn btn-lg btn-primary', disabled: true, id:"botao_salvar_inscricao_servidor", data:{disable_with: "Enviando..."} %><br><br>
+      <% else %>
+        <%= form.submit "Seguir para conferência", class: 'btn btn-lg btn-primary', disabled: true, id:"botao_salvar_inscricao_servidor", data:{disable_with: "Enviando..."} %><br><br>
+      <% end %>
+      <p style="font: normal 13px arial;margin-left: 20px;color: #585858;">
+        É necessário aceitar e clicar o <label for="inscricao_servidor_termo_aceito" style="text-decoration: underline;">Termo de aceite</label>.
+      </p>
+      <% if !form.object.new_record? %>
+        <div id="finalizar_inscricao">
+          <div class="alert alert-info" role="alert" style="text-align:">
+            <p><i class="fas fa-exclamation-triangle"></i> <b>ATENÇÂO!</b> cuidado ao finalizar, pois não será mais permitido alterações.</p>
+          </div>
+          <%= link_to '<i class="far fa-stop-circle"></i> Finalizar Inscrição'.html_safe, finalizar_inscricao_servidors_path(id: inscricao_servidor.slug), class: 'btn btn-success btn-lg btn-block', method: :finalizar, onclick:"return confirm('ATENÇÂO! cuidado ao finalizar, pois não será mais permitido alterações. Deseja realmente finalizar?');" %>
+        </div>
+      <% end %>
+      <% if(!@id.nil?)%>
+        <%= form.hidden_field :slug, value: @id %>
+      <% end %>
+      <%= form.hidden_field :formacao_academica_total %>
+      <%= form.hidden_field :qualificacao_profissional_total %>
+      <%= form.hidden_field :experiencia_profissional_total %>
+      <%= form.hidden_field :formacao_academica_soma_candidato %>
+      <%= form.hidden_field :qualificacao_profissional_soma_candidato %>
+      <%= form.hidden_field :experiencia_profissional_soma_candidato %>
+      <%= form.hidden_field :total_geral_candidato %>
+      <%#= form.hidden_field :total_geral_correcao %>
+      <%= form.hidden_field :formacao_academica_01_correcao %>
+      <%= form.hidden_field :formacao_academica_02_correcao %>
+      <%= form.hidden_field :formacao_academica_03_correcao %>
+      <%= form.hidden_field :formacao_academica_04_correcao %>
+      <%= form.hidden_field :formacao_academica_05_correcao %>
+      <%= form.hidden_field :formacao_academica_06_correcao %>
+      <%= form.hidden_field :formacao_academica_07_correcao %>
+      <%= form.hidden_field :qualificacao_profissional_01_correcao %>
+      <%= form.hidden_field :qualificacao_profissional_02_correcao %>
+      <%= form.hidden_field :qualificacao_profissional_03_correcao %>
+      <%= form.hidden_field :qualificacao_profissional_04_correcao %>
+      <%= form.hidden_field :experiencia_profissional_01_correcao %>
+      <%= form.hidden_field :experiencia_profissional_02_correcao %>
+      <%= form.hidden_field :experiencia_profissional_03_correcao %>
+      <%= form.hidden_field :experiencia_profissional_04_correcao %>
+      <%= form.hidden_field :experiencia_profissional_05_correcao %>
+      <%#= link_to '<i class="fas fa-forward"></i> Avançar para adicionar cargos'.html_safe, selecionar_vagas_inscricao_servidors_path(inscricao_servidor_id: inscricao_servidor.slug), class: 'btn btn-warning' %>
+    <% end %>
+    </div>
+  <% else %>
+    <h5>Ola <%= form.object.nome_completo %>,</h5>
+    <p>Essa é nossa plataforma de comunicação. Sugerimos que você copie e guarde este link <a href="<%= request.url %>"><%= request.url %></a>, 
+    pois é a partir desta pagina que nós manteremos contato no decorrer das fases de análises.</p>
+    <p><b><a href="#" onclick="window.print()" class="link">Clique aqui</a> para imprimir sua página de inscrição.</b></p>
+    <!-- HISTÓRICO DE OCORRENCIAS -->
+    <table width="100%">
+      <% if form.object.finalizar %>
+      <tr style="height: 130px;">
+        <td style="width: 200px;">
+          <%= image_tag('monitor_inicio.png') %>
+        </td>
+        <td colspan="2">
+          Sua inscrição foi realizada. Aguarde nossa equipe realizar a análise dos dados
+        </td>
+      </tr>
+      <% end %>
+      <% if form.object.status_acompanhamento == "Correção de dados" or form.object.status_acompanhamento == "Correção de pontuação" %>
+        <tr style="height: 130px; border-top: dashed 2px #d9d9d9;">
+          <% if form.object.recurso_candidato.nil? %>
+            <td>
+              <%= image_tag('monitor_deferido.png') %>
+            </td>
+            <td colspan="2">
+              <span class="badge badge-success">Deferido</span><br>
+              Os dados pessoais foram analisados. Aguarde nossa equipe analisar os currículos. <a href="#visualize_dados">Visualize os dados</a>
+            </td>
+          <% else %>
+            <td>
+              <%= image_tag('monitor_deferido.png') %>
+            </td>
+            <td style="width: 250px;">
+              <span class="badge badge-success">Deferido</span><br>
+              Os dados pessoais foram analisados. Aguarde nossa equipe analisar os currículos. <a href="#visualize_dados">Visualize os dados</a>
+            </td>
+            <td style="width:61%">
+              <!--ABRIR RECURSO DA CONFERÊNCIA DOS DADOS-->
+              <% configuracao = Configuracao.where(status: true).last %>
+              <% if Time.now.to_date < configuracao.data_inicio_recurso.to_date  %>
+                <div class="alert alert-info" role="alert" style="margin-bottom: 0;padding: 0.75rem 0.75rem 0;margin: 6px 0px 0px 0px;">
+                  <h6 style="text-align: left"><p>Sua inscrição foi indeferida. Você poderá apresentar recurso, informando objetivamente suas razões diante da motivação da desclassificação. </p>
+                  <p>Consulte o Cronograma de eventos, as datas para apresentação do recurso podem ser alteradas.</p></h6><hr>
+                  <div id="recurso_dados_contador" style="text-align: center;font-size: 25px;font-weight: bold;" datafim="<%= configuracao&.data_inicio_recurso.strftime('%m/%d/%Y') %>">10h 59m 00s</div>
+                </div>
+              <% elsif (Time.now.to_date >= configuracao.data_inicio_recurso.to_date and Time.now.to_date < configuracao.data_termino_recurso.to_date) or !form.object.recurso_candidato.nil? %>
+                <div class="alert alert-info" role="alert" style="margin-bottom: 0;padding: 0.75rem 0.75rem 0;margin: 6px 0px 0px 0px;">
+                  <h6>Recurso da Inscrição <span class="caracteres_recurso_dados" style="float: right;">500 restantes</span></h6>
+                </div>
+                <% if form.object.recurso_candidato.nil? %>
+                  <%= form.text_area :recurso_candidato, size: '1x3', class: 'form-control', style: "float: left; width: 86%;", placeholder:"Descreva seu recurso aqui..." %>                  
+                  <%= form.submit "Solicitar", class: 'btn btn-success', style: "float: right; width: 14%; height: 85px;" %>
+                <% else %>
+                  <%= form.text_area :recurso_candidato, size: '1x3', class: 'form-control', disabled: true %>
+                  <b>Resposta:</b>
+                  <% if form.object.resposta_recurso_candidato.nil? %>
+                    <p>Recurso apresentado. Em breve responderemos.</p>
+                  <% else %>
+                    <p><%= form.object.resposta_recurso_candidato %></p>
+                  <% end %>
+                <% end %>
+                <%= form.hidden_field :slug, value: @id %>
+              <% else %>
+                <div class="alert alert-info" role="alert" style="margin-bottom: 0;padding: 0.75rem 0.75rem 0;margin: 6px 0px 0px 0px;">
+                  <h5 style="text-align: center">Prazo para recurso de inscrição encerrado</h5>
+                </div>
+              <% end %>
+              <!--FIM-->
+            </td>
+          <% end %>
+        </tr>
+      <% elsif form.object.status_acompanhamento == 'Desclassificado' %>
+        <tr style="height: 130px; border-top: dashed 2px #d9d9d9;">
+          <td>
+            <%= image_tag('monitor_indeferido.png') %>
+          </td>
+          <td style="width: 250px;">
+            <span class="badge badge-danger">Indeferido na análise dos dados</span><br>
+            <%= form.object.observacao %>
+          </td>
+          <td style="width:61%">
+            <!--ABRIR RECURSO DA CONFERÊNCIA DOS DADOS-->
+            <% configuracao = Configuracao.where(status: true).last %>
+            <% if Time.now.to_date < configuracao.data_inicio_recurso.to_date  %>
+              <div class="alert alert-info" role="alert" style="margin-bottom: 0;padding: 0.75rem 0.75rem 0;margin: 6px 0px 0px 0px;">
+                <h6 style="text-align: left"><p>Sua inscrição foi indeferida. Você poderá apresentar recurso, informando objetivamente suas razões diante da motivação da desclassificação. </p>
+                <p>Consulte o Cronograma de eventos. As datas para apresentação do recurso podem ser alteradas.</p></h6><hr>
+                <div id="recurso_dados_contador" style="text-align: center;font-size: 25px;font-weight: bold;" datafim="<%= configuracao&.data_inicio_recurso.strftime('%m/%d/%Y') %>">10h 25m 00s</div>
+              </div>
+            <% elsif (Time.now.to_date >= configuracao.data_inicio_recurso.to_date and Time.now.to_date < configuracao.data_termino_recurso.to_date) or !form.object.recurso_candidato.nil? %>
+              <div class="alert alert-info" role="alert" style="margin-bottom: 0;padding: 0.75rem 0.75rem 0;margin: 6px 0px 0px 0px;">
+                <h6>Recurso da Inscrição <span class="caracteres_recurso_dados" style="float: right;">500 restantes</span></h6>
+              </div>
+              <% if form.object.recurso_candidato.nil? %>
+                <%= form.text_area :recurso_candidato, size: '1x3', class: 'form-control', style: "float: left; width: 86%;", placeholder:"Descreva seu recurso aqui..." %>
+                <%= form.submit "Solicitar", class: 'btn btn-success', style: "float: right; width: 14%; height: 85px;" %>
+              <% else %>
+                <%= form.text_area :recurso_candidato, size: '1x3', class: 'form-control', disabled: true %>
+                <b>Resposta:</b>
+                <% if form.object.resposta_recurso_candidato.nil? %>
+                  <p>Recurso apresentado. Em breve responderemos.</p>
+                <% else %>
+                  <p><%= form.object.resposta_recurso_candidato %></p>
+                <% end %>
+              <% end %>
+              <%= form.hidden_field :slug, value: @id %>
+            <% else %>
+              <div class="alert alert-info" role="alert" style="margin-bottom: 0;padding: 0.75rem 0.75rem 0;margin: 6px 0px 0px 0px;">
+                <h5 style="text-align: center">Prazo para recurso de inscrição encerrado</h5>
+              </div>
+            <% end %>
+            <!--FIM-->
+          </td>
+        </tr>
+      <% elsif form.object.status_acompanhamento == 'Finalizado'%>
+        <tr style="height: 130px; border-top: dashed 2px #d9d9d9;">
+          <td>
+            <%= image_tag('monitor_deferido_off.png') %>
+          </td>
+          <td style="width: 250px;"><%= image_tag('monitor_off.png') %></td>
+          <td><%= image_tag('monitor_off2.png') %></td>
+        </tr>
+      <% end %>
+      <% if form.object.status_acompanhamento == "Correção de pontuação" %>
+        <tr style="height: 130px; border-top: dashed 2px #d9d9d9;">
+          <td>
+            <% if form.object.status_acompanhamento %>
+              <%= image_tag('monitor_curriculo_deferido.png') %>
+            <% end %>
+          </td>
+          <td style="width: 250px;">
+            <% if form.object.reclassificar_recurso_pontuacao == true %>
+              <span class="badge badge-success">Recurso deferido</span><br>
+            <% elsif form.object.reclassificar_recurso_pontuacao == false %>
+              <span class="badge badge-danger">Recurso Indeferido</span><br>
+            <% end %>
+            A pontuação curricular foi analisada. <a href="#visualize_curriculo">Visualize a análise</a>
+          </td>
+          <td>
+            <!-- ABRIR RECURSO DA PONTUAÇÃO -->
+            <% configuracao = Configuracao.where(status: true).last %>
+            <% if Time.now.to_date < configuracao.data_inicio_recurso_pontuacao.to_date  %>
+              <div class="alert alert-info" role="alert" style="margin-bottom: 0;padding: 0.75rem 0.75rem 0;margin: 6px 0px 0px 0px;">
+                <h6 style="text-align: left"><p>Caso não concorde com a pontuação atribuída, você poderá apresentar recurso informando objetivamente suas razões para alterar a pontuação.</p>
+                <p>Consulte o Cronograma de eventos. As datas para apresentação do recurso podem ser alteradas.</p></h6><hr>
+                <div id="recurso_pontuacao_contador" style="text-align: center;font-size: 25px;font-weight: bold;" datafim="<%= configuracao&.data_inicio_recurso_pontuacao.strftime('%m/%d/%Y') %>">10h 25h 00s</div>
+              </div>
+              <% elsif (Time.now.to_date >= configuracao.data_inicio_recurso_pontuacao.to_date and Time.now.to_date < configuracao.data_termino_recurso_pontuacao.to_date) or !form.object.recurso_pontuacao.nil? %>
+              <div class="alert alert-info" role="alert" style="margin-bottom: 0;padding: 0.75rem 0.75rem 0;margin: 6px 0px 0px 0px;">
+                <h6>Recurso da Análise dos Currículos <span class="caracteres_recurso_curriculo" style="float: right;">500 restantes</span></h6>
+              </div>
+              <% if form.object.recurso_pontuacao.nil? %>
+                <%= form.text_area :recurso_pontuacao, size: '1x3', class: 'form-control', style: "float: left; width: 86%;" %>
+                <%= form.submit "Solicitar", class: 'btn btn-success', style: "float: right; width: 14%; height: 85px;" %>
+              <% else %>
+                <%= form.text_area :recurso_pontuacao, size: '1x3', class: 'form-control', disabled: true %>
+                <b>Resposta:</b>
+                <% if form.object.resposta_recurso_pontuacao.nil? %>
+                  <p>Recurso apresentado. Em breve responderemos.</p>
+                <% else %>
+                  <p><%= form.object.resposta_recurso_pontuacao %></p>
+                <% end %>
+              <% end %>
+              <%= form.hidden_field :slug, value: @id %>
+            <% else %>
+              <div class="alert alert-info" role="alert" style="margin-bottom: 0;padding: 0.75rem 0.75rem 0;margin: 6px 0px 0px 0px;">
+                <h5 style="text-align: center">Prazo para recurso da avaliação da pontuação encerrado</h5>
+              </div>
+            <% end %>
+            <!-- FIM -->
+          </td>
+        </tr>
+      <% elsif form.object.status_acompanhamento == 'Finalizado' or form.object.status_acompanhamento == 'Correção de dados' %> 
+        <tr style="height: 130px; border-top: dashed 2px #d9d9d9;">
+          <td>
+            <%= image_tag('monitor_curriculo_deferido_off.png') %>
+          </td>
+          <td style="width: 250px;"><%= image_tag('monitor_off.png') %></td>
+          <td><%= image_tag('monitor_off2.png') %></td>
+        </tr>
+      <% end %>
+    </table>
+    <br><br>
+
+    <%= render 'dados_pessoais', inscricao_servidor: inscricao_servidor %>
+    <%= render 'curriculo', inscricao_servidor: inscricao_servidor %>
+
+   
+  <% end %>
+<br><br>
+
+<script>
+
+var data_dados = $('#recurso_dados_contador').attr('datafim');
+contador_regressivo(data_dados, "recurso_dados_contador");
+var data_pontuacao = $('#recurso_pontuacao_contador').attr('datafim');
+contador_regressivo(data_pontuacao, "recurso_pontuacao_contador");
+
+
+var anos = 0;
+//TOTAL DA PONTUAÇÃO INFORMADA PELO USUARIO
+var total_formacao_academica = 0;
+var total_qualificacao_profissional = 0;
+var total_experiencia_profissional = 0;
+//--------------------------------------
+var formacao_academica_maximo = 0;
+var qualificacao_profissional_maximo = 0;
+var experiencia_profissional_maximo = 0;
+//--------------------------------------
+var formacao_academica_max_01 = 7;
+var formacao_academica_max_02 = 5;
+var formacao_academica_max_03 = 4;
+var formacao_academica_max_04 = 3;
+var formacao_academica_max_05 = 4;
+var formacao_academica_max_06 = 2;
+var formacao_academica_max_07 = 5;
+var qualificacao_profissional_max_01 = 10;
+var qualificacao_profissional_max_02 = 7.5;
+var qualificacao_profissional_max_03 = 0.5;
+var qualificacao_profissional_max_04 = 4;
+var experiencia_profissional_max_01 = 20;
+var experiencia_profissional_max_02 = 8;
+var experiencia_profissional_max_03 = 6;
+var experiencia_profissional_max_04 = 4;
+var experiencia_profissional_max_05 = 0;
+
+$("#inscricao_servidor_cargo_id").change(function(){
+    var id = $(this).val();
+    criterio_de_cargo(id);
+});
+
+function socioeducador(){
+	formacao_academica_maximo = 27,5;
+	qualificacao_profissional_maximo = 23.5;
+	experiencia_profissional_maximo = 38;
+
+	formacao_academica_max_01 = 7;
+	formacao_academica_max_02 = 5;
+	formacao_academica_max_03 = 4;
+	formacao_academica_max_04 = 3;
+	formacao_academica_max_05 = 4;
+	formacao_academica_max_06 = 2;
+	formacao_academica_max_07 = 2.5;
+	formacao_academica_maximo = formacao_academica_max_01 + formacao_academica_max_02 + formacao_academica_max_03 + formacao_academica_max_04 + formacao_academica_max_05 + formacao_academica_max_06 + formacao_academica_max_07;
+	$("#formacao_academica_01").html("7,0 por curso até o limite de 1 curso");
+	$("#formacao_academica_02").html("5,0 por curso até o limite de 1 curso");
+	$("#formacao_academica_03").html("4,0 por curso até o limite de 1 curso");
+	$("#formacao_academica_04").html("3,0 por curso até o limite de 1 curso");
+	$("#formacao_academica_05").html("2,0 por curso até o limite de 2 cursos");
+	$("#formacao_academica_06").html("1,0 por curso até o limite de 2 cursos");
+	$("#formacao_academica_07").html("2,5 Por curso até o limite de 1 cursos");
+	$("#formacao_academica_maximo").html(formacao_academica_maximo + " Pontos");
+	$("#inscricao_servidor_formacao_academica_total").val(formacao_academica_maximo);
+
+	qualificacao_profissional_max_01 = 10;
+	qualificacao_profissional_max_02 = 7.5;
+	qualificacao_profissional_max_03 = 2;
+	qualificacao_profissional_max_04 = 4;
+	qualificacao_profissional_maximo = qualificacao_profissional_max_01 + qualificacao_profissional_max_02 + qualificacao_profissional_max_03 + qualificacao_profissional_max_04;
+	$("#qualificacao_profissional_01").html("2,0 por curso até o limite de 5 cursos");
+	$("#qualificacao_profissional_02").html("1,5 por curso até o limite de 5 cursos");
+	$("#qualificacao_profissional_03").html("0,5 por curso até o limite de 4 cursos");
+	$("#qualificacao_profissional_04").html("1,0 por curso até o limite de 4 cursos");
+	$("#qualificacao_profissional_maximo").html(qualificacao_profissional_maximo + " Pontos");
+	$("#inscricao_servidor_qualificacao_profissional_total").val(qualificacao_profissional_maximo);
+	
+	experiencia_profissional_max_01 = 20;
+	experiencia_profissional_max_02 = 8;
+	experiencia_profissional_max_03 = 6;
+	experiencia_profissional_max_04 = 4;
+	experiencia_profissional_max_05 = 0;
+	experiencia_profissional_maximo = experiencia_profissional_max_01 + experiencia_profissional_max_02 + experiencia_profissional_max_03 + experiencia_profissional_max_04 + experiencia_profissional_max_05;
+	$("#experiencia_profissional_01").html("5,0 por ano de experiência até o limite de 4 anos");
+	$("#experiencia_profissional_02").html("2,0 por ano de experiência até o limite de 4 anos");
+	$("#experiencia_profissional_03").html("1,5 por ano de experiência até o limite de 4 anos");
+	$("#experiencia_profissional_04").html("1,0 por ano de experiência até o limite de 4 anos");
+	$("#experiencia_profissional_05").html("Não Se Aplica");
+	$("#experiencia_profissional_maximo").html(experiencia_profissional_maximo + " Pontos");
+	$("#inscricao_servidor_experiencia_profissional_total").val(experiencia_profissional_maximo);
+
+	total_maximo = formacao_academica_maximo+qualificacao_profissional_maximo+experiencia_profissional_maximo;
+  $("#total_maximo").html(total_maximo + " Pontos");
+  
+}
+
+function assistente_pedagogico_pscicologo(){
+	formacao_academica_max_01 = 7;
+	formacao_academica_max_02 = 5;
+	formacao_academica_max_03 = 4;
+	formacao_academica_max_04 = 3;
+	formacao_academica_max_05 = 4;
+	formacao_academica_max_06 = 2;
+	formacao_academica_max_07 = 0;
+	formacao_academica_maximo = formacao_academica_max_01 + formacao_academica_max_02 + formacao_academica_max_03 + formacao_academica_max_04 + formacao_academica_max_05 + formacao_academica_max_06 + formacao_academica_max_07;
+	$("#formacao_academica_01").html("7,0 por curso até o limite de 1 curso");
+	$("#formacao_academica_02").html("5,0 por curso até o limite de 1 curso");
+	$("#formacao_academica_03").html("4,0 por curso até o limite de 1 curso");
+	$("#formacao_academica_04").html("3,0 por curso até o limite de 1 curso");
+	$("#formacao_academica_05").html("2,0 por curso até o limite de 2 cursos");
+	$("#formacao_academica_06").html("1,0 por curso até o limite de 2 cursos");
+	$("#formacao_academica_07").html("Não Se Aplica");
+	$("#formacao_academica_maximo").html(formacao_academica_maximo + " Pontos");
+	$("#inscricao_servidor_formacao_academica_total").val(formacao_academica_maximo);
+
+	qualificacao_profissional_max_01 = 10;
+	qualificacao_profissional_max_02 = 7.5;
+	qualificacao_profissional_max_03 = 2;
+	qualificacao_profissional_max_04 = 4;
+	qualificacao_profissional_maximo = qualificacao_profissional_max_01 + qualificacao_profissional_max_02 + qualificacao_profissional_max_03 + qualificacao_profissional_max_04;
+	$("#qualificacao_profissional_01").html("2,0 por curso até o limite de 5 cursos");
+	$("#qualificacao_profissional_02").html("1,5 por curso até o limite de 5 cursos");
+	$("#qualificacao_profissional_03").html("0,5 por curso até o limite de 4 cursos");
+	$("#qualificacao_profissional_04").html("1,0 por curso até o limite de 4 cursos");
+	$("#qualificacao_profissional_maximo").html(qualificacao_profissional_maximo + " Pontos");
+	$("#inscricao_servidor_qualificacao_profissional_total").val(qualificacao_profissional_maximo);
+	
+	experiencia_profissional_max_01 = 20;
+	experiencia_profissional_max_02 = 8;
+	experiencia_profissional_max_03 = 6;
+	experiencia_profissional_max_04 = 4;
+	experiencia_profissional_max_05 = 5;
+	experiencia_profissional_maximo = experiencia_profissional_max_01 + experiencia_profissional_max_02 + experiencia_profissional_max_03 + experiencia_profissional_max_04 + experiencia_profissional_max_05;
+	$("#experiencia_profissional_01").html("5,0 por ano de experiência até o limite de 4 anos");
+	$("#experiencia_profissional_02").html("2,0 por ano de experiência até o limite de 4 anos");
+	$("#experiencia_profissional_03").html("1,5 por ano de experiência até o limite de 4 anos");
+	$("#experiencia_profissional_04").html("1,0 por ano de experiência até o limite de 4 anos");
+	$("#experiencia_profissional_05").html("1,0 por ano de experiência até o limite de 5 anos");
+	$("#experiencia_profissional_maximo").html(experiencia_profissional_maximo + " Pontos");
+	$("#inscricao_servidor_experiencia_profissional_total").val(experiencia_profissional_maximo);
+
+  total_maximo = formacao_academica_maximo+qualificacao_profissional_maximo+experiencia_profissional_maximo;
+  $("#total_maximo").html(total_maximo + " Pontos");
+}
+
+
+function calcular_formacao_academica(){
+	val1 = Number($('#inscricao_servidor_formacao_academica_01_candidato').val());
+	val2 = Number($('#inscricao_servidor_formacao_academica_02_candidato').val());
+	val3 = Number($('#inscricao_servidor_formacao_academica_03_candidato').val());
+	val4 = Number($('#inscricao_servidor_formacao_academica_04_candidato').val());
+	val5 = Number($('#inscricao_servidor_formacao_academica_05_candidato').val());
+	val6 = Number($('#inscricao_servidor_formacao_academica_06_candidato').val());
+	val7 = Number($('#inscricao_servidor_formacao_academica_07_candidato').val());
+  $('#inscricao_servidor_formacao_academica_01_correcao').val(val1);
+  $('#inscricao_servidor_formacao_academica_02_correcao').val(val2);
+  $('#inscricao_servidor_formacao_academica_03_correcao').val(val3);
+  $('#inscricao_servidor_formacao_academica_04_correcao').val(val4);
+  $('#inscricao_servidor_formacao_academica_05_correcao').val(val5);
+  $('#inscricao_servidor_formacao_academica_06_correcao').val(val6);
+  $('#inscricao_servidor_formacao_academica_07_correcao').val(val7);
+
+	total_formacao_academica = val1 + val2 + val3 + val4 + val5 + val6 + val7;
+	$("#formacao_academica_total").html(total_formacao_academica);
+  $("#inscricao_servidor_formacao_academica_soma_candidato").val(total_formacao_academica);
+  total_geral = total_formacao_academica+total_qualificacao_profissional+total_experiencia_profissional
+  $("#total_geral").html(total_geral);
+  $("#inscricao_servidor_total_geral_candidato").val(total_geral);
+  //$("#inscricao_servidor_total_geral_correcao").val(total_geral);
+}
+
+function calcular_qualificacao_profissional(){
+	val1 = Number($('#inscricao_servidor_qualificacao_profissional_01_candidato').val());
+	val2 = Number($('#inscricao_servidor_qualificacao_profissional_02_candidato').val());
+	val3 = Number($('#inscricao_servidor_qualificacao_profissional_03_candidato').val());
+	val4 = Number($('#inscricao_servidor_qualificacao_profissional_04_candidato').val());
+  $('#inscricao_servidor_qualificacao_profissional_01_correcao').val(val1);
+  $('#inscricao_servidor_qualificacao_profissional_02_correcao').val(val2);
+  $('#inscricao_servidor_qualificacao_profissional_03_correcao').val(val3);
+  $('#inscricao_servidor_qualificacao_profissional_04_correcao').val(val4);
+  
+	total_qualificacao_profissional = val1 + val2 + val3 + val4;
+	$("#qualificacao_profissional_total").html(total_qualificacao_profissional);
+  $("#inscricao_servidor_qualificacao_profissional_soma_candidato").val(total_qualificacao_profissional);
+  total_geral = total_formacao_academica+total_qualificacao_profissional+total_experiencia_profissional
+  $("#total_geral").html(total_geral);
+  $("#inscricao_servidor_total_geral_candidato").val(total_geral);
+  //$("#inscricao_servidor_total_geral_correcao").val(total_geral);
+}
+
+function calcular_experiencia_profissional(){
+	val1 = Number($('#inscricao_servidor_experiencia_profissional_01_candidato').val());
+	val2 = Number($('#inscricao_servidor_experiencia_profissional_02_candidato').val());
+	val3 = Number($('#inscricao_servidor_experiencia_profissional_03_candidato').val());
+	val4 = Number($('#inscricao_servidor_experiencia_profissional_04_candidato').val());
+	val5 = Number($('#inscricao_servidor_experiencia_profissional_05_candidato').val());
+  $('#inscricao_servidor_experiencia_profissional_01_correcao').val(val1);
+  $('#inscricao_servidor_experiencia_profissional_02_correcao').val(val2);
+  $('#inscricao_servidor_experiencia_profissional_03_correcao').val(val3);
+  $('#inscricao_servidor_experiencia_profissional_04_correcao').val(val4);
+  $('#inscricao_servidor_experiencia_profissional_05_correcao').val(val5);
+  
+	total_experiencia_profissional = val1 + val2 + val3 + val4 + val5;
+	$("#experiencia_profissional_total").html(total_experiencia_profissional);
+	$("#inscricao_servidor_experiencia_profissional_soma_candidato").val(total_experiencia_profissional);
+  total_geral = total_formacao_academica+total_qualificacao_profissional+total_experiencia_profissional
+  $("#total_geral").html(total_geral);
+  $("#inscricao_servidor_total_geral_candidato").val(total_geral);
+  //$("#inscricao_servidor_total_geral_correcao").val(total_geral);
+}
+
+
+var array_anexo_sem_pontuacao = [];
+function validar_anexo_sem_pontuacao(){
+  array_anexo_sem_pontuacao = [];
+  $('table select').each(function(){
+    valor_linha = this.id
+    valor_linha = valor_linha.replace("inscricao_servidor_formacao_academica_", "");
+    valor_linha = valor_linha.replace("_candidato", "");
+    //VERIFICA FORMAÇÃO ACADEMICA COM ANEXO E SEM PONTOS MARCADOS
+    if(this.id.indexOf("formacao_academica_") >= 0){
+      if($("#inscricao_servidor_formacao_academica_"+valor_linha+"_file").attr("tem_anexo") == "SIM"){
+        if($("#inscricao_servidor_formacao_academica_"+valor_linha+"_candidato").val() <="0.0"){
+          //VARIAVEL UTILIZADA NO BOTÃO SALVAR
+          $("#inscricao_servidor_formacao_academica_"+valor_linha+"_file").prop("required",true).css("border-color","#fc0000");
+          $("#inscricao_servidor_formacao_academica_"+valor_linha+"_candidato").prop("required",true).css("border-color","#fc0000");
+          array_anexo_sem_pontuacao.push(true);
+        }
+      }
+    }
+    //VERIFICA QUALIFICAÇÃO PROFISSIONAL COM ANEXO E SEM PONTOS MARCADOS
+    valor_linha = this.id
+    valor_linha = valor_linha.replace("inscricao_servidor_qualificacao_profissional_", "");
+    valor_linha = valor_linha.replace("_candidato", "");
+    if(this.id.indexOf("qualificacao_profissional_") >= 0){
+      if($("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_file").attr("tem_anexo") == "SIM"){
+        if($("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_candidato").val() <="0.0"){
+          //VARIAVEL UTILIZADA NO BOTÃO SALVAR
+          $("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_file").prop("required",true).css("border-color","#fc0000");
+          $("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_candidato").prop("required",true).css("border-color","#fc0000");
+          array_anexo_sem_pontuacao.push(true);
+        }
+      }
+    }
+    //VERIFICA EXPERIENCIA PROFISSIONAL COM ANEXO E SEM PONTOS MARCADOS
+    valor_linha = this.id
+    valor_linha = valor_linha.replace("inscricao_servidor_experiencia_profissional_", "");
+    valor_linha = valor_linha.replace("_candidato", "");
+    if(this.id.indexOf("experiencia_profissional_") >= 0){
+      if($("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_file").attr("tem_anexo") == "SIM"){
+        if($("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_candidato").val() <="0.0"){
+          //VARIAVEL UTILIZADA NO BOTÃO SALVAR
+          $("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_file").prop("required",true).css("border-color","#fc0000");
+          $("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_candidato").prop("required",true).css("border-color","#fc0000");
+          array_anexo_sem_pontuacao.push(true);
+        }
+      }
+    }
+  });
+}
+
+//var array_anexo_sem_pontuacao = [];
+function validar_pontuacao_sem_anexo(){
+  array_anexo_sem_pontuacao = [];
+  $('.container-fuild table select').each(function(){
+    valor_linha = this.id
+    valor_linha = valor_linha.replace("inscricao_servidor_formacao_academica_", "");
+    valor_linha = valor_linha.replace("_candidato", "");
+    //VERIFICA FORMAÇÃO ACADEMICA COM ANEXO E SEM PONTOS MARCADOS
+    if(this.id.indexOf("formacao_academica_") >= 0){
+      if($("#inscricao_servidor_formacao_academica_"+valor_linha+"_candidato").val() > "0.0"){
+        if($("#inscricao_servidor_formacao_academica_"+valor_linha+"_file").attr("tem_anexo") == "NAO"){
+          //VARIAVEL UTILIZADA NO BOTÃO SALVAR
+          $("#inscricao_servidor_formacao_academica_"+valor_linha+"_file").prop("disabled",false).prop("required",true).css("border-color","#fc0000");
+          $("#inscricao_servidor_formacao_academica_"+valor_linha+"_candidato").prop("disabled",false).prop("required",true).css("border-color","#fc0000");
+          $('#finalizar_inscricao').css("display", "none");
+          //array_anexo_sem_pontuacao.push(true);
+        }
+      }
+    }
+    //VERIFICA QUALIFICAÇÃO PROFISSIONAL COM ANEXO E SEM PONTOS MARCADOS
+    valor_linha = this.id
+    valor_linha = valor_linha.replace("inscricao_servidor_qualificacao_profissional_", "");
+    valor_linha = valor_linha.replace("_candidato", "");
+    if(this.id.indexOf("qualificacao_profissional_") >= 0){
+      if($("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_file").attr("tem_anexo") == "SIM"){
+        if($("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_candidato").val() <="0.0"){
+          //VARIAVEL UTILIZADA NO BOTÃO SALVAR
+          $("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_file").prop("required",true).css("border-color","#fc0000");
+          $("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_candidato").prop("required",true).css("border-color","#fc0000");
+          array_anexo_sem_pontuacao.push(true);
+        }
+      }
+    }
+    //VERIFICA EXPERIENCIA PROFISSIONAL COM ANEXO E SEM PONTOS MARCADOS
+    valor_linha = this.id
+    valor_linha = valor_linha.replace("inscricao_servidor_experiencia_profissional_", "");
+    valor_linha = valor_linha.replace("_candidato", "");
+    if(this.id.indexOf("experiencia_profissional_") >= 0){
+      if($("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_file").attr("tem_anexo") == "SIM"){
+        if($("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_candidato").val() <="0.0"){
+          //VARIAVEL UTILIZADA NO BOTÃO SALVAR
+          $("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_file").prop("required",true).css("border-color","#fc0000");
+          $("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_candidato").prop("required",true).css("border-color","#fc0000");
+          array_anexo_sem_pontuacao.push(true);
+        }
+      }
+    }
+  });
+}
+
+function validar_pontuacao_formacao_academica(objeto){
+  valor_linha = objeto.id
+  valor_linha = valor_linha.replace("inscricao_servidor_formacao_academica_", "");
+  valor_linha = valor_linha.replace("_candidato", "");
+  if($("#inscricao_servidor_formacao_academica_"+valor_linha+"_candidato").val() > 0){
+    if($("#inscricao_servidor_formacao_academica_"+valor_linha+"_file").attr("tem_anexo") == "NAO"){
+      if($("#inscricao_servidor_formacao_academica_"+valor_linha+"_file").val() == "")
+        $("#inscricao_servidor_formacao_academica_"+valor_linha+"_file").prop("required",true).css("border-color","#fc0000");
+      else{
+        validar_anexo_sem_pontuacao();
+        $("#inscricao_servidor_formacao_academica_"+valor_linha+"_file").prop("required",false).css("border-color","#ced4da");
+      }
+    }
+    else
+      $("#inscricao_servidor_formacao_academica_"+valor_linha+"_candidato").css("border-color","#ced4da");
+  }
+  else{
+    $("#inscricao_servidor_formacao_academica_"+valor_linha+"_file").prop("required",false).css("border-color","#ced4da");
+  }
+}
+
+function validar_anexo_formacao_academica(objeto){
+  valor_linha = objeto.id;
+  valor_linha = valor_linha.replace("inscricao_servidor_formacao_academica_", "");
+  valor_linha = valor_linha.replace("_file", "");
+  //if($("#inscricao_servidor_formacao_academica_"+valor_linha+"_file").attr("tem_anexo") == "NAO"){
+  if($("#inscricao_servidor_formacao_academica_"+valor_linha+"_file").val()!=""){
+    $("#inscricao_servidor_formacao_academica_"+valor_linha+"_file").attr("tem_anexo","SIM");
+    if($("#inscricao_servidor_formacao_academica_"+valor_linha+"_candidato").val() =="0.0"){
+      $("#inscricao_servidor_formacao_academica_"+valor_linha+"_candidato").prop("required",true).css("border-color","#fc0000");
+    }
+    else{
+      $("#inscricao_servidor_formacao_academica_"+valor_linha+"_candidato").prop("required",false).css("border-color","#ced4da");
+      $("#inscricao_servidor_formacao_academica_"+valor_linha+"_file").css("border-color","");
+    }
+  }
+}
+
+function validar_pontuacao_qualificacao_profissional(objeto){
+  valor_linha = objeto.id
+  valor_linha = valor_linha.replace("inscricao_servidor_qualificacao_profissional_", "");
+  valor_linha = valor_linha.replace("_candidato", "");
+  if($("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_candidato").val() > 0){
+    if($("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_file").attr("tem_anexo") == "NAO"){
+      if($("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_file").val() == "")
+        $("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_file").prop("required",true).css("border-color","#fc0000");
+      else{
+        validar_anexo_sem_pontuacao();
+        $("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_file").prop("required",false).css("border-color","#ced4da");
+        //$("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_candidato").css("border-color","");
+      }
+    }
+    else
+      $("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_candidato").css("border-color","#ced4da");
+  }
+  else{
+    $("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_file").prop("required",false).css("border-color","#ced4da");
+  }
+}
+
+function validar_anexo_qualificacao_profissional(objeto){
+  valor_linha = objeto.id
+  valor_linha = valor_linha.replace("inscricao_servidor_qualificacao_profissional_", "");
+  valor_linha = valor_linha.replace("_file", "");
+  //if($("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_file").attr("tem_anexo") == "NAO"){
+  if($("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_file").val()!=""){
+    $("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_file").attr("tem_anexo","SIM");
+    if($("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_candidato").val() =="0.0")
+      $("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_candidato").prop("required",true).css("border-color","#fc0000");
+    else{
+      $("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_candidato").prop("required",false).css("border-color","#ced4da");
+      $("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_file").css("border-color","");
+    }
+  }
+}
+
+function validar_pontuacao_experiencia_profissional(objeto){
+  valor_linha = objeto.id
+  valor_linha = valor_linha.replace("inscricao_servidor_experiencia_profissional_", "");
+  valor_linha = valor_linha.replace("_candidato", "");
+  if($("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_candidato").val() > 0){
+    if($("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_file").attr("tem_anexo") == "NAO"){
+      if($("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_file").val() == "")
+        $("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_file").prop("required",true).css("border-color","#fc0000");
+      else{
+        validar_anexo_sem_pontuacao();
+        $("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_file").prop("required",false).css("border-color","#ced4da");
+      }
+    }
+    else
+      $("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_candidato").css("border-color","#ced4da");
+  }
+  else
+    $("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_file").prop("required",false).css("border-color","#ced4da");
+}
+
+function validar_anexo_experiencia_profissional(objeto){
+  valor_linha = objeto.id
+  valor_linha = valor_linha.replace("inscricao_servidor_experiencia_profissional_", "");
+  valor_linha = valor_linha.replace("_file", "");
+  //if($("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_file").attr("tem_anexo") == "NAO"){
+  if($("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_file").val()!=""){
+    $("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_file").attr("tem_anexo","SIM");
+    if($("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_candidato").val() =="0.0")
+      $("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_candidato").prop("required",true).css("border-color","#fc0000");
+    else{
+      $("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_candidato").prop("required",false).css("border-color","#ced4da");
+      $("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_file").css("border-color","");
+    }
+  }
+}
+
+
+$(function(){
+  //Executa a requisição quando o campo cpf perder o foco
+  $('#inscricao_servidor_cpf').blur(function()
+  {
+    var cpf = $('#inscricao_servidor_cpf').val();
+    if(validaCPF(cpf))
+      $('#val_cpf').html('');
+    else
+    {
+      $('#val_cpf').html('CPF inválido');
+      $('#inscricao_servidor_cpf').focus();    
+    }
+  });
+
+  $('#inscricao_servidor_termo_aceito').click(function() {
+    if(this.checked)
+      $('#botao_salvar_inscricao_servidor').prop("disabled", false);
+    else
+      $('#botao_salvar_inscricao_servidor').prop("disabled", true);
+  })
+
+  $('#inscricao_servidor_deficiente').click(function() {
+    if(this.checked){
+      $('#inscricao_servidor_deficiente_fl').css("display", "block");
+      $('#inscricao_servidor_deficiente_anexo').prop("required",true);
+    }
+    else{
+      $('#inscricao_servidor_deficiente_fl').css("display", "none");
+      $('#inscricao_servidor_deficiente_anexo').prop("required",false);
+    }
+  })
+});
+
+function criterio_de_cargo(id){
+  if(id == 4){
+    socioeducador();
+    $("#nivel_superior").css('display', 'none');
+    $('#nivel_ensino_medio #inscricao_servidor_certificado_ensino_medio').prop("disabled", false);
+    $('#nivel_superior #inscricao_servidor_certificado_ensino_superior').prop("disabled", true);
+    $('#nivel_superior #inscricao_servidor_represetacao_classe').prop("disabled", true);
+    $("#nivel_ensino_medio").css('display', 'block');
+    
+    //ATUALIZAR O SELECT FORMAÇÃO ACADEMICA GRADUAÇÃO
+    $('#inscricao_servidor_formacao_academica_07_candidato').empty();
+    $('#inscricao_servidor_formacao_academica_07_candidato').append($('<option>', {value: "0.0",text: "0.0"}));
+    $('#inscricao_servidor_formacao_academica_07_candidato').append($('<option>', {value: "2.5",text: "2.5"}));
+    $('#inscricao_servidor_formacao_academica_07_file').prop("disabled", false);
+    <% if !form.object.formacao_academica_07_candidato.nil? %>
+      $('#inscricao_servidor_formacao_academica_07_candidato').val("<%= form.object.formacao_academica_07_candidato %>");
+    <% end %>
+    //ATUALIZAR O SELECT EXPERIÊNCIA PROFISSIONAL [EXERCÍCIO PROFISSIONAL NA CARREIRA ESPECÍFICA DO EDITAL (OUTRAS ÁREAS)] COMO "NÃO SE APLICA"
+    $('#inscricao_servidor_experiencia_profissional_05_candidato').empty();
+    $('#inscricao_servidor_experiencia_profissional_05_candidato').append($('<option>', {value: "0.0",text: "0.0"}));
+    $('#inscricao_servidor_experiencia_profissional_05_file').prop("disabled", true);
+  }
+  else{
+    assistente_pedagogico_pscicologo();
+    $("#nivel_superior").css('display', 'block');
+
+    // ALTERAÇAO REALIZADA PARA ATENDER A ALTERAÇÃO NO EDITAL QUE LIBERA O PEDAGOGO SER ISENTO DA OBRIGATORIEDADE DOS DOCUMENTOS
+    if(id == 3){
+      $('#nivel_superior #inscricao_servidor_represetacao_classe').removeAttr("required");
+    } else {
+      $('#nivel_superior #inscricao_servidor_represetacao_classe').attr("required", "req");
+    }
+    $('#nivel_superior #inscricao_servidor_certificado_ensino_superior').prop("disabled", false);
+    $('#nivel_superior #inscricao_servidor_represetacao_classe').prop("disabled", false);
+    $('#nivel_ensino_medio #inscricao_servidor_certificado_ensino_medio').prop("disabled", true);
+    $("#nivel_ensino_medio").css('display', 'none');
+    //ATUALIZAR O SELECT FORMAÇÃO ACADEMICA GRADUAÇÃO COMO "NÃO SE APLICA"
+    $('#inscricao_servidor_formacao_academica_07_candidato').empty();
+    $('#inscricao_servidor_formacao_academica_07_candidato').append($('<option>', {value: "0.0",text: "0.0"}));
+    $('#inscricao_servidor_formacao_academica_07_file').prop("disabled", true);
+    //ATUALIZAR O SELECT EXPERIÊNCIA PROFISSIONAL [EXERCÍCIO PROFISSIONAL NA CARREIRA ESPECÍFICA DO EDITAL (OUTRAS ÁREAS)]
+    $('#inscricao_servidor_experiencia_profissional_05_candidato').empty();
+    $('#inscricao_servidor_experiencia_profissional_05_candidato').append($('<option>', {value: "0.0",text: "0.0"}));
+    $('#inscricao_servidor_experiencia_profissional_05_candidato').append($('<option>', {value: "1.0",text: "1.0"}));
+    $('#inscricao_servidor_experiencia_profissional_05_candidato').append($('<option>', {value: "2.0",text: "2.0"}));
+    $('#inscricao_servidor_experiencia_profissional_05_candidato').append($('<option>', {value: "3.0",text: "3.0"}));
+    $('#inscricao_servidor_experiencia_profissional_05_candidato').append($('<option>', {value: "4.0",text: "4.0"}));
+    $('#inscricao_servidor_experiencia_profissional_05_candidato').append($('<option>', {value: "5.0",text: "5.0"}));
+    $('#inscricao_servidor_experiencia_profissional_05_file').prop("disabled", false);
+    <% if !form.object.experiencia_profissional_05_candidato.nil? %>
+      $('#inscricao_servidor_experiencia_profissional_05_candidato').val("<%= form.object.experiencia_profissional_05_candidato %>");
+    <% end %>
+  }
+  calcular_formacao_academica();
+  calcular_qualificacao_profissional();
+  calcular_experiencia_profissional();
+}
+
+$(document).ready(function () {
+  var id = $("#inscricao_servidor_cargo_id").val();
+  criterio_de_cargo(id);
+  
+  if($('#inscricao_servidor_termo_aceito').is(':checked'))
+    $('#botao_salvar_inscricao_servidor').prop("disabled", false);
+  else
+    $('#botao_salvar_inscricao_servidor').prop("disabled", true);
+
+  if($('#inscricao_servidor_deficiente').is(':checked'))
+    $('#inscricao_servidor_deficiente_fl').css("display", "block");
+  else
+    $('#inscricao_servidor_deficiente_fl').css("display", "none");
+  
+  $("#inscricao_servidor_telefone_celular").keyup(function(){
+    var id = $(this).val();
+    if(id.length < 15){
+      $("#valid_telefone_celular").css('display', 'block');
+    } else
+      $("#valid_telefone_celular").css('display', 'none');
+  });
+  $("#inscricao_servidor_telefone_celular").blur(function(){
+    var id = $(this).val();
+    if(id.length < 15){
+      $("#valid_telefone_celular").css('display', 'block');
+      $("#inscricao_servidor_telefone_celular").focus();
+    } else
+      $("#valid_telefone_celular").css('display', 'none');
+  });
+
+  //DESLIGA OS CAMPOS DO FORM E LIBERA A DINAMICA DO BOTÃO EDITAR SALVAR
+  <% if(!form.object.new_record?) %>
+    <% if(!form.object.finalizar? ) %>
+      desabilitar_campos_form(true);
+      $('#botao_salvar_inscricao_servidor').prop("disabled", true);
+      $('#botao_editar_inscricao_servidor').prop("disabled", true);
+      
+      $("#botao_editar_inscricao_servidor").click(function(e){
+        desabilitar_campos_form(false);
+        $('#finalizar_inscricao').css('display','none');
+      /**
+       * CHAMA FUNÇÃO criterio_de_cargo(id) PARA ORGANIZAR OS BOTÕES DE ensino_medio e ensino_superior, 
+       * POIS O SCRIPT EXIGE O FOCO AO SALVAR, PORISSO É NECESSÁRIO DESABILITAR QUEM PRECISA SER DESABILITADO
+       **/
+        criterio_de_cargo(id);
+        $('html, body').animate({scrollTop:240}, 'slow');
+        e.preventDefault(); 
+      });
+    <% end %>
+  <% end %>
+  validar_pontuacao_sem_anexo();
+});
+
+function desabilitar_campos_form(cmd){
+  $('.form-control,input,select,textarea,a').each(function(){
+    $(this).prop("disabled", cmd);
+  });
+  $('table a').each(function(){
+    if(cmd)
+      $(this).css("pointer-events", "none");
+    else
+      $(this).css("pointer-events", "visible");
+  });
+}
+
+function remover(elemento){
+  valor_linha = elemento.id
+  valor_linha = valor_linha.replace("formacao_academica_", "");
+  valor_linha = valor_linha.replace("_link", "");
+  //VERIFICA FORMAÇÃO ACADEMICA COM ANEXO E SEM PONTOS MARCADOS
+  if(elemento.id.indexOf("formacao_academica_") >= 0){
+    $('#inscricao_servidor_formacao_academica_'+valor_linha+'_candidato').val("0.0");
+    $("#inscricao_servidor_formacao_academica_"+valor_linha+"_file").val(null);
+    $("#inscricao_servidor_formacao_academica_"+valor_linha+"_file").attr("tem_anexo", "NAO")
+    $("#inscricao_servidor_formacao_academica_"+valor_linha+"_file").prop("required",false).css("border-color","");
+    $("#inscricao_servidor_formacao_academica_"+valor_linha+"_candidato").prop("required",false).css("border-color","");
+  }
+  valor_linha = elemento.id
+  valor_linha = valor_linha.replace("qualificacao_profissional_", "");
+  valor_linha = valor_linha.replace("_link", "");
+  //VERIFICA FORMAÇÃO ACADEMICA COM ANEXO E SEM PONTOS MARCADOS
+  if(elemento.id.indexOf("qualificacao_profissional_") >= 0){
+    $('#inscricao_servidor_qualificacao_profissional_'+valor_linha+'_candidato').val("0.0");
+    $("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_file").val(null);
+    $("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_file").attr("tem_anexo", "NAO")
+    $("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_file").prop("required",false).css("border-color","");
+    $("#inscricao_servidor_qualificacao_profissional_"+valor_linha+"_candidato").prop("required",false).css("border-color","");
+  }
+  valor_linha = elemento.id
+  valor_linha = valor_linha.replace("experiencia_profissional_", "");
+  valor_linha = valor_linha.replace("_link", "");
+  //VERIFICA FORMAÇÃO ACADEMICA COM ANEXO E SEM PONTOS MARCADOS
+  if(elemento.id.indexOf("experiencia_profissional_") >= 0){
+    $('#inscricao_servidor_experiencia_profissional_'+valor_linha+'_candidato').val("0.0");
+    $("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_file").val(null);
+    $("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_file").attr("tem_anexo", "NAO")
+    $("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_file").prop("required",false).css("border-color","");
+    $("#inscricao_servidor_experiencia_profissional_"+valor_linha+"_candidato").prop("required",false).css("border-color","");
+  }
+}
+
+$(".link").click(function(e){
+  e.preventDefault(); 
+});
+
+$("#botao_salvar_inscricao_servidor").click(function(e){
+  idade = calcular_qtd_de_anos_relacionado_data_atual($("#inscricao_servidor_data_nascimento").val());
+  validar_anexo_sem_pontuacao();
+  if (array_anexo_sem_pontuacao.length > 0){
+    $("#alerta_anexo_sem_pontuacao").css("display","block");
+    $('html, body').animate({scrollTop:0}, 'slow');
+    e.preventDefault();
+  }
+  else if(idade < 18){
+    $("#alerta_idade").css("display","block");
+    $('html, body').animate({scrollTop:0}, 'slow');
+    e.preventDefault();
+  }
+  else
+    $("#alerta_anexo_sem_pontuacao").css("display","none");
+    
+});
+
+$(".display").click(function(e){
+  $(".display").animate({height: "0", "margin-top": "0" }, "slow").fadeOut();
+});
+
+function close_display(){
+  $(".display").animate({height: "0", "margin-top": "0" }, "slow").fadeOut();
+} 
+
+var display_formacao_academica = 0;
+var display_qualificacao_profissional = 0;
+var display_experiencia_profissional = 0;
+function exibir_display(elemento){
+  id = elemento.id
+  valor_linha = id
+  valor_linha = valor_linha.replace("inscricao_servidor_formacao_academica_", "");
+  valor_linha = valor_linha.replace("_file", "");
+  if(id.indexOf("formacao_academica_") >= 0){
+    if(display_formacao_academica == 0){
+      $("#display_formacao_academica_"+valor_linha).fadeIn().animate({height: "200", "margin-top": "-200" }, "slow");
+      display_formacao_academica ++;
+    }
+  }
+  valor_linha = id
+  valor_linha = valor_linha.replace("inscricao_servidor_qualificacao_profissional_", "");
+  valor_linha = valor_linha.replace("_file", "");
+  if(id.indexOf("qualificacao_profissional_") >= 0){
+    if(display_qualificacao_profissional == 0){
+      $("#display_qualificacao_profissional_"+valor_linha).fadeIn().animate({height: "200", "margin-top": "-200" }, "slow");
+      display_qualificacao_profissional ++;
+    }
+  }
+
+  valor_linha = id
+  valor_linha = valor_linha.replace("inscricao_servidor_experiencia_profissional_", "");
+  valor_linha = valor_linha.replace("_file", "");
+  if(id.indexOf("experiencia_profissional_") >= 0){
+    if(display_experiencia_profissional == 0){
+      $("#display_experiencia_profissional_"+valor_linha).fadeIn().animate({height: "200", "margin-top": "-200" }, "slow");
+      display_experiencia_profissional ++;
+    }
+  }
+}
+
+function verificar_data_nascimento(campo) {
+  anos = calcular_qtd_de_anos_relacionado_data_atual($(campo).val());
+  //DESLIGA BOTÃO SALVAR SE DATA INFORMATA FOR MAIOR QUE DATA ATUAL
+  if (anos < 18) {
+      $('#validador_data_nascimento').css('display', 'block');
+      $('#validador_data_nascimento').empty().html('A idade informada é '+anos+' anos de idade. Não é permitido candidato com idade inferior a 18 anos');
+      //$('#botao_salvar_inscricao_servidor').prop("disabled", true);
+  }
+  else{
+    $('#validador_data_nascimento').css('display', 'none');
+    //$('#botao_salvar_inscricao_servidor').prop("disabled", false);
+  }
+}
+
+$(document).on("input", "#inscricao_servidor_recurso_candidato", function () {
+  var limite = 500;
+  var caracteresDigitados = $(this).val().length;
+  var caracteresRestantes = limite - caracteresDigitados;
+  $(".caracteres_recurso_dados").text(caracteresRestantes + " restantes");
+
+  if(caracteresRestantes == 0){
+    texto = $(this).val().substring(0,$(this).val().length - 1);
+    $(this).val(texto);
+  } else if(caracteresRestantes < 0){
+    texto = $(this).val().substring(0,500);
+    $(this).val(texto);
+    $(".caracteres_recurso_dados").text("0 restantes");
+  }
+});
+
+$(document).on("input", "#inscricao_servidor_recurso_pontuacao", function () {
+  var limite = 500;
+  var caracteresDigitados = $(this).val().length;
+  var caracteresRestantes = limite - caracteresDigitados;
+  $(".caracteres_recurso_curriculo").text(caracteresRestantes + " restantes");
+
+  if(caracteresRestantes == 0){
+    texto = $(this).val().substring(0,$(this).val().length - 1);
+    $(this).val(texto);
+  } else if(caracteresRestantes < 0){
+    texto = $(this).val().substring(0,500);
+    $(this).val(texto);
+    $(".caracteres_recurso_curriculo").text("0 restantes");
+  }
+});
+
+
+
+</script>
+<% end %>

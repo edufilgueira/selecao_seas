@@ -1,0 +1,32 @@
+<%= form_with(model: regiao, local: true) do |form| %>
+  <% if regiao.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(regiao.errors.count, "error") %> prohibited this regiao from being saved:</h2>
+
+      <ul>
+      <% regiao.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :inscricao_lideranca_id %>
+    <%= form.text_field :inscricao_lideranca_id %>
+  </div>
+
+  <div class="field">
+    <%= form.label :descricao %>
+    <%= form.text_field :descricao %>
+  </div>
+
+  <div class="field">
+    <%= form.label :ordem %>
+    <%= form.number_field :ordem %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>

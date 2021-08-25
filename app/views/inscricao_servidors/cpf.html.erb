@@ -1,0 +1,136 @@
+<%= form_for("frm", :url => {controller: :inscricao_servidors, action: :buscar_por_cpf}, html: { class: 'form-horizontal' }) do |f| %>
+
+<div class="wrap-login100">
+  <div style="float: left;width: 430px;padding-right: 50px;">
+    <span class="login100-form-title p-b-26">
+      <%= image_tag('logo_gov.png', width: "45") %><br>
+      <% unless params[:alert].blank? %>
+        <br>
+        <div class="alert alert-danger" style="font-size:18px">
+            <%= params[:alert] %>
+        </div>
+      <% end %>
+      Bem vindo!
+    </span>
+    <div>
+    <u style="text-align: left;text-decoration: none;">
+      <li>
+        Para realizar um nova inscrição clique na caixa seleção <b><label for="tipo_novo" style="text-decoration: underline;">Nova Inscrição</label><br></b>
+      </li>
+      <li>
+        Se você já está cadastrado e necessita apenas acompanhar <b><label for="tipo_consulta" style="text-decoration: underline;">Consulta</label><br></b>
+      </li>
+    </u>
+    <br>
+
+    <% if(params[:tipo] == "novo" or params[:tipo].nil?) %>
+      <%= radio_button_tag :tipo, "novo", true, required: 'required' %> <label for="tipo_novo">Nova Inscrição</label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <%= radio_button_tag :tipo, "consulta", false, required: 'required' %> <label for="tipo_consulta">Consultar</label>
+      <script>
+        $(document).ready(function() {
+          $("#tipo_novo").trigger("change");
+        })
+      </script>
+    <% else %>
+      <%= radio_button_tag :tipo, "novo", false, required: 'required' %> <label for="tipo_novo">Nova Inscrição</label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <%= radio_button_tag :tipo, "consulta", true, required: 'required' %> <label for="tipo_consulta">Consultar</label>
+      <script>
+        $(document).ready(function() {
+          $("#tipo_consulta").trigger("change");
+        })
+      </script>
+    <% end %>
+    <br><br>
+    <div class="wrap-input100 validate-input" data-validate="Valid email is: a@b.c">
+      <%= f.text_field :cpf, class: 'form-control mask-cpf input100', placeholder: "Informe o CPF", value: params[:cpf] %>
+      <span class="focus-input100" data-placeholder=""></span>
+    </div>
+    <div class="wrap-input100" id="div_inscricao">
+      <table style="width:100%">
+        <tr>
+          <td style="width:50%">
+            <%= f.text_field :inscricao, class: 'form-control input100', placeholder: "Nº Inscrição", value: params[:inscricao] %>
+            <span class="focus-input100" data-placeholder=""></span>
+          </td>
+          <td style="width:10px;padding: 0 5px 0 5px;">ou</td>
+          <td style="width:50%">
+            <%= f.text_field :data_nascimento, class: 'form-control input100 mask-date', placeholder: "Data de Nascimento", value: params[:data_nascimento] %>
+          </td>
+        </tr>
+      </table>
+        <div class="row">
+        <div class="col-md-6">
+        </div>
+        <div class="col-md-6">
+        </div>
+      </div>
+    </div>
+    <span id="val_cpf" class="requerido"></span>
+    <div class="form-group" style="width: 247px;border: solid 1px #ced4db;padding: 8px;border-radius: 0.25rem;">
+      <%= rucaptcha_input_tag(class: 'form-control', placeholder: 'Informe o Captcha', style:"margin-bottom: 3px;") %>
+      <%= rucaptcha_image_tag(alt: 'Captcha', style:"padding-bottom: 12px;") %>
+      <%= f.submit "Avançar", class: 'btn btn-success btn-block', id: "avancar_cpf" %>
+    </div>
+
+    </div>
+  </div>
+  <div style="float: right;width: 235px;border-left: solid 1px #ced4db;padding-left: 28px;">
+  <h3>Tutorial</h3>
+  <iframe width="230" height="120" src="https://www.youtube.com/embed/qdMgcN2Shws" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  <hr>
+  <iframe width="230" height="120" src="https://www.youtube.com/embed/XHDwoTD7qbw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  <hr>
+  <iframe width="230" height="120" src="https://www.youtube.com/embed/5z-EN2_IcTI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  <hr>
+  <iframe width="230" height="120" src="https://www.youtube.com/embed/rDaQRK-CDbo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+</div>
+<% end %>
+<script>
+$("#tipo_novo").change(function () {
+  $('#frm_inscricao').prop("disabled", true);
+  $('#div_inscricao').hide();
+});
+$("#tipo_consulta").change(function () {
+  $('#frm_inscricao').prop("disabled", false);
+  $('#div_inscricao').show();
+});
+
+$(document).ready(function() {
+  $('.container').css({
+    "color": "",
+    "background-color": "",
+    "box-shadow": "",
+  });
+
+  $('.container-fuild').css('text-align', '-webkit-center');
+})
+
+frm_validar_cpf();
+
+$('#frm_cpf').keyup(function()
+{
+  frm_validar_cpf();
+});
+
+$('#frm_cpf').blur(function()
+{
+  frm_validar_cpf();
+});
+
+function frm_validar_cpf(){
+  var cpf = $('#frm_cpf').val();
+  if(cpf != ""){
+    if(validaCPF(cpf)){
+      $('#val_cpf').html('');
+      $('#avancar_cpf').prop("disabled", false);
+    }
+    else
+    {
+      $('#avancar_cpf').prop("disabled", true);
+      $('#val_cpf').html('CPF inválido');
+      $('#frm_cpf').focus();    
+    }
+  }
+}
+</script>

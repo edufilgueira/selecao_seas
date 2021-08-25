@@ -1,0 +1,147 @@
+<!-- <p id="notice"><%= notice %></p>  -->
+
+<h3>Dados Pessoais:</h3>
+<hr>
+
+<p>
+  <strong>Nº inscrição:</strong>
+  <%= @inscricao.id %>
+</p>
+
+<p>
+  <strong>Nome completo:</strong>
+  <%= @inscricao.nome_completo %>
+</p>
+
+<p>
+  <strong>Naturalidade:</strong>
+  <%= @inscricao.naturalidade %>
+</p>
+
+<p>
+  <strong>Nacionalidade:</strong>
+  <%= @inscricao.nacionalidade %>
+</p>
+
+<p>
+  <strong>Nome da mãe:</strong>
+  <%= @inscricao.nome_mae %>
+</p>
+
+<p>
+  <strong>Sexo:</strong>
+  <%= @inscricao.sexo %>
+</p>
+
+<p>
+  <strong>Estado civil:</strong>
+  <%= @inscricao.estado_civil %>
+</p>
+
+<p>
+  <strong>Data de nascimento:</strong>
+  <%= l(@inscricao.data_nascimento.to_date, format: :short3) %>
+</p>
+
+<p>
+  <strong>CPF:</strong>
+  <%= @inscricao.cpf %>
+</p>
+
+<p>
+  <strong>RG:</strong>
+  <%= @inscricao.rg %>
+</p>
+
+<p>
+  <strong>Órgão emissor:</strong>
+  <%= @inscricao.orgao_emissor %>
+</p>
+
+<p>
+  <strong>Endereço:</strong>
+  <%= @inscricao.endereco %>
+</p>
+
+<p>
+  <strong>Complemento:</strong>
+  <%= @inscricao.complemento %>
+</p>
+
+<p>
+  <strong>Bairro:</strong>
+  <%= @inscricao.bairro %>
+</p>
+
+<p>
+  <strong>Cidade:</strong>
+  <%= @inscricao.cidade %>
+</p>
+
+<p>
+  <strong>UF:</strong>
+  <%= @inscricao.uf %>
+</p>
+
+<p>
+  <strong>CEP:</strong>
+  <%= @inscricao.cep %>
+</p>
+
+<p>
+  <strong>Telefone fixo:</strong>
+  <%= @inscricao.telefone_fixo %>
+</p>
+
+<p>
+  <strong>Telefone celular:</strong>
+  <%= @inscricao.telefone_celular %>
+</p>
+
+<p>
+  <strong>Email:</strong>
+  <%= @inscricao.email %>
+</p>
+
+<p>
+  <strong>Formação / Curso de nível superior:</strong>
+  <%= @inscricao.formacao %>
+</p>
+
+<p>
+  <strong>Órgão representação de classe:</strong>
+  <%= @inscricao.orgao_representacao_classe %>
+</p>
+
+<p>
+  <strong>Número registro:</strong>
+  <%= @inscricao.numero_registro %>
+</p>
+
+<p>
+  <strong>Termos aceitos?:</strong>
+  <%= @inscricao.termo_aceito? ? 'Sim' : 'Não' %>
+</p>
+
+<h3>Documentos:</h3>
+<hr>
+<h4>Currículo:</h4>
+<%= link_to("Currículo", @inscricao.curriculo.url, target: '_blank') %>
+<br>
+<h4>Documentação:</h4>
+<% @inscricao.documentacao.each_with_index do |documento, index| %>
+  <%= link_to("Anexo #{index + 1}", documento.url, target: '_blank') %>
+  <br>
+<% end %>
+<% if @inscricao.recurso_solicitado? %>
+  <h4>Recurso:</h4>
+  <%= link_to("Recurso", @inscricao.recurso.url, target: '_blank') %>
+  <br>
+<% end %>
+<br>
+
+<%#= link_to 'Edit', edit_inscricao_path(@inscricao) %>
+<%= link_to 'Voltar', inscricaos_path, class: 'btn btn-warning' %>
+
+<br>
+<br>

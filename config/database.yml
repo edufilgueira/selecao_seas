@@ -1,0 +1,23 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  username: postgres
+  password: teste
+  #password: pr89e5p1onjiU
+  host: localhost
+  port: 5434
+
+development:
+  <<: *default
+  schema_search_path: selecao_homolog
+  database: selecao_seas
+
+test:
+  <<: *default
+  database:
+  database: selecao_seas
+
+production:
+  <<: *default
+  database: selecao_seas

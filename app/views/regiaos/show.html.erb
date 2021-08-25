@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Inscricao lideranca:</strong>
+  <%= @regiao.inscricao_lideranca %>
+</p>
+
+<p>
+  <strong>Descricao:</strong>
+  <%= @regiao.descricao %>
+</p>
+
+<p>
+  <strong>Ordem:</strong>
+  <%= @regiao.ordem %>
+</p>
+
+<%= link_to 'Edit', edit_regiao_path(@regiao) %> |
+<%= link_to 'Back', regiaos_path %>

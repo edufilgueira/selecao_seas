@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Data término seleção:</strong>
+  <%= @configuracao.data_termino_selecao %>
+</p>
+
+<p>
+  <strong>Data inicio recurso:</strong>
+  <%= @configuracao.data_inicio_recurso %>
+</p>
+
+<p>
+  <strong>Data término recurso:</strong>
+  <%= @configuracao.data_termino_recurso %>
+</p>
+
+<p>
+  <strong>Status:</strong>
+  <%= @configuracao.status %>
+</p>
+
+<%= link_to 'Edit', edit_configuracao_path(@configuracao) %> |
+<%= link_to 'Back', configuracaos_path %>

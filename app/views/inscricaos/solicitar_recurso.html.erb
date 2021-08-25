@@ -1,0 +1,57 @@
+<br>
+<%= image_tag('logo.png') %>
+<br>
+<br>
+<div>
+  <h1 class="text-center">Solicitar Recurso</h1>
+  <br>
+  <%= form_for "frm", url: solicitar_recurso_inscricaos_path do |f|  %>
+    <div class="row">
+      <div class="col-md-3">
+        <%= f.text_field :cpf, class: 'form-control mask-cpf', placeholder: "Informe o CPF" %>
+      </div>
+      <div class="actions">
+        <%= f.submit 'Buscar', class: 'btn btn-primary' %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<% unless notice.blank? %>
+  <br>
+	<div class="alert alert-info" role="alert">
+		<%= notice.html_safe %>
+	</div>
+<% end %>
+
+<div>
+  <% if @msg %>
+    <br> 
+    <div class="alert alert-danger" role="alert">
+      <%= @msg %>
+    </div>
+  <% end %>
+</div>
+
+<div>
+  <% if !@inscricao.blank? and !@inscricao.recurso_solicitado? %>
+    <div>
+      <hr>
+      <p>Inscrição nº: <strong><%= @inscricao.id %></strong></p>
+      <p>Nome: <strong><%= @inscricao.nome_completo %></strong></p>
+      <p>CPF: <strong><%= @inscricao.cpf %></strong></p>
+
+      <h4>Anexe o documento abaixo:</h4>
+      <%= form_for "salva", url: salvar_solicitacao_recurso_inscricaos_path do |ff| %>
+        <%= hidden_field_tag :inscricao_id,  @inscricao.id %>
+        <label>Anexe o recurso</label>
+        <%= ff.file_field :recurso, required: true %>
+        <%= ff.hidden_field :recurso_cache %>
+        <br>
+        <%= ff.submit "Enviar", class: "btn btn-sm btn-success" %>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+<br>
+<br>

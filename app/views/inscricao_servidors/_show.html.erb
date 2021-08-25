@@ -1,0 +1,11 @@
+
+<%= render 'dados_pessoais', inscricao_servidor: @inscricao_servidor %>
+<%= render 'curriculo', inscricao_servidor: @inscricao_servidor %>
+
+
+
+<% if @inscricao_servidor.recurso_solicitado? %>
+  <h4>Recurso:</h4>
+  <%= link_to("Recurso", @inscricao_servidor.recurso.url, target: '_blank') %>
+  <br>
+<% end %>

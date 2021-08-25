@@ -1,0 +1,139 @@
+<% sql = "" %>
+<% @cargo_id = params[:cargo_id] %>
+<% @sexo = params[:sexo] %>
+<% @deficiente = params[:deficiente] %>
+<% @status_acompanhamento = params[:status_acompanhamento] %>
+<% @cota_negro = params[:cota_negro] %>
+<% @teste = "original" %>
+
+<% if(!@cargo_id.blank?) %>
+<%   if  @cargo_id.to_i > 0 %>
+<%     sql += " and inscricao_servidors.cargo_id = " + @cargo_id %>
+<%   end %>
+<% end %>
+
+<% if(!@sexo.blank?) %>
+<%   sql += " and inscricao_servidors.sexo ilike '#{@sexo}'"  %>
+<% end %>
+
+<% if(!@deficiente.blank?) %>
+<%   if @deficiente == "Sim" %>
+<%     sql += " and deficiente = true" %>
+<%   else %>
+<%     sql += " and deficiente = false" %>
+<%   end %>
+<% end %>
+
+<% if(!@status_acompanhamento.blank?) %>
+<%   if @status_acompanhamento == "Finalizado" %>
+<%     sql += " and inscricao_servidors.status_acompanhamento = 'Finalizado'" %>
+<%   elsif @status_acompanhamento == "inscrito_deferido" %>
+<%     sql += " and inscricao_servidors.status_acompanhamento = 'Correção de dados'"  %>
+<%   elsif @status_acompanhamento == "inscrito_indeferido" %>
+<%     sql += " and inscricao_servidors.status_acompanhamento = 'Desclassificado'"  %>
+<%   elsif @status_acompanhamento == "recurso_inscricao_apresentado" %>
+<%     sql += " and recurso_candidato is not null and resposta_recurso_candidato is null" %>
+<%   elsif @status_acompanhamento == "recurso_inscricao_deferido" %>
+<%     sql += " and reclassificar_recurso_candidato = true" %>
+<%   elsif @status_acompanhamento == "recurso_inscricao_indeferido" %>
+<%     sql += " and reclassificar_recurso_candidato = false" %>
+<%   elsif @status_acompanhamento == "analise_curriculo" %>
+<%     sql += " and inscricao_servidors.status_acompanhamento = 'Correção de dados'"  %>
+<%   elsif @status_acompanhamento == "curriculo_analisado" %>
+<%     sql += " and inscricao_servidors.status_acompanhamento = 'Correção de pontuação'"  %>
+<%   elsif @status_acompanhamento == "recurso_curriculo_apresentado" %>
+<%     sql += " and recurso_pontuacao is not null and resposta_recurso_pontuacao is null" %>
+<%   elsif @status_acompanhamento == "recurso_curriculo_deferido" %>
+<%     sql += " and reclassificar_recurso_pontuacao = true" %>
+<%   elsif @status_acompanhamento == "recurso_curriculo_indeferido" %>
+<%     sql += " and reclassificar_recurso_pontuacao = false" %>
+<%   elsif @status_acompanhamento == "resultado_final" %>
+<%     sql += " and inscricao_servidors.status_acompanhamento = 'Correção de pontuação'"  %>
+<%   else %>
+<%     sql += " and inscricao_servidors.status_acompanhamento = '#{@status_acompanhamento}'"  %>
+<%   end %>
+<% end %>
+
+<%  if(@cota_negro == "1") %>
+<% @teste = "entrei"%>
+<%    sql += " and inscricao_servidors.cota_negro = true" %>
+<%  end %>
+
+<%  status = "" %>
+<%  case @status_acompanhamento %>
+<%  when "Finalizado" %>
+<%    status = "Inscrito" %>
+<%  when "inscrito_deferido"  %>
+<%    status = "Inscrito Deferido"  %>
+<%  when "inscrito_indeferido"  %>
+<%    status = "Inscrito Indeferido"  %>
+<%  when "recurso_inscricao_apresentado"  %>
+<%    status = "Recurso de Inscrição Apresentado" %>
+<%  when "recurso_inscricao_deferido" %>
+<%    status = "Recurso de Inscrição Deferido"  %>
+<%  when "recurso_inscricao_indeferido" %>
+<%    status = "Recurso de Inscricao Indeferido"  %>
+<%  when "analise_curriculo"  %>
+<%    status = "Análise de Currículo" %>
+<%  when "curriculo_analisado"  %>
+<%    status = "Currículo Analisado"  %>
+<%  when "recurso_curriculo_apresentado"  %>
+<%    status = "Recurso de Currículo Apresentado" %>
+<%  when "recurso_curriculo_deferido" %>
+<%    status = "Recurso de Currículo Deferido"  %>
+<%  when "recurso_curriculo_indeferido" %>
+<%    status = "Recurso de Currículo Indeferido"  %>
+<%  when "resultado_final"  %>
+<%    status = "Resultado Final"  %>
+<%  else  %>
+<%    status = "" %>
+<%  end %>
+
+<% if @status_acompanhamento == "curriculo_analisado" or @status_acompanhamento == "resultado_final"  %>
+  <% @inscricao_servidors = InscricaoServidor.select("inscricao_servidors.id serv_id, inscricao_servidors.*, c.descricao nome_cargo, inscricao_servidors.total_geral_correcao").joins("LEFT JOIN cargos c ON c.id = inscricao_servidors.cargo_id").where("finalizar = true" + sql).order("total_geral_correcao desc, experiencia_profissional_01_correcao desc, experiencia_profissional_02_correcao desc, experiencia_profissional_03_correcao desc, experiencia_profissional_04_correcao desc, experiencia_profissional_05_correcao desc") %>  
+<% else %>
+  <% @inscricao_servidors = InscricaoServidor.select("inscricao_servidors.id serv_id, inscricao_servidors.*, c.descricao nome_cargo, inscricao_servidors.total_geral_correcao").joins("LEFT JOIN cargos c ON c.id = inscricao_servidors.cargo_id").where("finalizar = true" + sql).order("nome_completo") %>  
+<% end %>
+
+<img src="https://selecao.seas.ce.gov.br/assets/logo-seas.png">
+<h1>Total <span class="badge badge-secondary"><%= "de "+status %> - <%= @inscricao_servidors.length %></span></h1>
+<div class="form-group">
+  <div class="col-sm-12">
+  
+  </div>
+</div>
+
+<table class="table table-holver" style="width:100%; font-size: 15px; text-transform: uppercase;">
+  <thead>
+    <tr style="text-align:left">
+      <th>#</th>
+      <th>Inscrição</th>
+      <th>NOME</th>
+      <th>CPF</th>
+      <th>EMAIL</th>
+      <th>CEL</th>
+      <th>FIXO</th>
+      <th>PONTUAÇÃO</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% cont = 0 %>
+    <% @inscricao_servidors.each do |inscricao_servidor| %>
+    <% cont += 1 %>
+      <tr style="text-align:left;">
+        <td style="border-bottom: 1px solid #000;"><%= cont %></td>
+        <td style="border-bottom: 1px solid #000;"><%= "%.5i" %inscricao_servidor.serv_id %></td>
+        <td style="border-bottom: 1px solid #000;"><%= inscricao_servidor.nome_completo %></td>
+        <td style="border-bottom: 1px solid #000;"><%= inscricao_servidor.cpf %></td>
+        <td style="border-bottom: 1px solid #000;"><%= inscricao_servidor.email %></td>
+        <td style="border-bottom: 1px solid #000;"><%= inscricao_servidor.telefone_celular %></td>
+        <td style="border-bottom: 1px solid #000;"><%= inscricao_servidor.telefone_fixo %></td>
+        <td style="border-bottom: 1px solid #000;"><%= inscricao_servidor.total_geral_correcao %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%#= link_to 'New Inscricao Servidor', new_inscricao_servidor_path %>

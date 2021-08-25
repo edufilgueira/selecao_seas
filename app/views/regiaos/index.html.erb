@@ -1,0 +1,31 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Regiaos</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Inscricao lideranca</th>
+      <th>Descricao</th>
+      <th>Ordem</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @regiaos.each do |regiao| %>
+      <tr>
+        <td><%= regiao.inscricao_lideranca %></td>
+        <td><%= regiao.descricao %></td>
+        <td><%= regiao.ordem %></td>
+        <td><%= link_to 'Show', regiao %></td>
+        <td><%= link_to 'Edit', edit_regiao_path(regiao) %></td>
+        <td><%= link_to 'Destroy', regiao, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Regiao', new_regiao_path %>

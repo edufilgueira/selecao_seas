@@ -1,0 +1,132 @@
+<% if !@inscricao_servidor.usuario_corrigiu_dados.nil? %>
+  <% usuario = Usuario.find(@inscricao_servidor.usuario_corrigiu_dados) %>
+  <b>Corrigido por:</b> <%= usuario.email %>
+<% end %>
+
+<%= render 'show', inscricao_servidor: @inscricao_servidor %>
+<br>
+
+<%= form_tag url_for(controller: "inscricao_servidors", action: "analisar_dados_obs"), method: "post" do %>
+<%#= form_tag form_for(:url => {controller: :inscricao_servidors, action: :analisar_dados_obs}, html: { class: 'form-horizontal' }) do |f| %>
+  <%= hidden_field_tag :id, @inscricao_servidor.slug %>
+  <b><%= label_tag "Análise da inscrição" %></b>
+  <% if @inscricao_servidor.observacao.nil? %>
+    <%= text_area_tag :observacao, @inscricao_servidor.observacao, class: "form-control" %>
+  <% else %>
+    <%= text_area_tag :observacao, @inscricao_servidor.observacao, class: "form-control", disabled: true %>
+    <%#= @inscricao_servidor.observacao %>
+  <% end %>
+  <br>
+  <!--DESABILITA O CHECK SE O RECURSO DA ANALISE DE DADOS FOR ACEITA. UMA VEZ ACEITO, O CANDIDATO REENGRESSA NA SELEÇÃO E NAO PODE MAIS SER EXCLUIDO-->
+  <% if !@inscricao_servidor.reclassificar_recurso_candidato %>
+    <div class="alert alert-info" role="alert">
+      <h5>Situação da inscrição</h5>
+      <i class="fas fa-exclamation-triangle" style="color: #eccf00;"></i>
+      <% if @inscricao_servidor.status_acompanhamento == "Desclassificado" %>
+        <% if @inscricao_servidor.observacao.nil? %>
+          <%= radio_button_tag :desclassificar, "Deferir", false, required: 'required' %> <label for="desclassificar_Deferir">Deferir inscrição</label>
+          <%= radio_button_tag :desclassificar, "Indeferir", true, required: 'required' %> <label for="desclassificar_Indeferir">Indeferir inscrição</label>
+        <% else %>
+          <%= radio_button_tag :desclassificar, "Deferir", false, required: 'required', disabled: true %> <label for="desclassificar_Deferir">Deferir inscrição</label>
+          <%= radio_button_tag :desclassificar, "Indeferir", true, required: 'required', disabled: true %> <label for="desclassificar_Indeferir">Indeferir inscrição</label>
+        <% end %>
+      <% else %>
+        <% if @inscricao_servidor.observacao.nil? %>
+          <%= radio_button_tag :desclassificar, "Deferir", true, required: 'required' %> <label for="desclassificar_Deferir">Deferir inscrição</label>
+          <%= radio_button_tag :desclassificar, "Indeferir", false, required: 'required' %> <label for="desclassificar_Indeferir">Indeferir inscrição</label>
+        <% else %>
+          <%= radio_button_tag :desclassificar, "Deferir", true, required: 'required', disabled: true  %> <label for="desclassificar_Deferir">Deferir inscrição</label>
+          <%= radio_button_tag :desclassificar, "Indeferir", false, required: 'required', disabled: true  %> <label for="desclassificar_Indeferir">Indeferir inscrição</label>
+        <% end %>
+      <% end %>
+      <!--<label for="desclassificar">Indeferido</label>-->
+    </div>
+  <% end %>
+  <br>
+  <!--RECURSO DE ANALISE DE DADOS-->
+  <% if !@inscricao_servidor.recurso_candidato.blank? %>
+    <div class="div_borda">
+      <h5>Análise dos Dados Pessoais</h5><hr>
+      <p><b>Pedido de Recurso:</b><br>
+      <span style="font-style: italic;"><%= @inscricao_servidor.recurso_candidato %></span></p>
+      <p><b>Resposta:</b><br>
+      <% if @inscricao_servidor.resposta_recurso_candidato.nil? %>
+        <%= text_area_tag :resposta_recurso_candidato, @inscricao_servidor.resposta_recurso_candidato, class: "form-control", required: true %></p>
+      <% else %>
+        <%= @inscricao_servidor.resposta_recurso_candidato %><br>
+      <% end %>
+      <!-- SÓ EXIBE OS RADIOS BUTTON SE NAO ESXIXTIR RESPOSTA-->
+      <% if @inscricao_servidor.resposta_recurso_candidato.nil? %>
+        <% if @inscricao_servidor.reclassificar_recurso_candidato? %>
+          <%= radio_button_tag :reclassificar_fase_1, "Deferir", true, required: 'required' %> <label for="reclassificar_fase_1_Deferir">Deferir Recurso</label>
+          <%= radio_button_tag :reclassificar_fase_1, "Indeferir", false, required: 'required' %> <label for="reclassificar_fase_1_Indeferir">Indeferir Recurso</label>
+        <% else %>
+          <%= radio_button_tag :reclassificar_fase_1, "Deferir", false, required: 'required' %> <label for="reclassificar_fase_1_Deferir">Deferir Recurso</label>
+          <%= radio_button_tag :reclassificar_fase_1, "Indeferir", true, required: 'required' %> <label for="reclassificar_fase_1_Indeferir">Indeferir Recurso</label>
+        <% end %>
+      <% else %>
+        <br>
+        <% if @inscricao_servidor.reclassificar_recurso_candidato? %>
+          <span class="badge badge-success">Candidato deferido no recurso</span>
+        <% else %>
+          <span class="badge badge-danger">Candidato indeferido no recurso</span>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+  <br>
+  <!--RECURSO DE PONTUAÇÃO-->
+  <% if !@inscricao_servidor.recurso_pontuacao.blank? %>
+    <div class="div_borda">
+      <h5>Análise da Pontuação dos Currículos</h5><hr>
+      <p><b>Pedido de Recurso:</b><br>
+      <span style="font-style: italic;"><%= @inscricao_servidor.recurso_pontuacao %></span></p>
+      <p><b>Resposta:</b><br>
+      <% if @inscricao_servidor.resposta_recurso_pontuacao.nil? %>
+        <%= text_area_tag :resposta_recurso_pontuacao, @inscricao_servidor.resposta_recurso_pontuacao, class: "form-control", required: true %></p>
+      <% else %>
+        <%= @inscricao_servidor.resposta_recurso_pontuacao %><br>
+      <% end %>
+      <!-- SÓ EXIBE OS RADIOS BUTTON SE NAO ESXIXTIR RESPOSTA-->
+      <% if @inscricao_servidor.resposta_recurso_pontuacao.nil? %>
+        <% if @inscricao_servidor.reclassificar_recurso_pontuacao? %>
+          <%= radio_button_tag :reclassificar_fase_2, "Deferir", true, required: 'required' %> <label for="reclassificar_fase_2_Deferir">Deferir Recurso</label>
+          <%= radio_button_tag :reclassificar_fase_2, "Indeferir", false, required: 'required' %> <label for="reclassificar_fase_2_Indeferir">Indeferir Recurso</label>
+        <% else %>
+          <%= radio_button_tag :reclassificar_fase_2, "Deferir", false, required: 'required' %> <label for="reclassificar_fase_2_Deferir">Deferir Recurso</label>
+          <%= radio_button_tag :reclassificar_fase_2, "Indeferir", true, required: 'required' %> <label for="reclassificar_fase_2_Indeferir">Indeferir Recurso</label>
+        <% end %>
+      <% else %>
+        <br>
+        <% if @inscricao_servidor.reclassificar_recurso_pontuacao? %>
+          <span class="badge badge-success">Recurso deferido</span>
+        <% else %>
+          <span class="badge badge-danger">Recurso indeferido</span>
+        <% end %>
+      <% end %>
+      <%= link_to '<br>Alterar Pontuação'.html_safe, edit_correcao_inscricao_servidors_path(id: @inscricao_servidor.slug, fase: "revisao"), target: "_blank", style: "display:none", id: "alterar_pontuacao" %>
+    </div>
+  <% end %>
+  <br><br>
+  <%= submit_tag "Conferir informações", class: 'btn btn-success' %>
+  <%= link_to 'Voltar', inscricao_servidors_path, class: 'btn btn-warning' %>
+<% end %>
+
+<br>
+<br>
+<script>
+$("#reclassificar_fase_2_Deferir").change(function () {
+  $('#alterar_pontuacao').css('display','block');
+});
+$("#reclassificar_fase_2_Indeferir").change(function () {
+  $('#alterar_pontuacao').css('display','none');
+});
+
+$("#desclassificar_Deferir").change(function () {
+  $('#observacao').prop("required",false);
+});
+$("#desclassificar_Indeferir").change(function () {
+  $('#observacao').prop("required",true);
+});
+
+</script>

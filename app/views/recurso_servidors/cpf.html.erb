@@ -1,0 +1,42 @@
+<%= form_for("frm", :url => {controller: :recurso_servidors, action: :buscar_por_cpf}, html: { class: 'form-horizontal' }) do |f| %>
+
+<div class="wrap-login100">
+  <span class="login100-form-title p-b-26">
+    Bem vindo!
+  </span>
+  <div>
+  <div class="wrap-input100 validate-input" data-validate="Valid email is: a@b.c">
+    <%= f.text_field :cpf, class: 'form-control mask-cpf input100', placeholder: "Informe o CPF", required: true %>
+    <span class="focus-input100" data-placeholder=""></span>
+  </div>
+  <span id="val_cpf" class="requerido"></span>
+  </div>
+  <%= f.submit "Avançar", class: 'btn btn-success', id: "avancar_cpf", disabled: true %>
+</div>
+<% end %>
+<script>
+  $(document).ready(function() {
+    $('.container').css({
+    "color": "",
+    "background-color": "",
+    "box-shadow": "",
+  });
+
+  $('.container-fuild').css('text-align', '-webkit-center');
+})
+
+$('#frm_cpf').keyup(function()
+{
+  var cpf = $('#frm_cpf').val();
+  if(validaCPF(cpf)){
+    $('#val_cpf').html('');
+    $('#avancar_cpf').prop("disabled", false);
+  }
+  else
+  {
+    $('#avancar_cpf').prop("disabled", true);
+    $('#val_cpf').html('CPF inválido');
+    $('#frm_cpf').focus();    
+  }
+});
+</script>

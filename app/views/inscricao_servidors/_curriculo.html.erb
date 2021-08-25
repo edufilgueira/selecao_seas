@@ -1,0 +1,436 @@
+<h3 id="visualize_curriculo">Dados Curricular</h3>
+<hr>
+<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col" style="width: 33px;">#</th>
+      <th scope="col" style="width: 400px;">Formação Acadêmica</th>
+      <th scope="col" style="width: 130px; ">Pontuação</th>
+      <th scope="col" style="width: 130px; ">Correção</th>
+      <th scope="col">Observação</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if(@inscricao_servidor.formacao_academica_01_verificar or !@inscricao_servidor.formacao_academica_01_file.blank?) %>
+      <tr>
+        <td>1</td>
+        <td>Doutorado (em área correlata a Socioeducação)</td>
+        <td><%= @inscricao_servidor.formacao_academica_01_candidato %></td>
+        <td><%= @inscricao_servidor.formacao_academica_01_verificar? ? @inscricao_servidor.formacao_academica_01_correcao : image_tag('ampulheta.gif', width:"50", style:"margin-bottom: -14px;margin-top: -7px;")+"<span style='font-size: 13px;color: #e87225;font-weight: bold;'><br>Aguarde<span>".html_safe %></td>
+        <td>
+          <%= @inscricao_servidor.formacao_academica_01_resposta_descricao %>
+          <%= @inscricao_servidor.formacao_academica_01_obs %> <br>
+          <% if(!@inscricao_servidor.formacao_academica_01_file.blank?) %>
+            <% @inscricao_servidor.formacao_academica_01_file.each do |file| %>
+              <span class="font_anexo">
+                <a target="blank" href="<%= file %>">
+                  <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                  <%= file.identifier.gsub("_"," ").gsub(" .",".") %>
+                </a><br>
+              </span>
+            <% end %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    <% if(@inscricao_servidor.formacao_academica_02_verificar or !@inscricao_servidor.formacao_academica_02_file.blank?) %>
+      <tr>
+        <td>2</td>
+        <td>Doutorado (em qualquer área)</td>
+        <td><%= @inscricao_servidor.formacao_academica_02_candidato %></td>
+        <td><%= @inscricao_servidor.formacao_academica_02_verificar? ? @inscricao_servidor.formacao_academica_02_correcao : image_tag('ampulheta.gif', width:"50", style:"margin-bottom: -14px;margin-top: -7px;")+"<span style='font-size: 13px;color: #e87225;font-weight: bold;'><br>Aguarde<span>".html_safe %></td>
+        <td>
+          <%= @inscricao_servidor.formacao_academica_02_resposta_descricao %>
+          <%= @inscricao_servidor.formacao_academica_02_obs %><br>
+          <% if(!@inscricao_servidor.formacao_academica_02_file.blank?) %>
+            <% @inscricao_servidor.formacao_academica_02_file.each do |file| %>
+              <span class="font_anexo">
+                <a target="blank" href="<%= file %>">
+                  <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                  <%= file.identifier.gsub("_"," ").gsub(" .",".") %>
+                </a><br>
+              </span>
+            <% end %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    <% if(@inscricao_servidor.formacao_academica_03_verificar or !@inscricao_servidor.formacao_academica_03_file.blank?) %>
+      <tr>
+        <td>3</td>
+        <td>Mestrado (em área correlata a Socioeducação)</td>
+        <td><%= @inscricao_servidor.formacao_academica_03_candidato %></td>
+        <td><%= @inscricao_servidor.formacao_academica_03_verificar? ? @inscricao_servidor.formacao_academica_03_correcao : image_tag('ampulheta.gif', width:"50", style:"margin-bottom: -14px;margin-top: -7px;")+"<span style='font-size: 13px;color: #e87225;font-weight: bold;'><br>Aguarde<span>".html_safe %></td>
+        <td>
+          <%= @inscricao_servidor.formacao_academica_03_resposta_descricao %>
+          <%= @inscricao_servidor.formacao_academica_03_obs %><br>
+          <% if(!@inscricao_servidor.formacao_academica_03_file.blank?) %>
+            <% @inscricao_servidor.formacao_academica_03_file.each do |file| %>
+              <span class="font_anexo">
+                <a target="blank" href="<%= file %>">
+                  <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                  <%= file.identifier.gsub("_"," ").gsub(" .",".") %>
+                </a><br>
+              </span>
+            <% end %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    <% if(@inscricao_servidor.formacao_academica_04_verificar or !@inscricao_servidor.formacao_academica_04_file.blank?) %>
+      <tr>
+        <td>4</td>
+        <td>Mestrado (em qualquer área)</td>
+        <td><%= @inscricao_servidor.formacao_academica_04_candidato %></td>
+        <td><%= @inscricao_servidor.formacao_academica_04_verificar? ? @inscricao_servidor.formacao_academica_04_correcao : image_tag('ampulheta.gif', width:"50", style:"margin-bottom: -14px;margin-top: -7px;")+"<span style='font-size: 13px;color: #e87225;font-weight: bold;'><br>Aguarde<span>".html_safe %></td>
+        <td>
+          <%= @inscricao_servidor.formacao_academica_04_resposta_descricao %>
+          <%= @inscricao_servidor.formacao_academica_04_obs %><br>
+          <% if(!@inscricao_servidor.formacao_academica_04_file.blank?) %>
+            <% @inscricao_servidor.formacao_academica_04_file.each do |file| %>
+              <span class="font_anexo">
+                <a target="blank" href="<%= file %>">
+                  <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                  <%= file.identifier.gsub("_"," ").gsub(" .",".") %>
+                </a><br>
+              </span>
+            <% end %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    <% if(@inscricao_servidor.formacao_academica_05_verificar or !@inscricao_servidor.formacao_academica_05_file.blank?) %>
+      <tr>
+        <td>5</td>
+        <td>Especialização/Pós-Graduação (em área correlata a Socioeducação)</td>
+        <td><%= @inscricao_servidor.formacao_academica_05_candidato %></td>
+        <td><%= @inscricao_servidor.formacao_academica_05_verificar? ? @inscricao_servidor.formacao_academica_05_correcao : image_tag('ampulheta.gif', width:"50", style:"margin-bottom: -14px;margin-top: -7px;")+"<span style='font-size: 13px;color: #e87225;font-weight: bold;'><br>Aguarde<span>".html_safe %></td>
+        <td>
+          <%= @inscricao_servidor.formacao_academica_05_resposta_descricao %>
+          <%= @inscricao_servidor.formacao_academica_05_obs %><br>
+          <% if(!@inscricao_servidor.formacao_academica_05_file.blank?) %>
+            <% @inscricao_servidor.formacao_academica_05_file.each do |file| %>
+              <span class="font_anexo">
+                <a target="blank" href="<%= file %>">
+                  <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                  <%= file.identifier.gsub("_"," ").gsub(" .",".") %>
+                </a><br>
+              </span>
+            <% end %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    <% if(@inscricao_servidor.formacao_academica_06_verificar or !@inscricao_servidor.formacao_academica_06_file.blank?) %>
+      <tr>
+        <td>6</td>
+        <td>Especialização/Pós-Graduação (em qualquer área, com carga horária mínima de 360h/a)</td>
+        <td><%= @inscricao_servidor.formacao_academica_06_candidato %></td>
+        <td><%= @inscricao_servidor.formacao_academica_06_verificar? ? @inscricao_servidor.formacao_academica_06_correcao : image_tag('ampulheta.gif', width:"50", style:"margin-bottom: -14px;margin-top: -7px;")+"<span style='font-size: 13px;color: #e87225;font-weight: bold;'><br>Aguarde<span>".html_safe %></td>
+        <td>
+          <%= @inscricao_servidor.formacao_academica_06_resposta_descricao %>
+          <%= @inscricao_servidor.formacao_academica_06_obs %><br>
+          <% if(!@inscricao_servidor.formacao_academica_06_file.blank?) %>
+            <% @inscricao_servidor.formacao_academica_06_file.each do |file| %>
+              <span class="font_anexo">
+                <a target="blank" href="<%= file %>">
+                  <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                  <%= file.identifier.gsub("_"," ").gsub(" .",".") %>
+                </a><br>
+              </span>
+            <% end %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    <% if(@inscricao_servidor.formacao_academica_07_verificar or !@inscricao_servidor.formacao_academica_07_file.blank?) %>
+      <tr>
+        <td>7</td>
+        <td>Graduação</td>
+        <td><%= @inscricao_servidor.formacao_academica_07_candidato %></td>
+        <td><%= @inscricao_servidor.formacao_academica_07_verificar? ? @inscricao_servidor.formacao_academica_07_correcao : image_tag('ampulheta.gif', width:"50", style:"margin-bottom: -14px;margin-top: -7px;")+"<span style='font-size: 13px;color: #e87225;font-weight: bold;'><br>Aguarde<span>".html_safe %></td>
+        <td>
+          <%= @inscricao_servidor.formacao_academica_07_resposta_descricao %>
+          <%= @inscricao_servidor.formacao_academica_07_obs %><br>
+          <% if(!@inscricao_servidor.formacao_academica_07_file.blank?) %>
+            <% @inscricao_servidor.formacao_academica_07_file.each do |file| %>
+              <span class="font_anexo">
+                <a target="blank" href="<%= file %>">
+                  <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                  <%= file.identifier.gsub("_"," ").gsub(" .",".") %>
+                </a><br>
+              </span>
+            <% end %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    <tr>
+      <td style="text-align: right; font-weight: bold; background-color: #ddd; font-size: 20px;"></td>
+      <td style="text-align: right; font-weight: bold; background-color: #ddd; font-size: 20px;">TOTAL</td>
+      <td style="text-align: left; font-weight: bold; background-color: #ddd; font-size: 20px;"><%= @inscricao_servidor.formacao_academica_soma_candidato %></td>
+      <td style="text-align: left; font-weight: bold; background-color: #ddd; font-size: 20px;"><%= @inscricao_servidor.formacao_academica_soma_correcao %></td>
+      <td style="text-align: center; font-weight: bold; background-color: #ddd; font-size: 20px;"><span id="experiencia_profissional_maximo_"></span></td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col" style="width: 33px;">#</th>
+      <th scope="col" style="width: 400px;">Qualificação Profissional</th>
+      <th scope="col" style="width: 130px; ">Pontuação</th>
+      <th scope="col" style="width: 130px; ">Correção</th>
+      <th scope="col">Observação</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if(@inscricao_servidor.qualificacao_profissional_01_verificar or !@inscricao_servidor.qualificacao_profissional_01_file.blank?) %>
+      <tr>
+        <td>1</td>
+        <td>Cursos de Extensão realizadas na área da Socioeducação (com carga horária mínima de 80h/a)</td>
+        <td><%= @inscricao_servidor.qualificacao_profissional_01_candidato %></td>
+        <td><%= @inscricao_servidor.qualificacao_profissional_01_verificar? ? @inscricao_servidor.qualificacao_profissional_01_correcao : image_tag('ampulheta.gif', width:"50", style:"margin-bottom: -14px;margin-top: -7px;")+"<span style='font-size: 13px;color: #e87225;font-weight: bold;'><br>Aguarde<span>".html_safe %></td>
+        <td>
+          <%= @inscricao_servidor.qualificacao_profissional_01_resposta_descricao %>
+          <%= @inscricao_servidor.qualificacao_profissional_01_obs %><br>
+          <% if(!@inscricao_servidor.qualificacao_profissional_01_file.blank?) %>
+            <% @inscricao_servidor.qualificacao_profissional_01_file.each do |file| %>
+              <span class="font_anexo">
+                <a target="blank" href="<%= file %>">
+                  <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                  <%= file.identifier.gsub("_"," ").gsub(" .",".") %>
+                </a><br>
+              </span>
+            <% end %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    <% if(@inscricao_servidor.qualificacao_profissional_02_verificar or !@inscricao_servidor.qualificacao_profissional_02_file.blank?) %>
+      <tr>
+        <td>2</td>
+        <td>Cursos de Extensão realizadas na área da Socioeducação (com carga horária mínima de 24h/a)</td>
+        <td><%= @inscricao_servidor.qualificacao_profissional_02_candidato %></td>
+        <td><%= @inscricao_servidor.qualificacao_profissional_02_verificar? ? @inscricao_servidor.qualificacao_profissional_02_correcao : image_tag('ampulheta.gif', width:"50", style:"margin-bottom: -14px;margin-top: -7px;")+"<span style='font-size: 13px;color: #e87225;font-weight: bold;'><br>Aguarde<span>".html_safe %></td>
+        <td>
+          <%= @inscricao_servidor.qualificacao_profissional_02_resposta_descricao %>
+          <%= @inscricao_servidor.qualificacao_profissional_02_obs %><br>
+          <% if(!@inscricao_servidor.qualificacao_profissional_02_file.blank?) %>
+            <% @inscricao_servidor.qualificacao_profissional_02_file.each do |file| %>
+              <span class="font_anexo">
+                <a target="blank" href="<%= file %>">
+                  <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                  <%= file.identifier.gsub("_"," ").gsub(" .",".") %>
+                </a><br>
+              </span>
+            <% end %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    <% if(@inscricao_servidor.qualificacao_profissional_03_verificar or !@inscricao_servidor.qualificacao_profissional_03_file.blank?) %>
+      <tr>
+        <td>3</td>
+        <td>Cursos de Extensão realizados em qualquer área horária mínima de 24h/a</td>
+        <td><%= @inscricao_servidor.qualificacao_profissional_03_candidato %></td>
+        <td><%= @inscricao_servidor.qualificacao_profissional_03_verificar? ? @inscricao_servidor.qualificacao_profissional_03_correcao : image_tag('ampulheta.gif', width:"50", style:"margin-bottom: -14px;margin-top: -7px;")+"<span style='font-size: 13px;color: #e87225;font-weight: bold;'><br>Aguarde<span>".html_safe %></td>
+        <td>
+          <%= @inscricao_servidor.qualificacao_profissional_03_resposta_descricao %>
+          <%= @inscricao_servidor.qualificacao_profissional_03_obs %><br>
+          <% if(!@inscricao_servidor.qualificacao_profissional_03_file.blank?) %>
+            <% @inscricao_servidor.qualificacao_profissional_03_file.each do |file| %>
+              <span class="font_anexo">
+                <a target="blank" href="<%= file %>">
+                  <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                  <%= file.identifier.gsub("_"," ").gsub(" .",".") %>
+                </a><br>
+              </span>
+            <% end %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    <% if(@inscricao_servidor.qualificacao_profissional_04_verificar or !@inscricao_servidor.qualificacao_profissional_04_file.blank?) %>
+      <tr>
+        <td>4</td>
+        <td>Instrutor(a) em cursos ou similares na área Socioeducação (com carga horária mínima de 16h/a)</td>
+        <td><%= @inscricao_servidor.qualificacao_profissional_04_candidato %></td>
+        <td><%= @inscricao_servidor.qualificacao_profissional_04_verificar? ? @inscricao_servidor.qualificacao_profissional_04_correcao : image_tag('ampulheta.gif', width:"50", style:"margin-bottom: -14px;margin-top: -7px;")+"<span style='font-size: 13px;color: #e87225;font-weight: bold;'><br>Aguarde<span>".html_safe %></td>
+        <td>
+          <%= @inscricao_servidor.qualificacao_profissional_04_resposta_descricao %>
+          <%= @inscricao_servidor.qualificacao_profissional_04_obs %><br>
+          <% if(!@inscricao_servidor.qualificacao_profissional_04_file.blank?) %>
+            <% @inscricao_servidor.qualificacao_profissional_04_file.each do |file| %>
+              <span class="font_anexo">
+                <a target="blank" href="<%= file %>">
+                  <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                  <%= file.identifier.gsub("_"," ").gsub(" .",".") %>
+                </a><br>
+              </span>
+            <% end %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    <tr>
+      <td style="text-align: right; font-weight: bold; background-color: #ddd; font-size: 20px;"></td>
+      <td style="text-align: right; font-weight: bold; background-color: #ddd; font-size: 20px;">TOTAL</td>
+      <td style="text-align: left; font-weight: bold; background-color: #ddd; font-size: 20px;"><%= @inscricao_servidor.qualificacao_profissional_soma_candidato %></td>
+      <td style="text-align: left; font-weight: bold; background-color: #ddd; font-size: 20px;"><%= @inscricao_servidor.qualificacao_profissional_soma_correcao %></td>
+      <td style="text-align: center; font-weight: bold; background-color: #ddd; font-size: 20px;"><span id="experiencia_profissional_maximo_"></span></td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col" style="width: 33px;">#</th>
+      <th scope="col" style="width: 400px;">Experiência Profissional</th>
+      <th scope="col" style="width: 130px; ">Pontuação</th>
+      <th scope="col" style="width: 130px; ">Correção</th>
+      <th scope="col">Observação</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if(@inscricao_servidor.experiencia_profissional_01_verificar or !@inscricao_servidor.experiencia_profissional_01_file.blank?) %>
+      <tr>
+        <td>1</td>
+        <td>Exercício da atividade em Centros Socioeducativos nos Últimos 4 anos (atuação com medidas socieoducativas de privação e restrição de liberdade)</td>
+        <td><%= @inscricao_servidor.experiencia_profissional_01_candidato %></td>
+        <td><%= @inscricao_servidor.experiencia_profissional_01_verificar? ? @inscricao_servidor.experiencia_profissional_01_correcao : image_tag('ampulheta.gif', width:"50", style:"margin-bottom: -14px;margin-top: -7px;")+"<span style='font-size: 13px;color: #e87225;font-weight: bold;'><br>Aguarde<span>".html_safe %></td>
+        <td>
+          <%= @inscricao_servidor.experiencia_profissional_01_resposta_descricao %>
+          <%= @inscricao_servidor.experiencia_profissional_01_obs %><br>
+          <% if(!@inscricao_servidor.experiencia_profissional_01_file.blank?) %>
+            <% @inscricao_servidor.experiencia_profissional_01_file.each do |file| %>
+              <span class="font_anexo">
+                <a target="blank" href="<%= file %>">
+                  <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                  <%= file.identifier.gsub("_"," ").gsub(" .",".") %>
+                </a><br>
+              </span>
+            <% end %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    <% if(@inscricao_servidor.experiencia_profissional_02_verificar or !@inscricao_servidor.experiencia_profissional_02_file.blank?) %>
+      <tr>
+        <td>2</td>
+        <td>Exercício da atividade em Centros Socioeducativos em período anterior a 4 anos (atuação com medidas socieoducativas de privação e restrição de liberdade)</td>
+        <td><%= @inscricao_servidor.experiencia_profissional_02_candidato %></td>
+        <td><%= @inscricao_servidor.experiencia_profissional_02_verificar? ? @inscricao_servidor.experiencia_profissional_02_correcao : image_tag('ampulheta.gif', width:"50", style:"margin-bottom: -14px;margin-top: -7px;")+"<span style='font-size: 13px;color: #e87225;font-weight: bold;'><br>Aguarde<span>".html_safe %></td>
+        <td>
+          <%= @inscricao_servidor.experiencia_profissional_02_resposta_descricao %>
+          <%= @inscricao_servidor.experiencia_profissional_02_obs %><br>
+          <% if(!@inscricao_servidor.experiencia_profissional_02_file.blank?) %>
+            <% @inscricao_servidor.experiencia_profissional_02_file.each do |file| %>
+              <span class="font_anexo">
+                <a target="blank" href="<%= file %>">
+                  <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                  <%= file.identifier.gsub("_"," ").gsub(" .",".") %>
+                </a><br>
+              </span>
+            <% end %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    <% if(@inscricao_servidor.experiencia_profissional_03_verificar or !@inscricao_servidor.experiencia_profissional_03_file.blank?) %>
+      <tr>
+        <td>3</td>
+        <td>Exercício da atividade com adolescentes nos Últimos 4 anos</td>
+        <td><%= @inscricao_servidor.experiencia_profissional_03_candidato %></td>
+        <td><%= @inscricao_servidor.experiencia_profissional_03_verificar? ? @inscricao_servidor.experiencia_profissional_03_correcao : image_tag('ampulheta.gif', width:"50", style:"margin-bottom: -14px;margin-top: -7px;")+"<span style='font-size: 13px;color: #e87225;font-weight: bold;'><br>Aguarde<span>".html_safe %></td>
+        <td>
+          <%= @inscricao_servidor.experiencia_profissional_03_resposta_descricao %>
+          <%= @inscricao_servidor.experiencia_profissional_03_obs %><br>
+          <% if(!@inscricao_servidor.experiencia_profissional_03_file.blank?) %>
+            <% @inscricao_servidor.experiencia_profissional_03_file.each do |file| %>
+              <span class="font_anexo">
+                <a target="blank" href="<%= file %>">
+                  <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                  <%= file.identifier.gsub("_"," ").gsub(" .",".") %>
+                </a><br>
+              </span>
+            <% end %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    <% if(@inscricao_servidor.experiencia_profissional_04_verificar or !@inscricao_servidor.experiencia_profissional_04_file.blank?) %>
+      <tr>
+        <td>4</td>
+        <td>Exercício da atividade com adolescentes em período anterior aos 4 anos</td>
+        <td><%= @inscricao_servidor.experiencia_profissional_04_candidato %></td>
+        <td><%= @inscricao_servidor.experiencia_profissional_04_verificar? ? @inscricao_servidor.experiencia_profissional_04_correcao : image_tag('ampulheta.gif', width:"50", style:"margin-bottom: -14px;margin-top: -7px;")+"<span style='font-size: 13px;color: #e87225;font-weight: bold;'><br>Aguarde<span>".html_safe %></td>
+        <td>
+          <%= @inscricao_servidor.experiencia_profissional_04_resposta_descricao %>
+          <%= @inscricao_servidor.experiencia_profissional_04_obs %><br>
+          <% if(!@inscricao_servidor.experiencia_profissional_04_file.blank?) %>
+            <% @inscricao_servidor.experiencia_profissional_04_file.each do |file| %>
+              <span class="font_anexo">
+                <a target="blank" href="<%= file %>">
+                  <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                  <%= file.identifier.gsub("_"," ").gsub(" .",".") %>
+                </a><br>
+              </span>
+            <% end %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    <% if(@inscricao_servidor.experiencia_profissional_05_verificar or !@inscricao_servidor.experiencia_profissional_05_file.blank?) %>
+      <tr>
+        <td>5</td>
+        <td>Exercício Profissional na Carreira Específica do Edital (outras áreas)</td>
+        <td><%= @inscricao_servidor.experiencia_profissional_05_candidato %></td>
+        <td><%= @inscricao_servidor.experiencia_profissional_05_verificar? ? @inscricao_servidor.experiencia_profissional_05_correcao : image_tag('ampulheta.gif', width:"50", style:"margin-bottom: -14px;margin-top: -7px;")+"<span style='font-size: 13px;color: #e87225;font-weight: bold;'><br>Aguarde<span>".html_safe %></td>
+        <td>
+          <%= @inscricao_servidor.experiencia_profissional_05_resposta_descricao %>
+          <%= @inscricao_servidor.experiencia_profissional_05_obs %><br>
+          <% if(!@inscricao_servidor.experiencia_profissional_05_file.blank?) %>
+            <% @inscricao_servidor.experiencia_profissional_05_file.each do |file| %>
+              <span class="font_anexo">
+                <a target="blank" href="<%= file %>">
+                  <%= file.content_type.include?('image') ? image_tag("img.png", size: "15x20") : image_tag("pdf.png", size: "15x20") %> 
+                  <%= file.identifier.gsub("_"," ").gsub(" .",".") %>
+                </a><br>
+              </span>
+            <% end %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    <tr>
+      <td style="text-align: right; font-weight: bold; background-color: #ddd; font-size: 20px;"></td>
+      <td style="text-align: right; font-weight: bold; background-color: #ddd; font-size: 20px;">TOTAL</td>
+      <td style="text-align: left; font-weight: bold; background-color: #ddd; font-size: 20px;"><%= @inscricao_servidor.experiencia_profissional_soma_candidato %></td>
+      <td style="text-align: left; font-weight: bold; background-color: #ddd; font-size: 20px;"><%= @inscricao_servidor.experiencia_profissional_soma_correcao %></td>
+      <td style="text-align: center; font-weight: bold; background-color: #ddd; font-size: 20px;"></span></td>
+      <td style="text-align: center; font-weight: bold; background-color: #ddd; font-size: 20px;"></td>
+    </tr>
+  </tbody>
+</table>
+<table class="table">
+  <tr>
+    <td style="width: 33px;text-align: right; font-weight: bold; background-color: #ddd; font-size: 20px;"></td>
+    <td style="width: 400px;text-align: right; font-weight: bold; background-color: #ddd; font-size: 20px;">TOTAL GERAL</td>
+    <td style="width: 130px;text-align: left; font-weight: bold; background-color: #ddd; font-size: 20px;"><%= @inscricao_servidor.total_geral_candidato %></span></td>
+    <td style="width: 130px;text-align: left; font-weight: bold; background-color: #ddd; font-size: 20px;"><%= @inscricao_servidor.total_geral_correcao %></span></td>
+    <td style="text-align: center; font-weight: bold; background-color: #ddd; font-size: 20px;"></span></td>
+    <td style="width: 50px;text-align: center; font-weight: bold; background-color: #ddd; font-size: 20px;"></td>
+  </tr>
+</table>
+
+
+
+
+<% if @inscricao_servidor.recurso_solicitado? %>
+  <h4>Recurso:</h4>
+  <%= link_to("Recurso", @inscricao_servidor.recurso.url, target: '_blank') %>
+  <br>
+<% end %>

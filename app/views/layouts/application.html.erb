@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Inscrição</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+  </head>
+
+  <body style="margin-top: 50px; background: #f2f2f2; padding-bottom: 50px;">
+    <div class="container" style="background: white; border-radius: 15px; box-shadow: 2px 7px 8px 0px #d3d3d3;">
+      <div class="container-fuild" style="margin-left: 10px; margin-right: 10px;">
+        <% if usuario_signed_in? %>
+          <br>
+          <div class="text-right">
+            <kbd><%= current_usuario.email %></kbd>
+            <%= link_to('Sair', destroy_usuario_session_path, :method => :delete, :class => 'btn btn-sm btn-danger') %>
+          </div>
+        <% end %>
+        <%= yield %>
+      </div>
+    </div>
+  </body>
+</html>

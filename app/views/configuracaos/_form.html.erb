@@ -1,0 +1,96 @@
+<%= form_with(model: configuracao, local: true) do |form| %>
+  <% if configuracao.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(configuracao.errors.count, "error") %> prohibited this configuracao from being saved:</h2>
+
+      <ul>
+      <% configuracao.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <table style="width:100%">
+    <tr>
+      <td>
+        <h3>Seleção Servidores</h3>
+        <div class="field">
+          <%= form.label :data_inicio_selecao %>
+          <%= form.date_select :data_inicio_selecao %>
+        </div>
+
+        <div class="field">
+          <%= form.label :data_termino_selecao %>
+          <%= form.date_select :data_termino_selecao %>
+        </div>
+
+        <h3>Recurso Dados Servidores</h3>
+        <div class="field">
+          <%= form.label :data_inicio_recurso_dados %>
+          <%= form.date_select :data_inicio_recurso %>
+        </div>
+        
+        <div class="field">
+          <%= form.label :data_termino_recurso_dados %>
+          <%= form.date_select :data_termino_recurso %>
+        </div>
+
+        <h3>Recurso Pontuação Servidores</h3>
+        <div class="field">
+          <%= form.label :data_inicio_recurso_pontuacao %>
+          <%= form.date_select :data_inicio_recurso_pontuacao %>
+        </div>
+        
+        <div class="field">
+          <%= form.label :data_termino_recurso_pontuacao %>
+          <%= form.date_select :data_termino_recurso_pontuacao %>
+        </div>
+      </td>
+      <td>
+        <h3>Seleção Liderança</h3>
+        <div class="field">
+          <%= form.label :data_inicio_selecao_lideranca %>
+          <%= form.date_select :data_inicio_selecao_lideranca %>
+        </div>
+
+        <div class="field">
+          <%= form.label :data_termino_selecao_lideranca %>
+          <%= form.date_select :data_termino_selecao_lideranca %>
+        </div>
+
+        <h3>Recurso Dados Liderança</h3>
+        <div class="field">
+          <%= form.label :data_inicio_recurso_lideranca %>
+          <%= form.date_select :data_inicio_recurso_lideranca %>
+        </div>
+
+        <div class="field">
+          <%= form.label :data_termino_recurso_lideranca %>
+          <%= form.date_select :data_termino_recurso_lideranca %>
+        </div>
+
+        <h3>Recurso Entrevista Liderança</h3>
+        <div class="field">
+          <%= form.label :data_inicio_entrevista_lideranca %>
+          <%= form.date_select :data_inicio_entrevista_lideranca %>
+        </div>
+
+        <div class="field">
+          <%= form.label :data_termino_entrevista_lideranca %>
+          <%= form.date_select :data_termino_entrevista_lideranca %>
+        </div>
+        
+      </td>
+    </tr>
+  </table>
+
+  <div class="field">
+    <%= form.label :status %>
+    <%= form.check_box :status %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>

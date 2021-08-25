@@ -1,0 +1,35 @@
+<img src="https://selecao.seas.ce.gov.br/assets/logo-seas.png">
+<!--<h1>Total de inscrito <span class="badge badge-secondary"><%#= @inscricao_servidors.length %></span></h1>-->
+<div class="form-group">
+  <div class="col-sm-12">
+    
+  </div>
+</div>
+
+<table class="table table-holver">
+  <thead>
+    <tr>
+      <th>Nº Inscrição</th>
+      <th>Nome</th>
+      <th>E-mail</th>
+      <th width="40%">Texto</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @recurso_servidors.each do |recurso_servidor| %>
+      <tr>
+        <td><%= recurso_servidor.inscricao_servidor.id %></td>
+        <td><%= recurso_servidor.inscricao_servidor.nome_completo %></td>
+        <td><%= recurso_servidor.inscricao_servidor.email %></td>
+        <td><%= recurso_servidor.texto %></td>
+        <!--
+        <td><%#= link_to 'Show', recurso_servidor %></td>
+        <td><%#= link_to 'Edit', edit_recurso_servidor_path(recurso_servidor) %></td>
+        <td><%#= link_to 'Destroy', recurso_servidor, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        -->
+      </tr>
+    <% end %>
+  </tbody>
+</table>

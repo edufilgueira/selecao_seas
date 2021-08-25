@@ -1,0 +1,27 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Local Contratacaos</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Descricao</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @local_contratacaos.each do |local_contratacao| %>
+      <tr>
+        <td><%= local_contratacao.descricao %></td>
+        <td><%= link_to 'Show', local_contratacao %></td>
+        <td><%= link_to 'Edit', edit_local_contratacao_path(local_contratacao) %></td>
+        <td><%= link_to 'Destroy', local_contratacao, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Local Contratacao', new_local_contratacao_path %>

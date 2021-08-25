@@ -1,0 +1,18 @@
+<%= image_tag('logo.png') %>
+
+<h2 class="text-center">Formulário Eletrônico de Inscrição - Seleção Diretor 2020</h2>
+
+<% unless notice.blank? %>
+	<div class="alert alert-info" role="alert">
+		<%= notice.html_safe %>
+	</div>
+<% end %>
+
+<br>
+
+<%= render 'form', inscricao: @inscricao %>
+
+<%#= link_to 'Back', inscricaos_path %>
+
+<br>
+<br>

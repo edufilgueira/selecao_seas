@@ -1,0 +1,89 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  cpf: MyString
+  nome_completo: MyString
+  naturalidade: MyString
+  nacionalidade: MyString
+  pessoa_com_deficiencia: false
+  nome_mae: MyString
+  sexo: MyString
+  estado_civil: MyString
+  data_nascimento: 2021-08-19
+  rg: MyString
+  orgao_emissor: MyString
+  endereco: MyString
+  complemento: MyString
+  bairro: MyString
+  cidade: MyString
+  uf: 
+  cep: MyString
+  telefone_fixo: MyString
+  telefone_celular: MyString
+  email: MyString
+  orgao_representacao_classe: MyString
+  numero_registro: MyString
+  termo_aceito: false
+  recurso_solicitado: false
+  recurso: 
+  documentos: 
+  finalizar: false
+  deficiente: false
+  deficiente_anexo: 
+  correcao: false
+  slug: MyText
+  status_acompanhamento: MyString
+  usuario_corrigiu_dados: 1
+  observacao: MyText
+  represetacao_classe: 
+  cota_negro: false
+  recurso_candidato_dados: MyText
+  resposta_recurso_candidato_dados: MyText
+  reclassificar_recurso_candidato_dados: false
+  recurso_entrevista: MyText
+  resposta_recurso_entrevista: MyText
+  reclassificar_recurso_entrevista: false
+
+two:
+  cpf: MyString
+  nome_completo: MyString
+  naturalidade: MyString
+  nacionalidade: MyString
+  pessoa_com_deficiencia: false
+  nome_mae: MyString
+  sexo: MyString
+  estado_civil: MyString
+  data_nascimento: 2021-08-19
+  rg: MyString
+  orgao_emissor: MyString
+  endereco: MyString
+  complemento: MyString
+  bairro: MyString
+  cidade: MyString
+  uf: 
+  cep: MyString
+  telefone_fixo: MyString
+  telefone_celular: MyString
+  email: MyString
+  orgao_representacao_classe: MyString
+  numero_registro: MyString
+  termo_aceito: false
+  recurso_solicitado: false
+  recurso: 
+  documentos: 
+  finalizar: false
+  deficiente: false
+  deficiente_anexo: 
+  correcao: false
+  slug: MyText
+  status_acompanhamento: MyString
+  usuario_corrigiu_dados: 1
+  observacao: MyText
+  represetacao_classe: 
+  cota_negro: false
+  recurso_candidato_dados: MyText
+  resposta_recurso_candidato_dados: MyText
+  reclassificar_recurso_candidato_dados: false
+  recurso_entrevista: MyText
+  resposta_recurso_entrevista: MyText
+  reclassificar_recurso_entrevista: false

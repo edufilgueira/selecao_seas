@@ -1,0 +1,2 @@
+class LocalContratacao < ApplicationRecord
+end

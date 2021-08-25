@@ -1,0 +1,185 @@
+<%= form_with(model: inscricao, local: true) do |form| %>
+  <% if inscricao.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(inscricao.errors.count, "Erro") %>:</h2>
+
+      <ul>
+      <% inscricao.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+<h2>Dados Pessoais</h2>
+  <div class="row">
+    <div class="col-md-12">
+      <%= form.label :nome_completo, class: 'required' %>
+      <%= form.text_field :nome_completo, class: 'form-control', required: true %>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-6">
+      <%= form.label :naturalidade, class: 'required' %>
+      <%= form.text_field :naturalidade, class: 'form-control', required: true %>
+    </div>
+    <div class="col-md-6">
+      <%= form.label :nacionalidade, class: 'required' %>
+      <%= form.text_field :nacionalidade, class: 'form-control', required: true %>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-12">
+      <%= form.label :nome_mae, class: 'required' %>
+      <%= form.text_field :nome_mae, class: 'form-control', required: true %>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-6">
+      <%= form.label :sexo, class: 'required' %>
+      <%= form.select :sexo, options_for_select(["Feminino", "Masculino", "Indefinido"]), {prompt: 'selecione'}, class: 'form-control', required: true %>
+    </div>
+    <div class="col-md-6">
+      <%= form.label :estado_civil, class: 'required' %>
+      <%= form.select :estado_civil, ["Solteiro(a)", "Casado(a)", "Separado(a)", "Divorciado(a)", 'Viúvo(a)', "União Estável", "Outros"], {prompt: 'selecione'}, class: 'form-control', required: true %>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-6">
+      <%= form.label :data_nascimento, class: 'required' %>
+      <%= form.text_field :data_nascimento, class: 'form-control mask-date', required: true %>
+    </div>
+    <div class="col-md-6">
+      <%= form.label :cpf, class: 'required' %>
+      <%= form.text_field :cpf, class: 'form-control mask-cpf', required: true %>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-6">
+      <%= form.label :rg, class: 'required' %>
+      <%= form.text_field :rg, class: 'form-control', type: :number, required: true %>
+    </div>
+    <div class="col-md-6">
+      <%= form.label :orgao_emissor, class: 'required' %>
+      <%= form.text_field :orgao_emissor, class: 'form-control', required: true %>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-12">
+      <%= form.label :endereco, class: 'required' %>
+      <%= form.text_field :endereco, class: 'form-control', required: true %>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-6">
+      <%= form.label :complemento %>
+      <%= form.text_field :complemento, class: 'form-control' %>
+    </div>
+    <div class="col-md-6">
+      <%= form.label :bairro, class: 'required' %>
+      <%= form.text_field :bairro, class: 'form-control', required: true %>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-4">
+      <%= form.label :cidade, class: 'required' %>
+      <%= form.text_field :cidade, class: 'form-control', required: true %>
+    </div>
+    <div class="col-md-4">
+      <%= form.label :uf, class: 'required' %>
+      <%= form.text_field :uf, class: 'form-control', required: true %>
+    </div>
+    <div class="col-md-4">
+      <%= form.label :cep, class: 'required' %>
+      <%= form.text_field :cep, class: 'form-control', required: true %>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-6">
+      <%= form.label :telefone_fixo %>
+      <%= form.telephone_field :telefone_fixo, class: 'form-control mask-phone-fix' %>
+    </div>
+    <div class="col-md-6">
+      <%= form.label :telefone_celular, class: 'required' %>
+      <%= form.telephone_field :telefone_celular, class: 'form-control mask-phone-cel', required: true %>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-12">
+      <%= form.label :email, class: 'required' %>
+      <%= form.email_field :email, class: 'form-control', required: true %>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-12">
+      <%= form.label :formacao, class: 'required' %>
+      <%= form.text_field :formacao, class: 'form-control', required: true %>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-6">
+      <%= form.label :orgao_representacao_classe %>
+      <%= form.text_field :orgao_representacao_classe, class: 'form-control' %>
+    </div>
+    <div class="col-md-6">
+      <%= form.label :numero_registro %>
+      <%= form.text_field :numero_registro, class: 'form-control' %>
+    </div>
+  </div>
+  <br>
+  <%= form.check_box :termo_aceito, required: true %>
+  <%= form.label :termo_aceito, class: 'required' %>
+  <br>
+  <div class="text-justify">Declaro que atendo todas as exigências contidas na Seleção destinada ao preenchimento de vaga(s) e à formação de Cadastro de Reserva na função de Diretor dos Centros Socioeducativos de Fortaleza/CE da Superintendência do Sistema Estadual de Atendimento Socioeducativo do Estado do Ceará (Seas), e que estou de acordo com a regulamentação nela contida, bem como estou ciente de que a inscrição implicará a completa ciência e a tácita aceitação das normas e condições estabelecidas no Edital, sobre as quais não poderei alegar qualquer espécie de desconhecimento. Constatada a inexatidão das afirmativas ou irregularidades de documentos, ainda que comprovadas posteriormente, serei eliminado da Seleção, anulando-se todos os atos decorrentes de minha inscrição. Declaro, ainda, que deverei apresentar os documentos exigidos no item 3 do Edital simplificado, na forma e prazos previstos.</div>
+  <br>
+  <h2>Documentação</h2>
+  <h4><b>Observação:</b> todos os anexos deverão estar em formato <b><i>.pdf</i></b></h4>
+  <div class="row">
+    <div class="col-md-12">
+      <%= form.label :curriculo, class: 'required' %>
+      <br>
+      Anexe o currículo
+      <%= form.file_field :curriculo, required: true %>
+      <%= form.hidden_field :curriculo_cache %>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-12">
+      <%= form.label :documentacao, class: 'required' %>
+      <br>
+      Anexe todos os documentos de uma única vez
+      <%= form.file_field :documentacao, multiple: true, required: true, onclick: 'mensagemDocumentacao()' %>
+      <%= form.hidden_field :documentacao_cache %>
+      <br>
+      <div><b>Observação:</b> Para visualizar os arquivos anexados, disponha o ponteiro do mouse sobre o botão "Escolher arquivos"</div>
+      <div id="alerta"></div>
+    </div>
+  </div>
+  <br>
+  <div class="actions">
+    <%= form.submit "Enviar", class: 'btn btn-success' %>
+  </div>
+<% end %>
+
+<script>
+  function mensagemDocumentacao() {
+    var documentacao = $('#inscricao_documentacao').val();
+    if (documentacao !== '') {
+
+      $('#alerta').html('<br><div class="alert alert-danger alert-dismissible fade show" role="alert">Os documentos deverão serem anexados de uma única vez..<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+    }
+  }
+</script>

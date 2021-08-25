@@ -1,0 +1,39 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Configuracaos</h1>
+
+<table class="table table-holver">
+  <thead>
+    <tr>
+      <th>Seleção Ini</th>
+      <th>Seleção Fim</th>
+      <th>Recurso<br>Dados Ini</th>
+      <th>Recurso<br>Dados Fim</th>
+      <th>Recurso<br>Pontos Ini</th>
+      <th>Recurso<br>Pontos Fim</th>
+      <th>Status</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @configuracaos.each do |configuracao| %>
+      <tr>
+        <td><%= configuracao.data_inicio_selecao %></td>
+        <td><%= configuracao.data_termino_selecao %></td>
+        <td><%= configuracao.data_inicio_recurso %></td>
+        <td><%= configuracao.data_termino_recurso %></td>
+        <td><%= configuracao.data_inicio_recurso_pontuacao %></td>
+        <td><%= configuracao.data_termino_recurso_pontuacao %></td>
+        <td><%= configuracao.status %></td>
+        <td><%= link_to 'Show', configuracao %></td>
+        <td><%= link_to 'Edit', edit_configuracao_path(configuracao) %></td>
+        <!--<td><%#= link_to 'Destroy', configuracao, method: :delete, data: { confirm: 'Are you sure?' } %></td>-->
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'Nova Configuracao', new_configuracao_path, class: 'btn btn-success'  %><br><br>

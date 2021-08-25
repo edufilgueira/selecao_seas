@@ -1,0 +1,29 @@
+// Place all the styles related to the inscricao_servidors controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+.tamanho_mb {
+    padding: 1px 10px;
+    margin-bottom: 0;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    color: #1e2124;
+    background-color: #ffffff;
+    width: 200px;
+}
+
+.requerido{
+    color: #ee3921;
+    margin: 0 0 0 0px;
+    font-size: 14px;
+}
+
+.check_modificado{
+    transform: scale(2.5);
+    margin-top: 10px;
+    margin-left: 8px;
+}
+
+.font_anexo{
+    font-size: 12px;
+}

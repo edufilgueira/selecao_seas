@@ -1,0 +1,48 @@
+<%= form_with(model: recurso_servidor, local: true) do |form| %>
+  <% if recurso_servidor.errors.any? %>
+    <div id="error_explanation">
+      <!-- <h2><%#= pluralize(recurso_servidor.errors.count, "error") %> </h2> -->
+      <ul>
+      <% recurso_servidor.errors.full_messages.each do |message| %>
+        <li><%= message.gsub('Inscricao servidor', 'Recurso') %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <% if @cpf_preenchido %>
+    <% if(!@inscricao_servidor.nil?) %>
+      <div style="border: 1px solid #cdcdcd; padding: 5px 10px 0px 10px; text-align: center; background-color: #48bb6b; color: #FFF; font-weight: bold; margin: 20px 30% 20px 30%; border-radius: 10px;">
+        <div>Nº Inscrição</div>
+        <% inscricao_servidor = @inscricao_servidor %>
+        <div style="font-size: 40px;margin: -10px 0 0 0;"><%= "%.5i" %inscricao_servidor.id %></div>
+      </div>
+    <% end %>
+    
+    <div class="row">
+      <div class="col-md-6">
+        <b><%= form.label "Nome do requerente" %>:</b><br>
+        <div style="font-size: 22px;"><%= @inscricao_servidor.nome_completo %></div>
+      </div>
+      <div class="col-md-6">
+        <b><%= form.label "e-mail" %>:</b><br>
+        <div style="font-size: 22px;"><%= @inscricao_servidor.email %></div>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-md-12">
+        <%= form.text_area :texto, class: 'form-control', rows: 10 %>
+      </div>
+    </div>
+    <br>
+    <div class="actions">
+      <%= form.hidden_field :inscricao_servidor_id, value:@inscricao_servidor.id  %>
+      <%= form.submit 'Enviar', class: 'btn btn-success' %>
+    </div>
+  <% elsif !recurso_servidor.errors.any? %>
+    <br><br>
+    <div class="alert alert-info" role="alert" style="text-align: center">
+		  <i class="fas fa-exclamation-triangle"></i> <b>ATENÇÃO:</b> CPF não identificado
+	  </div>
+  <% end %>
+<% end %>

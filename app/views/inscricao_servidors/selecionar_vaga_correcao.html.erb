@@ -1,0 +1,330 @@
+
+
+<h2 class="text-center">Formulário Eletrônico de Inscrição - Seleção Servidor 2021</h2>
+<% if(!params[:inscricao_servidor_id].nil?) %>
+	<div style="border: 1px solid #cdcdcd; padding: 5px 10px 0px 10px; text-align: center; background-color: #48bb6b; color: #FFF; font-weight: bold; margin: 20px 30% 20px 30%; border-radius: 10px;">
+		<div>Nº Inscrição</div>
+		<% inscricao_servidor = InscricaoServidor.find_by(slug: params[:inscricao_servidor_id]) %>
+		<div style="font-size: 40px;margin: -10px 0 0 0;"><%= "%.5i" %inscricao_servidor.id %></div>
+	</div>
+<% end %>
+
+<% unless params[:notice].blank? %>
+	<div class="alert alert-info" role="alert">
+		<%= params[:notice].html_safe %>
+	</div>
+<% end %>
+<br>
+<% if !inscricao_servidor.usuario_corrigiu_pontuacao.nil? %>
+  <% usuario = Usuario.find(inscricao_servidor.usuario_corrigiu_pontuacao) %>
+  <b>Corrigido por:</b> <%= usuario.email %>
+<% end %>
+<table class="table table-holver" style="text-transform: uppercase">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Cargos Selecionados</th>
+			<th></th>
+    </tr>
+  </thead>
+	<tbody>
+		<% ids = [] %>
+		<% cont = 1 %>
+		<% @selecionar_vagas.each do |selecionar_vaga| %>
+			<% ids.push(selecionar_vaga.cargo.id) %>
+			<tr>
+				<td><%= cont %></td>
+				<td><%= selecionar_vaga.cargo.descricao %></td>
+				<td><%= link_to '<i class="fas fa-edit"></i> Validar'.html_safe, edit_selecionar_vaga_correcao_inscricao_servidors_path(selecionar_vaga_id: selecionar_vaga.id, inscricao_servidor_id: @inscricao_servidor_id, novo: "sim"), class: 'btn btn-sm btn-info' %></td>
+			</tr>
+			<% cont += 1 %>
+		<% end %>
+	</tbody>
+</table>
+<% inscricao_servidor = InscricaoServidor.find(@inscricao_servidor_id) %>
+<%#= link_to "Adicionar cargos", selecionar_vagas_inscricao_servidors_path(inscricao_servidor_id: @inscricao_servidor_id, novo: "sim"), class: 'btn btn-success' %>
+<%#= link_to "Voltar para os dados da Inscrição", inscricao_servidor_path(inscricao_servidor.slug), class: 'btn btn-warning' %>
+<br><hr>
+<% if(!@novo.nil?)%>
+	<%= form_for(@selecionar_vaga, :url => {controller: :inscricao_servidors, action: :salvar_selecionar_vagas}, html: { class: 'form-horizontal' }) do |f| %>
+	<div class="form-group">
+		<div class="col-sm-12">
+			<h2>Selecione o cargo o qual deseja candidatar-se</h2>
+			<%= f.collection_select :cargo_id, Cargo.where.not(id: ids), :id, :descricao, {include_blank: '--selecione--'}, class: 'form-control', required: true %>
+		</div>
+	</div>
+	<h2>Itens de Avaliação</h2>
+	<table class="table" style="text-transform: uppercase">
+		<thead class="thead-dark">
+			<tr>
+				<th scope="col" style="width: 400px;">Formação Acadêmica</th>
+				<th scope="col" style="width: 210px;">PONTUAÇÃO MÁXIMA</th>
+				<th scope="col" style="width: 130px;">PONTUAÇÃO</th>
+				<th scope="col"><div class="tamanho_mb">Tamanho do arquivo 5mb</div></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>Doutorado (em área correlata a Socioeducação)</td>
+				<td><span id="formacao_academica_01"></span></td>
+				<td><%= f.number_field :formacao_academica_01_candidato, class: 'form-control', step: "0.5", onkeyup:"calcular_formacao_academica();",  onblur:"calcular_formacao_academica();" %></td>
+				<td><%= f.file_field :formacao_academica_01_file, class: 'form-control2', style:"transform: scale(2.5);margin-top: 10px;margin-left: 8px;" %></td>
+			</tr>
+			<tr>
+				<td>Doutorado (em qualquer área)</td>
+				<td><span id="formacao_academica_02"></span></td>
+				<td><%= f.number_field :formacao_academica_02_candidato, class: 'form-control', step: "0.5", onkeyup:"calcular_formacao_academica();",  onblur:"calcular_formacao_academica();" %></td>
+				<td><%= f.file_field :formacao_academica_02_file, class: 'form-control' %></td>
+			</tr>
+			<tr>
+				<td>Mestrado (em área correlata a Socioeducação)</td>
+				<td><span id="formacao_academica_03"></span></td>
+				<td><%= f.number_field :formacao_academica_03_candidato, class: 'form-control', step: "0.5", onkeyup:"calcular_formacao_academica();",  onblur:"calcular_formacao_academica();" %></td>
+				<td><%= f.file_field :formacao_academica_03_file, class: 'form-control' %></td>
+			</tr>
+			<tr>
+				<td>Mestrado (em qualquer área)</td>
+				<td><span id="formacao_academica_04"></span></td>
+				<td><%= f.number_field :formacao_academica_04_candidato, class: 'form-control', step: "0.5", onkeyup:"calcular_formacao_academica();",  onblur:"calcular_formacao_academica();" %></td>
+				<td><%= f.file_field :formacao_academica_04_file, class: 'form-control' %></td>
+			</tr>
+			<tr>
+				<td>Especialização/Pós-Graduação (em área correlata a Socioeducação)</td>
+				<td><span id="formacao_academica_05"></span></td>
+				<td><%= f.number_field :formacao_academica_05_candidato, class: 'form-control', step: "0.5", onkeyup:"calcular_formacao_academica();",  onblur:"calcular_formacao_academica();" %></td>
+				<td><%= f.file_field :formacao_academica_05_file, class: 'form-control' %></td>
+			</tr>
+			<tr>
+				<td>Especialização/Pós-Graduação (em qualquer área, com carga horária mínima de 360h/a)</td>
+				<td><span id="formacao_academica_06"></span></td>
+				<td><%= f.number_field :formacao_academica_06_candidato, class: 'form-control', step: "0.5", onkeyup:"calcular_formacao_academica();",  onblur:"calcular_formacao_academica();" %></td>
+				<td><%= f.file_field :formacao_academica_06_file, class: 'form-control' %></td>
+			</tr>
+			<tr>
+				<td>Graduação</td>
+				<td><span id="formacao_academica_07"></span></td>
+				<td><%= f.number_field :formacao_academica_07_candidato, class: 'form-control', step: "0.5", onkeyup:"calcular_formacao_academica();",  onblur:"calcular_formacao_academica();" %></td>
+				<td><%= f.file_field :formacao_academica_07_file, class: 'form-control' %></td>
+			</tr>
+			<tr>
+				<td style="text-align: right; font-weight: bold; background-color: #ddd; font-size: 20px;">TOTAL</td>
+				<td style="text-align: center; font-weight: bold; background-color: #ddd; font-size: 20px;"><span id="formacao_academica_maximo"></span></td>
+				<td style="text-align: center; font-weight: bold; background-color: #ddd; font-size: 20px;"><span id="formacao_academica_total"></span></td>
+				<td style="text-align: center; font-weight: bold; background-color: #ddd; font-size: 20px;"></td>
+			</tr>
+		</tbody>
+	</table>
+
+	<table class="table" style="text-transform: uppercase">
+		<thead class="thead-dark">
+			<tr>
+				<th scope="col" style="width: 400px;">Qualificação Profissional</th>
+				<th scope="col" style="width: 210px;">PONTUAÇÃO MÁXIMA</th>
+				<th scope="col" style="width: 130px;">PONTUAÇÃO</th>
+				<th scope="col"><div class="tamanho_mb">Tamanho do arquivo 5mb</div></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>Cursos de Extensão realizadas na área da Socioeducação (com carga horária mínima de 80h/a)</td>
+				<td><span id="qualificacao_profissional_01"></span></td>
+				<td><%= f.number_field :qualificacao_profissional_01_candidato, class: 'form-control', step: "0.5", onkeyup:"calcular_qualificacao_profissional()" %></td>
+				<td><%= f.file_field :qualificacao_profissional_01_file, class: 'form-control' %></td>
+			</tr>
+			<tr>
+				<td>Cursos de Extensão realizadas na área da Socioeducação (com carga horária mínima de 24h/a)</td>
+				<td><span id="qualificacao_profissional_02"></span></td>
+				<td><%= f.number_field :qualificacao_profissional_02_candidato, class: 'form-control', step: "0.5", onkeyup:"calcular_qualificacao_profissional()" %></td>
+				<td><%= f.file_field :qualificacao_profissional_02_file, class: 'form-control' %></td>
+			</tr>
+			<tr>
+				<td>Cursos de Extensão realizados em qualquer área horária mínima de 24h/a</td>
+				<td><span id="qualificacao_profissional_03"></span></td>
+				<td><%= f.number_field :qualificacao_profissional_03_candidato, class: 'form-control', step: "0.5", onkeyup:"calcular_qualificacao_profissional()" %></td>
+				<td><%= f.file_field :qualificacao_profissional_03_file, class: 'form-control' %></td>
+			</tr>
+			<tr>
+				<td>Instrutor(a) em cursos ou similares na área Socioeducação (com carga horária mínima de 16h/a)</td>
+				<td><span id="qualificacao_profissional_04"></span></td>
+				<td><%= f.number_field :qualificacao_profissional_04_candidato, class: 'form-control', step: "0.5", onkeyup:"calcular_qualificacao_profissional()" %></td>
+				<td><%= f.file_field :qualificacao_profissional_04_file, class: 'form-control' %></td>
+			</tr>
+			<tr>
+				<td style="text-align: right; font-weight: bold; background-color: #ddd; font-size: 20px;">TOTAL</td>
+				<td style="text-align: center; font-weight: bold; background-color: #ddd; font-size: 20px;"><span id="qualificacao_profissional_maximo"></span></td>
+				<td style="text-align: center; font-weight: bold; background-color: #ddd; font-size: 20px;"><span id="qualificacao_profissional_total"></span></td>
+				<td style="text-align: center; font-weight: bold; background-color: #ddd; font-size: 20px;"></td>
+			</tr>
+		</tbody>
+	</table>
+
+	<table class="table" style="text-transform: uppercase">
+		<thead class="thead-dark">
+			<tr>
+				<th scope="col" style="width: 400px;">Experiência Profissional</th>
+				<th scope="col" style="width: 210px;">PONTUAÇÃO MÁXIMA</th>
+				<th scope="col" style="width: 130px;">PONTUAÇÃO</th>
+				<th scope="col"><div class="tamanho_mb">Tamanho do arquivo 5mb</div></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>Exercício da atividade em Centros Socioeducativos nos Últimos 4 anos (atuação com medidas socieoducativas de privação e restrição de liberdade)</td>
+				<td><span id="experiencia_profissional_01"></span></td>
+				<td><%= f.number_field :experiencia_profissional_01_candidato, class: 'form-control', step: "0.5", onkeyup:"calcular_experiencia_profissional()" %></td>
+				<td><%= f.file_field :experiencia_profissional_01_file, class: 'form-control' %></td>
+			</tr>
+			<tr>
+				<td>Exercício da atividade em Centros Socioeducativos em período anterior a 4 anos (atuação com medidas socieoducativas de privação e restrição de liberdade)</td>
+				<td><span id="experiencia_profissional_02"></span></td>
+				<td><%= f.number_field :experiencia_profissional_02_candidato, class: 'form-control', step: "0.5", onkeyup:"calcular_experiencia_profissional()" %></td>
+				<td><%= f.file_field :experiencia_profissional_02_file, class: 'form-control' %></td>
+			</tr>
+			<tr>
+				<td>Exercício da atividade com adolescentes nos Últimos 4 anos</td>
+				<td><span id="experiencia_profissional_03"></span></td>
+				<td><%= f.number_field :experiencia_profissional_03_candidato, class: 'form-control', step: "0.5", onkeyup:"calcular_experiencia_profissional()" %></td>
+				<td><%= f.file_field :experiencia_profissional_03_file, class: 'form-control' %></td>
+			</tr>
+			<tr>
+				<td>Exercício da atividade com adolescentes em período anterior aos 4 anos</td>
+				<td><span id="experiencia_profissional_04"></span></td>
+				<td><%= f.number_field :experiencia_profissional_04_candidato, class: 'form-control', step: "0.5", onkeyup:"calcular_experiencia_profissional()" %></td>
+				<td><%= f.file_field :experiencia_profissional_04_file, class: 'form-control' %></td>
+			</tr>
+			<tr>
+				<td>Exercício Profissional na Carreira Específica do Edital (outras áreas)</td>
+				<td><span id="experiencia_profissional_05"></span></td>
+				<td><%= f.number_field :experiencia_profissional_05_candidato, class: 'form-control', step: "0.5", onkeyup:"calcular_experiencia_profissional()" %></td>
+				<td><%= f.file_field :experiencia_profissional_05_file, class: 'form-control' %></td>
+			</tr>
+			<tr>
+				<td style="text-align: right; font-weight: bold; background-color: #ddd; font-size: 20px;">TOTAL</td>
+				<td style="text-align: center; font-weight: bold; background-color: #ddd; font-size: 20px;"><span id="experiencia_profissional_maximo"></span></td>
+				<td style="text-align: center; font-weight: bold; background-color: #ddd; font-size: 20px;"><span id="experiencia_profissional_total"></span></td>
+				<td style="text-align: center; font-weight: bold; background-color: #ddd; font-size: 20px;"></td>
+			</tr>
+		</tbody>
+	</table>
+
+	<%= f.submit "Salvar", class: 'btn btn-success' %>
+	<%= f.hidden_field :inscricao_servidor_id, value: @inscricao_servidor_id %>
+	<%= f.hidden_field :formacao_academica_total %>
+	<%= f.hidden_field :qualificacao_profissional_total %>
+	<%= f.hidden_field :experiencia_profissional_total %>
+	<%= f.hidden_field :formacao_academica_soma_candidato %>
+	<%= f.hidden_field :qualificacao_profissional_soma_candidato %>
+	<%= f.hidden_field :experiencia_profissional_soma_candidato %>
+	<%= link_to "Cancelar", selecionar_vagas_inscricao_servidors_path(inscricao_servidor_id: @inscricao_servidor_id), class: 'btn btn-warning' %>
+	<% end %>
+<% end %>
+<%= link_to '<i class="far fa-stop-circle"></i> Finalizar Correção'.html_safe, correcao_inscricao_servidors_path(id: inscricao_servidor.slug), class: 'btn btn-danger' %>
+<%= link_to '<i class="fas fa-backward"></i> Voltar'.html_safe, inscricao_servidors_path, class: 'btn btn-warning' %>
+<br><br>
+<script>
+var formacao_academica_maximo = 0;
+var qualificacao_profissional_maximo = 0;
+var experiencia_profissional_maximo = 0;
+
+$("#selecionar_vaga_cargo_id").change(function(){
+    var id = $(this).val();
+		if(id == 4)
+			socioeducador();
+		else
+			assistente_pedagogico_pscicologo();
+});
+function socioeducador(){
+	formacao_academica_maximo = 27,5;
+	qualificacao_profissional_maximo = 23,5;
+	experiencia_profissional_maximo = 38;
+	$("#formacao_academica_01").html("7,0 por curso até o limite de 1 curso");
+	$("#formacao_academica_02").html("5,0 por curso até o limite de 1 curso");
+	$("#formacao_academica_03").html("4,0 por curso até o limite de 1 curso");
+	$("#formacao_academica_04").html("3,0 por curso até o limite de 1 curso");
+	$("#formacao_academica_05").html("2,0 por curso até o limite de 2 cursos");
+	$("#formacao_academica_06").html("1,0 por curso até o limite de 2 cursos");
+	$("#formacao_academica_07").html("2,5 Por curso até o limite de 2 cursos");
+	$("#formacao_academica_maximo").html("27,5 Pontos");
+	$("#selecionar_vaga_formacao_academica_total").val(formacao_academica_maximo);
+
+	$("#qualificacao_profissional_01").html("2,0 por curso até o limite de 5 cursos");
+	$("#qualificacao_profissional_02").html("1,5 por curso até o limite de 5 cursos");
+	$("#qualificacao_profissional_03").html("0,5 por curso até o limite de 4 cursos");
+	$("#qualificacao_profissional_04").html("1,0 por curso até o limite de 4 cursos");
+	$("#qualificacao_profissional_maximo").html("23,5 Pontos");
+	$("#selecionar_vaga_qualificacao_profissional_total").val(qualificacao_profissional_maximo);
+	
+	$("#experiencia_profissional_01").html("5,0 por ano de experiência até o limite de 4 anos");
+	$("#experiencia_profissional_02").html("2,0 por ano de experiência até o limite de 4 anos");
+	$("#experiencia_profissional_03").html("1,5 por ano de experiência até o limite de 4 anos");
+	$("#experiencia_profissional_04").html("1,0 por ano de experiência até o limite de 4 anos");
+	$("#experiencia_profissional_05").html("Não Se Aplica");
+	$("#experiencia_profissional_maximo").html("38 Pontos");
+	$("#selecionar_vaga_experiencia_profissional_total").val(experiencia_profissional_maximo);
+}
+
+function assistente_pedagogico_pscicologo(){
+	formacao_academica_maximo = 25;
+	qualificacao_profissional_maximo = 23,5;
+	experiencia_profissional_maximo = 43;
+	$("#formacao_academica_01").html("7,0 por curso até o limite de 1 curso");
+	$("#formacao_academica_02").html("5,0 por curso até o limite de 1 curso");
+	$("#formacao_academica_03").html("4,0 por curso até o limite de 1 curso");
+	$("#formacao_academica_04").html("3,0 por curso até o limite de 1 curso");
+	$("#formacao_academica_05").html("2,0 por curso até o limite de 2 cursos");
+	$("#formacao_academica_06").html("1,0 por curso até o limite de 2 cursos");
+	$("#formacao_academica_07").html("Não Se Aplica");
+	$("#formacao_academica_maximo").html("25 Pontos");
+	$("#selecionar_vaga_formacao_academica_total").val(formacao_academica_maximo);
+
+	$("#qualificacao_profissional_01").html("2,0 por curso até o limite de 4 cursos");
+	$("#qualificacao_profissional_02").html("1,5 por curso até o limite de 5 cursos");
+	$("#qualificacao_profissional_03").html("0,5 por curso até o limite de 4 cursos");
+	$("#qualificacao_profissional_04").html("1,0 por curso até o limite de 4 cursos");
+	$("#qualificacao_profissional_maximo").html("23,5 Pontos");
+	$("#selecionar_vaga_qualificacao_profissional_total").val(qualificacao_profissional_maximo);
+	
+	$("#experiencia_profissional_01").html("2,0 por ano de experiência até o limite de 4 anos");
+	$("#experiencia_profissional_02").html("2,0 por ano de experiência até o limite de 4 anos");
+	$("#experiencia_profissional_03").html("1,5 por ano de experiência até o limite de 4 anos");
+	$("#experiencia_profissional_04").html("1,0 por ano de experiência até o limite de 4 anos");
+	$("#experiencia_profissional_05").html("1,0 por ano de experiência até o limite de 4 anos");
+	$("#experiencia_profissional_maximo").html("43 Pontos");
+	$("#selecionar_vaga_experiencia_profissional_total").val(experiencia_profissional_maximo);
+}
+
+function calcular_formacao_academica(){
+	val1 = Number($('#selecionar_vaga_formacao_academica_01_candidato').val());
+	val2 = Number($('#selecionar_vaga_formacao_academica_02_candidato').val());
+	val3 = Number($('#selecionar_vaga_formacao_academica_03_candidato').val());
+	val4 = Number($('#selecionar_vaga_formacao_academica_04_candidato').val());
+	val5 = Number($('#selecionar_vaga_formacao_academica_05_candidato').val());
+	val6 = Number($('#selecionar_vaga_formacao_academica_06_candidato').val());
+	val7 = Number($('#selecionar_vaga_formacao_academica_07_candidato').val());
+	total = val1 + val2 + val3 + val4 + val5 + val6 + val7;
+	$("#formacao_academica_total").html(total);
+	$("#selecionar_vaga_formacao_academica_soma_candidato").val(total);
+	console.log(total);
+}
+
+function calcular_qualificacao_profissional(){
+	val1 = Number($('#selecionar_vaga_qualificacao_profissional_01_candidato').val());
+	val2 = Number($('#selecionar_vaga_qualificacao_profissional_02_candidato').val());
+	val3 = Number($('#selecionar_vaga_qualificacao_profissional_03_candidato').val());
+	val4 = Number($('#selecionar_vaga_qualificacao_profissional_04_candidato').val());
+
+	total = val1 + val2 + val3 + val4;
+	$("#qualificacao_profissional_total").html(total);
+	$("#selecionar_vaga_qualificacao_profissional_soma_candidato").val(total);
+}
+function calcular_experiencia_profissional(){
+	val1 = Number($('#selecionar_vaga_experiencia_profissional_01_candidato').val());
+	val2 = Number($('#selecionar_vaga_experiencia_profissional_02_candidato').val());
+	val3 = Number($('#selecionar_vaga_experiencia_profissional_03_candidato').val());
+	val4 = Number($('#selecionar_vaga_experiencia_profissional_04_candidato').val());
+	val5 = Number($('#selecionar_vaga_experiencia_profissional_05_candidato').val());
+	total = val1 + val2 + val3 + val4 + val5;
+	$("#experiencia_profissional_total").html(total);
+	$("#selecionar_vaga_experiencia_profissional_soma_candidato").val(total);
+}
+</script>
