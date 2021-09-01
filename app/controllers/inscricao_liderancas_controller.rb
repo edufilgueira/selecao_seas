@@ -216,6 +216,35 @@ class InscricaoLiderancasController < ApplicationController
     #redirect_to inscricao_liderancas_path()
   end
 
+  def entrevista
+    @inscricao_lideranca = InscricaoLideranca.find_by(slug: params[:id])
+    @id = @inscricao_lideranca.slug
+    @entrevista_01 = @inscricao_lideranca.avaliacao_entrevista_01
+    @entrevista_02 = @inscricao_lideranca.avaliacao_entrevista_02
+    @entrevista_03 = @inscricao_lideranca.avaliacao_entrevista_03
+    @entrevista_04 = @inscricao_lideranca.avaliacao_entrevista_04
+    @entrevista_05 = @inscricao_lideranca.avaliacao_entrevista_05
+    @entrevista_obs = @inscricao_lideranca.avaliacao_entrevista_obs
+  end
+
+  def salvar_entrevista
+    inscricao_lideranca = InscricaoLideranca.find_by(slug: params[:frm][:id])
+    inscricao_lideranca.avaliacao_entrevista_01 = params[:frm][:avaliacao_entrevista_01]
+    inscricao_lideranca.avaliacao_entrevista_02 = params[:frm][:avaliacao_entrevista_02]
+    inscricao_lideranca.avaliacao_entrevista_03 = params[:frm][:avaliacao_entrevista_03]
+    inscricao_lideranca.avaliacao_entrevista_04 = params[:frm][:avaliacao_entrevista_04]
+    inscricao_lideranca.avaliacao_entrevista_05 = params[:frm][:avaliacao_entrevista_05]
+    inscricao_lideranca.avaliacao_entrevista_obs = params[:frm][:avaliacao_entrevista_obs]
+    inscricao_lideranca.status_acompanhamento = "Correção de pontuação"
+    inscricao_lideranca.save
+    redirect_to inscricao_liderancas_path()
+  end
+
+  def recurso
+    @inscricao_lideranca = InscricaoLideranca.find_by(slug: params[:id])
+    @id = params[:id]
+  end
+
   # POST /inscricao_liderancas or /inscricao_liderancas.json
   def create
     @inscricao_lideranca = InscricaoLideranca.new(inscricao_lideranca_params)
@@ -238,6 +267,7 @@ class InscricaoLiderancasController < ApplicationController
 
   # PATCH/PUT /inscricao_liderancas/1 or /inscricao_liderancas/1.json
   def update
+    #raise inscricao_lideranca_params.inspect
     @inscricao_lideranca = InscricaoLideranca.where(slug: inscricao_lideranca_params[:slug])[0]
 
     respond_to do |format|
@@ -260,7 +290,18 @@ class InscricaoLiderancasController < ApplicationController
 
       if @inscricao_lideranca.update(inscricao_lideranca)
         if params[:commit] == "Finalizar Correção"
-          correcao(@inscricao_lideranca.slug)
+          #correcao(@inscricao_lideranca.slug)
+          if !params[:resposta_recurso_candidato_dados].blank?
+            @inscricao_lideranca.resposta_recurso_candidato_dados = params[:resposta_recurso_candidato_dados]
+          end
+
+          if params[:desclassificar] == "Indeferir"
+            @inscricao_lideranca.status_acompanhamento = "Desclassificado"
+          elsif params[:desclassificar] == "Deferir"
+            @inscricao_lideranca.status_acompanhamento = "Correção de dados"
+          end
+          @inscricao_lideranca.save
+
           #VERIFICA SE A PAGINA FOI CHAMADA PELA REVIÃO DA PONTUAÇÃO, PARA FECHAR A PAGINA INDEX COM window.close(); APÓS CARREGA-LA.
           if !params[:fase].nil? and params[:fase] == "revisao"
             format.html { redirect_to inscricao_liderancas_path(fase:"revisao") }
@@ -325,8 +366,8 @@ class InscricaoLiderancasController < ApplicationController
         end
       end
     else
-      
-      redirect_to "/?cpf="+cpf+"&inscricao="+inscricao+"&tipo="+tipo+"&data_nascimento="+data_nascimento+"&alert=Código incorreto."
+      redirect_to cpf_inscricao_liderancas_path(cpf: cpf, inscricao: inscricao, tipo: tipo, data_nascimento: data_nascimento, alert: "Código incorreto.")
+      #redirect_to "/?cpf="+cpf+"&inscricao="+inscricao+"&tipo="+tipo+"&data_nascimento="+data_nascimento+"&alert=Código incorreto."
     end 
   end
 
@@ -385,7 +426,8 @@ class InscricaoLiderancasController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def inscricao_lideranca_params
-      params.require(:inscricao_lideranca).permit(:nome_completo, :naturalidade, :nacionalidade, :nome_mae, :sexo, :estado_civil, :data_nascimento, :cpf, :rg, :orgao_emissor, :endereco, :complemento, :bairro, :cidade, :uf, :cep, :telefone_fixo, :telefone_celular, :email, :orgao_representacao_classe, :numero_registro, :termo_aceito, :curriculo, :recurso_solicitado, :recurso, :documentos, :slug, :deficiente, :deficiente_anexo, :cargo_id, :formacao_academica_01_candidato, :formacao_academica_01_correcao, :represetacao_classe, :represetacao_classe_cache, :formacao_academica_02_candidato, :formacao_academica_02_correcao, :formacao_academica_03_candidato, :formacao_academica_03_correcao, :formacao_academica_04_candidato, :formacao_academica_04_correcao, :formacao_academica_05_candidato, :formacao_academica_05_correcao, :formacao_academica_06_candidato, :formacao_academica_06_correcao, :formacao_academica_07_candidato, :formacao_academica_07_correcao, :qualificacao_profissional_01_candidato, :qualificacao_profissional_01_correcao, :qualificacao_profissional_02_candidato, :qualificacao_profissional_02_correcao, :qualificacao_profissional_03_candidato, :qualificacao_profissional_03_correcao, :qualificacao_profissional_04_candidato, :qualificacao_profissional_04_correcao, :experiencia_profissional_01_candidato, :experiencia_profissional_02_candidato, :experiencia_profissional_03_candidato, :experiencia_profissional_04_candidato, :experiencia_profissional_05_candidato, :experiencia_profissional_01_correcao, :experiencia_profissional_02_correcao, :experiencia_profissional_03_correcao, :experiencia_profissional_04_correcao, :experiencia_profissional_05_correcao, {formacao_academica_01_file: []}, {formacao_academica_02_file: []}, {formacao_academica_03_file: []}, {formacao_academica_04_file: []},{formacao_academica_05_file: []}, {formacao_academica_06_file: []}, {formacao_academica_07_file: []}, {qualificacao_profissional_01_file: []}, {qualificacao_profissional_02_file: []}, {qualificacao_profissional_03_file: []}, {qualificacao_profissional_04_file: []}, {experiencia_profissional_01_file: []}, {experiencia_profissional_02_file: []}, {experiencia_profissional_03_file: []}, {experiencia_profissional_04_file: []}, {experiencia_profissional_05_file: []}, :formacao_academica_total, :qualificacao_profissional_total, :experiencia_profissional_total, :formacao_academica_soma_candidato, :qualificacao_profissional_soma_candidato, :experiencia_profissional_soma_candidato, :formacao_academica_soma_correcao, :qualificacao_profissional_soma_correcao, :experiencia_profissional_soma_correcao, :formacao_academica_01_verificar, :formacao_academica_02_verificar, :formacao_academica_03_verificar, :formacao_academica_04_verificar, :formacao_academica_05_verificar, :formacao_academica_06_verificar, :formacao_academica_07_verificar,:qualificacao_profissional_01_verificar, :qualificacao_profissional_02_verificar, :qualificacao_profissional_03_verificar, :qualificacao_profissional_04_verificar, :experiencia_profissional_01_verificar, :experiencia_profissional_02_verificar, :experiencia_profissional_03_verificar, :experiencia_profissional_04_verificar, :experiencia_profissional_05_verificar, :formacao_academica_01_obs, :formacao_academica_02_obs, :formacao_academica_03_obs, :formacao_academica_04_obs, :formacao_academica_05_obs,:formacao_academica_06_obs, :formacao_academica_07_obs, :qualificacao_profissional_01_obs, :qualificacao_profissional_02_obs, :qualificacao_profissional_03_obs, :qualificacao_profissional_04_obs, :experiencia_profissional_01_obs, :experiencia_profissional_02_obs, :experiencia_profissional_03_obs, :experiencia_profissional_04_obs, :experiencia_profissional_05_obs, :formacao_academica_01_resposta, :formacao_academica_02_resposta, :formacao_academica_03_resposta, :formacao_academica_04_resposta, :formacao_academica_05_resposta,:formacao_academica_06_resposta, :formacao_academica_07_resposta, :qualificacao_profissional_01_resposta, :qualificacao_profissional_02_resposta, :qualificacao_profissional_03_resposta, :qualificacao_profissional_04_resposta, :experiencia_profissional_01_resposta, :experiencia_profissional_02_resposta, :experiencia_profissional_03_resposta, :experiencia_profissional_04_resposta, :experiencia_profissional_05_resposta, :total_geral_candidato, :total_geral_correcao, :certificado_ensino_medio, :certificado_ensino_superior, :recurso_candidato_dados, :resposta_recurso_candidato_dados, :reclassificar_recurso_candidato, :recurso_entrevista, :resposta_recurso_entrevista, :reclassificar_recurso_entrevista, :formacao_academica_01_file_cache, :formacao_academica_02_file_cache, :formacao_academica_03_file_cache, :formacao_academica_04_file_cache, :formacao_academica_05_file_cache, :formacao_academica_06_file_cache, :formacao_academica_07_file_cache, :qualificacao_profissional_01_file_cache, :qualificacao_profissional_02_file_cache, :qualificacao_profissional_03_file_cache, :qualificacao_profissional_04_file_cache, :experiencia_profissional_01_file_cache, :experiencia_profissional_02_file_cache, :experiencia_profissional_03_file_cache, :experiencia_profissional_04_file_cache, :experiencia_profissional_05_file_cache, :documentos_cache, :deficiente_anexo_cache, :certificado_ensino_superior_cache, :certificado_ensino_medio_cache, :cota_negro, 
+      params.require(:inscricao_lideranca).permit(:nome_completo, :naturalidade, :nacionalidade, :nome_mae, :sexo, :estado_civil, :data_nascimento, :cpf, :rg, :orgao_emissor, :endereco, :complemento, :bairro, :cidade, :uf, :cep, :telefone_fixo, :telefone_celular, :email, :orgao_representacao_classe, :numero_registro, :termo_aceito, :curriculo, :recurso_solicitado, :recurso, :documentos, :slug, :deficiente, :deficiente_anexo, :cargo_id, :formacao_academica_01_candidato, :formacao_academica_01_correcao, :represetacao_classe, :represetacao_classe_cache, :formacao_academica_02_candidato, :formacao_academica_02_correcao, :formacao_academica_03_candidato, :formacao_academica_03_correcao, :formacao_academica_04_candidato, :formacao_academica_04_correcao, :formacao_academica_05_candidato, :formacao_academica_05_correcao, :formacao_academica_06_candidato, :formacao_academica_06_correcao, :formacao_academica_07_candidato, :formacao_academica_07_correcao, :qualificacao_profissional_01_candidato, :qualificacao_profissional_01_correcao, :qualificacao_profissional_02_candidato, :qualificacao_profissional_02_correcao, :qualificacao_profissional_03_candidato, :qualificacao_profissional_03_correcao, :qualificacao_profissional_04_candidato, :qualificacao_profissional_04_correcao, :experiencia_profissional_01_candidato, :experiencia_profissional_02_candidato, :experiencia_profissional_03_candidato, :experiencia_profissional_04_candidato, :experiencia_profissional_05_candidato, :experiencia_profissional_01_correcao, :experiencia_profissional_02_correcao, :experiencia_profissional_03_correcao, :experiencia_profissional_04_correcao, :experiencia_profissional_05_correcao, {formacao_academica_01_file: []}, {formacao_academica_02_file: []}, {formacao_academica_03_file: []}, {formacao_academica_04_file: []},{formacao_academica_05_file: []}, {formacao_academica_06_file: []}, {formacao_academica_07_file: []}, {qualificacao_profissional_01_file: []}, {qualificacao_profissional_02_file: []}, {qualificacao_profissional_03_file: []}, {qualificacao_profissional_04_file: []}, {experiencia_profissional_01_file: []}, {experiencia_profissional_02_file: []}, {experiencia_profissional_03_file: []}, {experiencia_profissional_04_file: []}, {experiencia_profissional_05_file: []}, :formacao_academica_total, :qualificacao_profissional_total, :experiencia_profissional_total, :formacao_academica_soma_candidato, :qualificacao_profissional_soma_candidato, :experiencia_profissional_soma_candidato, :formacao_academica_soma_correcao, :qualificacao_profissional_soma_correcao, :experiencia_profissional_soma_correcao, :formacao_academica_01_verificar, :formacao_academica_02_verificar, :formacao_academica_03_verificar, :formacao_academica_04_verificar, :formacao_academica_05_verificar, :formacao_academica_06_verificar, :formacao_academica_07_verificar,:qualificacao_profissional_01_verificar, :qualificacao_profissional_02_verificar, :qualificacao_profissional_03_verificar, :qualificacao_profissional_04_verificar, :experiencia_profissional_01_verificar, :experiencia_profissional_02_verificar, :experiencia_profissional_03_verificar, :experiencia_profissional_04_verificar, :experiencia_profissional_05_verificar, :formacao_academica_01_obs, :formacao_academica_02_obs, :formacao_academica_03_obs, :formacao_academica_04_obs, :formacao_academica_05_obs,:formacao_academica_06_obs, :formacao_academica_07_obs, :qualificacao_profissional_01_obs, :qualificacao_profissional_02_obs, :qualificacao_profissional_03_obs, :qualificacao_profissional_04_obs, :experiencia_profissional_01_obs, :experiencia_profissional_02_obs, :experiencia_profissional_03_obs, :experiencia_profissional_04_obs, :experiencia_profissional_05_obs, :formacao_academica_01_resposta, :formacao_academica_02_resposta, :formacao_academica_03_resposta, :formacao_academica_04_resposta, :formacao_academica_05_resposta,:formacao_academica_06_resposta, :formacao_academica_07_resposta, :qualificacao_profissional_01_resposta, :qualificacao_profissional_02_resposta, :qualificacao_profissional_03_resposta, :qualificacao_profissional_04_resposta, :experiencia_profissional_01_resposta, :experiencia_profissional_02_resposta, :experiencia_profissional_03_resposta, :experiencia_profissional_04_resposta, :experiencia_profissional_05_resposta, :total_geral_candidato, :total_geral_correcao, :certificado_ensino_medio, :certificado_ensino_superior, :recurso_candidato_dados, :resposta_recurso_candidato_dados, :reclassificar_recurso_candidato, :recurso_entrevista, :resposta_recurso_entrevista, :reclassificar_recurso_entrevista, :formacao_academica_01_file_cache, :formacao_academica_02_file_cache, :formacao_academica_03_file_cache, :formacao_academica_04_file_cache, :formacao_academica_05_file_cache, :formacao_academica_06_file_cache, :formacao_academica_07_file_cache, :qualificacao_profissional_01_file_cache, :qualificacao_profissional_02_file_cache, :qualificacao_profissional_03_file_cache, :qualificacao_profissional_04_file_cache, :experiencia_profissional_01_file_cache, :experiencia_profissional_02_file_cache, :experiencia_profissional_03_file_cache, :experiencia_profissional_04_file_cache, :experiencia_profissional_05_file_cache, :documentos_cache, :deficiente_anexo_cache, :certificado_ensino_superior_cache, :certificado_ensino_medio_cache, :cota_negro, :observacao, 
+      :avaliacao_entrevista_01, :avaliacao_entrevista_02, :avaliacao_entrevista_03, :avaliacao_entrevista_04, :avaliacao_entrevista_05, :avaliacao_entrevista_obs, 
       regiaos_attributes: %i[inscricao_lideranca_id local_contratacao_id ordem id _destroy] )
     end
 end

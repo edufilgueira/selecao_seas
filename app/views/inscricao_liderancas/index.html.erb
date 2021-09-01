@@ -71,11 +71,11 @@
     <tr>
       <th style="width: 33px;">#</th>
       <th style="width: 85px;">Insc</th>
-      <th style="width: 165px;">Cargos</th>
+      <th style="width: 110px;">Cargos</th>
       <th>Nome</th>
-      <th>CPF</th>
+      <!--<th>CPF</th>-->
       <th style="width: 85px;">Sexo</th>
-      <th style="width: 100px;">Envio</th>
+      <!--<th style="width: 100px;">Envio</th>-->
       <th style="width: 85px;">Pont</th>
       <th style="width: 85px;">Edit</th>
       <th style="width: 125px;" colspan="3">Ação</th>
@@ -86,6 +86,7 @@
     <% cont = 0 %>
     <% @inscricao_liderancas.each do |inscricao_lideranca| %>
       <% cont += 1 %>
+      
       <% if inscricao_lideranca.status_acompanhamento == "Correção de dados" %>
         <tr style="color: #127689;font-weight: bold;">
       <% elsif inscricao_lideranca.status_acompanhamento == "Desclassificado" %>
@@ -107,7 +108,7 @@
         <td><%= "%.5i" %inscricao_lideranca.id %></td>
         <td><%= inscricao_lideranca.nome_cargo %></td>
         <td><%= inscricao_lideranca.nome_completo %></td>
-        <td><%= inscricao_lideranca.cpf %></td>
+        <!--<td><%#= inscricao_lideranca.cpf %></td>-->
         <td>
           <% if inscricao_lideranca&.sexo == "Masculino" %>
             <span style="display:none">M</span><span class="btn btn-sm btn-circle" style="background-color:#2785d4;border-radius: 20px;width: 30px;height: 30px;"><i class="fa fa-male" aria-hidden="true" style="color: white;"></i></span>
@@ -115,11 +116,11 @@
             <span style="display:none">F</span><span class="btn btn-sm btn-circle" style="background-color:#e86cff;border-radius: 20px;width: 30px;height: 30px;"><i class="fa fa-female" aria-hidden="true" style="color: white;"></i></span>
           <% end %>
       </td>
-        <td>
-          <% if !inscricao_lideranca.created_at.nil? %>
-            <%= inscricao_lideranca.created_at.strftime('%d/%m/%Y') %>
-          <% end %>
-        </td>
+        <!--<td>
+          <%# if !inscricao_lideranca.created_at.nil? %>
+            <%#= inscricao_lideranca.created_at.strftime('%d/%m/%Y') %>
+          <%# end %>
+        </td>-->
         <!--<td><%#= l(inscricao_lideranca.created_at.strftime('%d/%m/%Y')) %></td> -->
         <td><%= inscricao_lideranca.total_geral_candidato %></td>
         <td><%= inscricao_lideranca.total_geral_correcao %></td>
@@ -127,10 +128,13 @@
           <% if inscricao_lideranca.status_acompanhamento != "Desclassificado" %>
             <%= link_to '<i class="fas fa-file-medical-alt"></i>'.html_safe, mostrar_lideranca_inscricao_liderancas_path(id: inscricao_lideranca.slug), class: 'btn btn-sm btn-info' %>
             <% if inscricao_lideranca.status_acompanhamento == "Correção de dados" or inscricao_lideranca.status_acompanhamento == "Correção de pontuação" %>
-              <%= link_to '<i class="fas fa-check-square"></i>'.html_safe, edit_correcao_inscricao_liderancas_path(id: inscricao_lideranca.slug), class: 'btn btn-sm btn-danger', style: "background-color: #5eaf3c; border-color: #5eaf3c;" %>
+              <%= link_to '<i class="fas fa-check-square"></i>'.html_safe, entrevista_inscricao_liderancas_path(id: inscricao_lideranca.slug), class: 'btn btn-sm btn-danger', style: "background-color: #5eaf3c; border-color: #5eaf3c;" %>
             <% end %>
           <% else %>
             <%= link_to '<i class="fas fa-file-medical-alt"></i>'.html_safe, mostrar_lideranca_inscricao_liderancas_path(id: inscricao_lideranca.slug), class: 'btn btn-sm btn-light', style: "background-color: #d5d8da;" %>
+          <% end %>
+          <% if (!inscricao_lideranca.recurso_candidato_dados.blank?) or (!inscricao_lideranca.recurso_entrevista.blank?)%>
+            <%= link_to '<i class="fab fa-accessible-icon"></i>'.html_safe, recurso_inscricao_liderancas_path(id: inscricao_lideranca.slug), class: 'btn btn-sm btn-light', style: "background-color: #ffcc00;" %>
           <% end %>
         </td>
         <!-- <td><%#= link_to 'Edit', edit_inscricao_path(inscricao) %></td>

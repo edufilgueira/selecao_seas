@@ -1,0 +1,86 @@
+<%= form_for("frm", :url => {controller: :inscricao_liderancas, action: :salvar_entrevista}, html: { class: 'form-horizontal' }) do |f| %>
+
+  <% if !@inscricao_lideranca.usuario_corrigiu_pontuacao.nil? %>
+    <% usuario = Usuario.find(@inscricao_lideranca.usuario_corrigiu_pontuacao) %>
+    <b>Corrigido por:</b> <%= usuario.email %><br><br>
+  <% end %>
+  <div class="row">
+    <div class="col-md-12">
+      <b><label>Cargo</label></b><br>
+      <%= @inscricao_lideranca.cargo.descricao %>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-3">
+      <b><label>CPF</label></b><br>
+      <%= @inscricao_lideranca.cpf %>
+    </div>
+    <div class="col-md-9">
+      <b><label>Nome</label></b><br>
+      <%= @inscricao_lideranca.nome_completo %>
+    </div>
+  </div>
+  <br> 
+  <hr>
+  <h3 id="visualize_curriculo">Análise da Entrevista</h3>
+  <table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col" style="width: 33px;">#</th>
+        <th scope="col" style="">Competencias</th>
+        <th scope="col" style="width: 200px; ">Pontuação Maxima</th>
+        <th scope="col" style="width: 130px; ">Pontuação</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>Clareza e coerência na explanação das ideias.</td>
+        <td>5 pontos</td>
+        <td><%= f.text_field :avaliacao_entrevista_01, class: 'form-control', required: true, value: @entrevista_01 %></td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td> Liderança, comunicabilidade e criatividade.</td>
+        <td>5 pontos</td>
+        <td><%= f.text_field :avaliacao_entrevista_02, class: 'form-control', required: true, value: @entrevista_02  %></td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>Compreensão acerca da função que vai exercer.</td>
+        <td>10 pontos</td>
+        <td><%= f.text_field :avaliacao_entrevista_03, class: 'form-control', required: true, value: @entrevista_03  %></td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>Conhecimento acerca dos instrumentos de gestão.</td>
+        <td>10 pontos</td>
+        <td><%= f.text_field :avaliacao_entrevista_04, class: 'form-control', required: true, value: @entrevista_04  %></td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>Conhecimento sobre o Sistema Socioeducativo.</td>
+        <td>20 pontos</td>
+        <td><%= f.text_field :avaliacao_entrevista_05, class: 'form-control', required: true, value: @entrevista_05  %></td>
+      </tr>
+      <tr>
+        <td style="text-align: right; font-weight: bold; background-color: #ddd; font-size: 20px;"></td>
+        <td style="text-align: right; font-weight: bold; background-color: #ddd; font-size: 20px;">TOTAL</td>
+        <td style="text-align: left; font-weight: bold; background-color: #ddd; font-size: 20px;"><%#= @inscricao_lideranca.formacao_academica_soma_candidato %></td>
+        <td style="text-align: left; font-weight: bold; background-color: #ddd; font-size: 20px;"><%#= @inscricao_lideranca.formacao_academica_soma_correcao %></td>
+        <td style="text-align: center; font-weight: bold; background-color: #ddd; font-size: 20px;"><span id="experiencia_profissional_maximo_"></span></td>
+      </tr>
+    </tbody>
+  </table>
+  <br>
+  <%= f.label "Observação" %>
+  <%= f.text_area :avaliacao_entrevista_obs, class:"form-control", value: @entrevista_obs  %>
+  <%= f.hidden_field :id, value: @id %>
+  <br>
+  <div class="actions" style="text-align: center">
+    <%= link_to '<i class="fas fa-backward"></i> Voltar'.html_safe, inscricao_liderancas_path, class: 'btn btn-lg btn-warning' %>
+    <%= f.submit "Avançar", class: 'btn btn-lg btn-success', id: "avancar_cpf" %>
+  </div>
+  <br>
+<% end %>

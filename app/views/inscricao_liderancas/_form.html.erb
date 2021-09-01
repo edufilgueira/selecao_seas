@@ -84,7 +84,7 @@
 
     <br>
     <div id="listagem_regioes" style="border: solid 1px #ced4da;padding: 20px; border-radius: 0.25rem;">
-      <h4>Adicione as regiões que deseja concorrer à vaga</h4>
+      <h4>Adicione a região que deseja concorrer à vaga</h4>
 
       <%= form.nested_fields_for :regiaos do |f| %>
         <div class="row" id="regiao">
@@ -102,7 +102,7 @@
         </div>
         <hr>
       <% end %>
-      <%= form.add_nested_fields_link :regiaos, '<i class="fas fa-plus-circle"></i>'.html_safe , id:"add_regiao", class:"btn btn-success", onclick:"limitar_regioes()" %>	
+      <%#= form.add_nested_fields_link :regiaos, '<i class="fas fa-plus-circle"></i>'.html_safe , id:"add_regiao", class:"btn btn-success", onclick:"limitar_regioes()" %>	
     </div>
 
     <br>
@@ -254,7 +254,7 @@
 
     <div id="nivel_superior" class="alert alert-info" role="alert" style="background-color: #dfe4ea;border: 0px solid #000;color: #212529;">
       <div class="col-md-12">
-        <b><label>Informar os campos abaixo somente para os cargos de Assistente Social, Psicólogo e Pedagogo</label></b><hr>
+        <b><label>Informar os campos caso tenha órgão de classe</label></b><hr>
         <div class="row">
           <div class="col-md-6">
             <%= form.label "Orgão representação classe" %>
@@ -645,39 +645,83 @@
     <% end %>
     </div>
   <% else %>
-    <h5>Ola <%= form.object.nome_completo %>,</h5>
-    <p>Essa é nossa plataforma de comunicação. Sugerimos que você copie e guarde este link <a href="<%= request.url %>"><%= request.url %></a>, 
-    pois é a partir desta pagina que nós manteremos contato no decorrer das fases de análises.</p>
-    <p><b><a href="#" onclick="window.print()" class="link">Clique aqui</a> para imprimir sua página de inscrição.</b></p>
-    <!-- HISTÓRICO DE OCORRENCIAS -->
-    <table width="100%">
-      <% if form.object.finalizar %>
-      <tr style="height: 130px;">
-        <td style="width: 200px;">
-          <%= image_tag('monitor_inicio.png') %>
-        </td>
-        <td colspan="2">
-          Sua inscrição foi realizada. Aguarde nossa equipe realizar a análise dos dados
-        </td>
-      </tr>
-      <% end %>
-      <% if form.object.status_acompanhamento == "Correção de dados" or form.object.status_acompanhamento == "Correção de pontuação" %>
-        <tr style="height: 130px; border-top: dashed 2px #d9d9d9;">
-          <% if form.object.recurso_candidato_dados.nil? %>
+      <h5>Ola <%= form.object.nome_completo %>,</h5>
+      <p>Essa é nossa plataforma de comunicação. Sugerimos que você copie e guarde este link <a href="<%= request.url %>"><%= request.url %></a>, 
+      pois é a partir desta pagina que nós manteremos contato no decorrer das fases de análises.</p>
+      <p><b><a href="#" onclick="window.print()" class="link">Clique aqui</a> para imprimir sua página de inscrição.</b></p>
+      <!-- HISTÓRICO DE OCORRENCIAS -->
+      <table width="100%">
+        <% if form.object.finalizar %>
+        <tr style="height: 130px;">
+          <td style="width: 200px;">
+            <%= image_tag('monitor_inicio.png') %>
+          </td>
+          <td colspan="2">
+            Sua inscrição foi realizada. Aguarde nossa equipe realizar a análise dos dados
+          </td>
+        </tr>
+        <% end %>
+        <% if form.object.status_acompanhamento == "Correção de dados" or form.object.status_acompanhamento == "Correção de pontuação" %>
+          <tr style="height: 130px; border-top: dashed 2px #d9d9d9;">
+            <% if form.object.recurso_candidato_dados.nil? %>
+              <td>
+                <%= image_tag('monitor_deferido.png') %>
+              </td>
+              <td colspan="2">
+                <span class="badge badge-success">Deferido</span><br>
+                Os dados pessoais foram analisados. Aguarde nossa equipe analisar os currículos. <a href="#visualize_dados">Visualize os dados</a>
+              </td>
+            <% else %>
+              <td>
+                <%= image_tag('monitor_deferido.png') %>
+              </td>
+              <td style="width: 250px;">
+                <span class="badge badge-success">Deferido</span><br>
+                Os dados pessoais foram analisados. Aguarde nossa equipe analisar os currículos. <a href="#visualize_dados">Visualize os dados</a>
+              </td>
+              <td style="width:61%">
+                <!--ABRIR RECURSO DA CONFERÊNCIA DOS DADOS-->
+                <% configuracao = Configuracao.where(status: true).last %>
+                <% if Time.now.to_date < configuracao.data_inicio_recurso_lideranca.to_date  %>
+                  <div class="alert alert-info" role="alert" style="margin-bottom: 0;padding: 0.75rem 0.75rem 0;margin: 6px 0px 0px 0px;">
+                    <h6 style="text-align: left"><p>Sua inscrição foi indeferida. Você poderá apresentar recurso, informando objetivamente suas razões diante da motivação da desclassificação. </p>
+                    <p>Consulte o Cronograma de eventos, as datas para apresentação do recurso podem ser alteradas.</p></h6><hr>
+                    <div id="recurso_dados_contador" style="text-align: center;font-size: 25px;font-weight: bold;" datafim="<%= configuracao&.data_inicio_recurso_lideranca.strftime('%m/%d/%Y') %>">10h 59m 00s</div>
+                  </div>
+                <% elsif (Time.now.to_date >= configuracao.data_inicio_recurso_lideranca.to_date and Time.now.to_date < configuracao.data_termino_recurso_lideranca.to_date) or !form.object.recurso_candidato_dados.nil? %>
+                  <div class="alert alert-info" role="alert" style="margin-bottom: 0;padding: 0.75rem 0.75rem 0;margin: 6px 0px 0px 0px;">
+                    <h6>Recurso da Inscrição <span class="caracteres_recurso_dados" style="float: right;">500 restantes</span></h6>
+                  </div>
+                  <% if form.object.recurso_candidato_dados.nil? %>
+                    <%= form.text_area :recurso_candidato_dados, size: '1x3', class: 'form-control', style: "float: left; width: 86%;", placeholder:"Descreva seu recurso aqui..." %>                  
+                    <%= form.submit "Solicitar", class: 'btn btn-success', style: "float: right; width: 14%; height: 85px;" %>
+                  <% else %>
+                    <%= form.text_area :recurso_candidato_dados, size: '1x3', class: 'form-control', disabled: true %>
+                    <b>Resposta:</b>
+                    <% if form.object.resposta_recurso_candidato_dados.nil? %>
+                      <p>Recurso apresentado. Em breve responderemos.</p>
+                    <% else %>
+                      <p><%= form.object.resposta_recurso_candidato_dados %></p>
+                    <% end %>
+                  <% end %>
+                  <%= form.hidden_field :slug, value: @id %>
+                <% else %>
+                  <div class="alert alert-info" role="alert" style="margin-bottom: 0;padding: 0.75rem 0.75rem 0;margin: 6px 0px 0px 0px;">
+                    <h5 style="text-align: center">Prazo para recurso de inscrição encerrado</h5>
+                  </div>
+                <% end %>
+                <!--FIM-->
+              </td>
+            <% end %>
+          </tr>
+        <% elsif form.object.status_acompanhamento == 'Desclassificado' %>
+          <tr style="height: 130px; border-top: dashed 2px #d9d9d9;">
             <td>
-              <%= image_tag('monitor_deferido.png') %>
-            </td>
-            <td colspan="2">
-              <span class="badge badge-success">Deferido</span><br>
-              Os dados pessoais foram analisados. Aguarde nossa equipe analisar os currículos. <a href="#visualize_dados">Visualize os dados</a>
-            </td>
-          <% else %>
-            <td>
-              <%= image_tag('monitor_deferido.png') %>
+              <%= image_tag('monitor_indeferido.png') %>
             </td>
             <td style="width: 250px;">
-              <span class="badge badge-success">Deferido</span><br>
-              Os dados pessoais foram analisados. Aguarde nossa equipe analisar os currículos. <a href="#visualize_dados">Visualize os dados</a>
+              <span class="badge badge-danger">Indeferido na análise dos dados</span><br>
+              <%= form.object.observacao %>
             </td>
             <td style="width:61%">
               <!--ABRIR RECURSO DA CONFERÊNCIA DOS DADOS-->
@@ -685,15 +729,15 @@
               <% if Time.now.to_date < configuracao.data_inicio_recurso_lideranca.to_date  %>
                 <div class="alert alert-info" role="alert" style="margin-bottom: 0;padding: 0.75rem 0.75rem 0;margin: 6px 0px 0px 0px;">
                   <h6 style="text-align: left"><p>Sua inscrição foi indeferida. Você poderá apresentar recurso, informando objetivamente suas razões diante da motivação da desclassificação. </p>
-                  <p>Consulte o Cronograma de eventos, as datas para apresentação do recurso podem ser alteradas.</p></h6><hr>
-                  <div id="recurso_dados_contador" style="text-align: center;font-size: 25px;font-weight: bold;" datafim="<%= configuracao&.data_inicio_recurso_lideranca.strftime('%m/%d/%Y') %>">10h 59m 00s</div>
+                  <p>Consulte o Cronograma de eventos. As datas para apresentação do recurso podem ser alteradas.</p></h6><hr>
+                  <div id="recurso_dados_contador" style="text-align: center;font-size: 25px;font-weight: bold;" datafim="<%= configuracao&.data_inicio_recurso_lideranca.strftime('%m/%d/%Y') %>">10h 25m 00s</div>
                 </div>
               <% elsif (Time.now.to_date >= configuracao.data_inicio_recurso_lideranca.to_date and Time.now.to_date < configuracao.data_termino_recurso_lideranca.to_date) or !form.object.recurso_candidato_dados.nil? %>
                 <div class="alert alert-info" role="alert" style="margin-bottom: 0;padding: 0.75rem 0.75rem 0;margin: 6px 0px 0px 0px;">
                   <h6>Recurso da Inscrição <span class="caracteres_recurso_dados" style="float: right;">500 restantes</span></h6>
                 </div>
                 <% if form.object.recurso_candidato_dados.nil? %>
-                  <%= form.text_area :recurso_candidato_dados, size: '1x3', class: 'form-control', style: "float: left; width: 86%;", placeholder:"Descreva seu recurso aqui..." %>                  
+                  <%= form.text_area :recurso_candidato_dados, size: '1x3', class: 'form-control', style: "float: left; width: 86%;", placeholder:"Descreva seu recurso aqui..." %>
                   <%= form.submit "Solicitar", class: 'btn btn-success', style: "float: right; width: 14%; height: 85px;" %>
                 <% else %>
                   <%= form.text_area :recurso_candidato_dados, size: '1x3', class: 'form-control', disabled: true %>
@@ -712,123 +756,80 @@
               <% end %>
               <!--FIM-->
             </td>
-          <% end %>
-        </tr>
-      <% elsif form.object.status_acompanhamento == 'Desclassificado' %>
-        <tr style="height: 130px; border-top: dashed 2px #d9d9d9;">
-          <td>
-            <%= image_tag('monitor_indeferido.png') %>
-          </td>
-          <td style="width: 250px;">
-            <span class="badge badge-danger">Indeferido na análise dos dados</span><br>
-            <%= form.object.observacao %>
-          </td>
-          <td style="width:61%">
-            <!--ABRIR RECURSO DA CONFERÊNCIA DOS DADOS-->
-            <% configuracao = Configuracao.where(status: true).last %>
-            <% if Time.now.to_date < configuracao.data_inicio_recurso_lideranca.to_date  %>
-              <div class="alert alert-info" role="alert" style="margin-bottom: 0;padding: 0.75rem 0.75rem 0;margin: 6px 0px 0px 0px;">
-                <h6 style="text-align: left"><p>Sua inscrição foi indeferida. Você poderá apresentar recurso, informando objetivamente suas razões diante da motivação da desclassificação. </p>
-                <p>Consulte o Cronograma de eventos. As datas para apresentação do recurso podem ser alteradas.</p></h6><hr>
-                <div id="recurso_dados_contador" style="text-align: center;font-size: 25px;font-weight: bold;" datafim="<%= configuracao&.data_inicio_recurso_lideranca.strftime('%m/%d/%Y') %>">10h 25m 00s</div>
-              </div>
-            <% elsif (Time.now.to_date >= configuracao.data_inicio_recurso_lideranca.to_date and Time.now.to_date < configuracao.data_termino_recurso_lideranca.to_date) or !form.object.recurso_candidato_dados.nil? %>
-              <div class="alert alert-info" role="alert" style="margin-bottom: 0;padding: 0.75rem 0.75rem 0;margin: 6px 0px 0px 0px;">
-                <h6>Recurso da Inscrição <span class="caracteres_recurso_dados" style="float: right;">500 restantes</span></h6>
-              </div>
-              <% if form.object.recurso_candidato_dados.nil? %>
-                <%= form.text_area :recurso_candidato_dados, size: '1x3', class: 'form-control', style: "float: left; width: 86%;", placeholder:"Descreva seu recurso aqui..." %>
-                <%= form.submit "Solicitar", class: 'btn btn-success', style: "float: right; width: 14%; height: 85px;" %>
-              <% else %>
-                <%= form.text_area :recurso_candidato_dados, size: '1x3', class: 'form-control', disabled: true %>
-                <b>Resposta:</b>
-                <% if form.object.resposta_recurso_candidato_dados.nil? %>
-                  <p>Recurso apresentado. Em breve responderemos.</p>
-                <% else %>
-                  <p><%= form.object.resposta_recurso_candidato_dados %></p>
-                <% end %>
+          </tr>
+        <% elsif form.object.status_acompanhamento == 'Finalizado'%>
+          <tr style="height: 130px; border-top: dashed 2px #d9d9d9;">
+            <td>
+              <%= image_tag('monitor_deferido_off.png') %>
+            </td>
+            <td style="width: 250px;"><%= image_tag('monitor_off.png') %></td>
+            <td><%= image_tag('monitor_off2.png') %></td>
+          </tr>
+        <% end %>
+        <% if form.object.status_acompanhamento == "Correção de pontuação" %>
+          <tr style="height: 130px; border-top: dashed 2px #d9d9d9;">
+            <td>
+              <% if form.object.status_acompanhamento %>
+                <%= image_tag('monitor_curriculo_deferido.png') %>
               <% end %>
-              <%= form.hidden_field :slug, value: @id %>
-            <% else %>
-              <div class="alert alert-info" role="alert" style="margin-bottom: 0;padding: 0.75rem 0.75rem 0;margin: 6px 0px 0px 0px;">
-                <h5 style="text-align: center">Prazo para recurso de inscrição encerrado</h5>
-              </div>
-            <% end %>
-            <!--FIM-->
-          </td>
-        </tr>
-      <% elsif form.object.status_acompanhamento == 'Finalizado'%>
-        <tr style="height: 130px; border-top: dashed 2px #d9d9d9;">
-          <td>
-            <%= image_tag('monitor_deferido_off.png') %>
-          </td>
-          <td style="width: 250px;"><%= image_tag('monitor_off.png') %></td>
-          <td><%= image_tag('monitor_off2.png') %></td>
-        </tr>
-      <% end %>
-      <% if form.object.status_acompanhamento == "Correção de pontuação" %>
-        <tr style="height: 130px; border-top: dashed 2px #d9d9d9;">
-          <td>
-            <% if form.object.status_acompanhamento %>
-              <%= image_tag('monitor_curriculo_deferido.png') %>
-            <% end %>
-          </td>
-          <td style="width: 250px;">
-            <% if form.object.reclassificar_recurso_entrevista == true %>
-              <span class="badge badge-success">Recurso deferido</span><br>
-            <% elsif form.object.reclassificar_recurso_entrevista == false %>
-              <span class="badge badge-danger">Recurso Indeferido</span><br>
-            <% end %>
-            A pontuação curricular foi analisada. <a href="#visualize_curriculo">Visualize a análise</a>
-          </td>
-          <td>
-            <!-- ABRIR RECURSO DA PONTUAÇÃO -->
-            <% configuracao = Configuracao.where(status: true).last %>
-            <% if Time.now.to_date < configuracao.data_inicio_entrevista_lideranca.to_date  %>
-              <div class="alert alert-info" role="alert" style="margin-bottom: 0;padding: 0.75rem 0.75rem 0;margin: 6px 0px 0px 0px;">
-                <h6 style="text-align: left"><p>Caso não concorde com a pontuação atribuída, você poderá apresentar recurso informando objetivamente suas razões para alterar a pontuação.</p>
-                <p>Consulte o Cronograma de eventos. As datas para apresentação do recurso podem ser alteradas.</p></h6><hr>
-                <div id="recurso_entrevista_contador" style="text-align: center;font-size: 25px;font-weight: bold;" datafim="<%= configuracao&.data_inicio_entrevista_lideranca.strftime('%m/%d/%Y') %>">10h 25h 00s</div>
-              </div>
-              <% elsif (Time.now.to_date >= configuracao.data_inicio_entrevista_lideranca.to_date and Time.now.to_date < configuracao.data_termino_entrevista_lideranca.to_date) or !form.object.recurso_entrevista.nil? %>
-              <div class="alert alert-info" role="alert" style="margin-bottom: 0;padding: 0.75rem 0.75rem 0;margin: 6px 0px 0px 0px;">
-                <h6>Recurso da Análise dos Currículos <span class="caracteres_recurso_curriculo" style="float: right;">500 restantes</span></h6>
-              </div>
-              <% if form.object.recurso_entrevista.nil? %>
-                <%= form.text_area :recurso_entrevista, size: '1x3', class: 'form-control', style: "float: left; width: 86%;" %>
-                <%= form.submit "Solicitar", class: 'btn btn-success', style: "float: right; width: 14%; height: 85px;" %>
-              <% else %>
-                <%= form.text_area :recurso_entrevista, size: '1x3', class: 'form-control', disabled: true %>
-                <b>Resposta:</b>
-                <% if form.object.resposta_recurso_entrevista.nil? %>
-                  <p>Recurso apresentado. Em breve responderemos.</p>
-                <% else %>
-                  <p><%= form.object.resposta_recurso_entrevista %></p>
-                <% end %>
+            </td>
+            <td style="width: 250px;">
+              <% if form.object.reclassificar_recurso_entrevista == true %>
+                <span class="badge badge-success">Recurso deferido</span><br>
+              <% elsif form.object.reclassificar_recurso_entrevista == false %>
+                <span class="badge badge-danger">Recurso Indeferido</span><br>
               <% end %>
-              <%= form.hidden_field :slug, value: @id %>
-            <% else %>
-              <div class="alert alert-info" role="alert" style="margin-bottom: 0;padding: 0.75rem 0.75rem 0;margin: 6px 0px 0px 0px;">
-                <h5 style="text-align: center">Prazo para recurso da avaliação da pontuação encerrado</h5>
-              </div>
-            <% end %>
-            <!-- FIM -->
-          </td>
-        </tr>
-      <% elsif form.object.status_acompanhamento == 'Finalizado' or form.object.status_acompanhamento == 'Correção de dados' %> 
-        <tr style="height: 130px; border-top: dashed 2px #d9d9d9;">
-          <td>
-            <%= image_tag('monitor_curriculo_deferido_off.png') %>
-          </td>
-          <td style="width: 250px;"><%= image_tag('monitor_off.png') %></td>
-          <td><%= image_tag('monitor_off2.png') %></td>
-        </tr>
+              A pontuação curricular foi analisada. <a href="#visualize_curriculo">Visualize a análise</a>
+            </td>
+            <td>
+              <!-- ABRIR RECURSO DA PONTUAÇÃO -->
+              <% configuracao = Configuracao.where(status: true).last %>
+              <% if Time.now.to_date < configuracao.data_inicio_entrevista_lideranca.to_date  %>
+                <div class="alert alert-info" role="alert" style="margin-bottom: 0;padding: 0.75rem 0.75rem 0;margin: 6px 0px 0px 0px;">
+                  <h6 style="text-align: left"><p>Caso não concorde com a pontuação atribuída, você poderá apresentar recurso informando objetivamente suas razões para alterar a pontuação.</p>
+                  <p>Consulte o Cronograma de eventos. As datas para apresentação do recurso podem ser alteradas.</p></h6><hr>
+                  <div id="recurso_entrevista_contador" style="text-align: center;font-size: 25px;font-weight: bold;" datafim="<%= configuracao&.data_inicio_entrevista_lideranca.strftime('%m/%d/%Y') %>">10h 25h 00s</div>
+                </div>
+                <% elsif (Time.now.to_date >= configuracao.data_inicio_entrevista_lideranca.to_date and Time.now.to_date < configuracao.data_termino_entrevista_lideranca.to_date) or !form.object.recurso_entrevista.nil? %>
+                <div class="alert alert-info" role="alert" style="margin-bottom: 0;padding: 0.75rem 0.75rem 0;margin: 6px 0px 0px 0px;">
+                  <h6>Recurso da Análise dos Currículos <span class="caracteres_recurso_curriculo" style="float: right;">500 restantes</span></h6>
+                </div>
+                <% if form.object.recurso_entrevista.nil? %>
+                  <%= form.text_area :recurso_entrevista, size: '1x3', class: 'form-control', style: "float: left; width: 86%;" %>
+                  <%= form.submit "Solicitar", class: 'btn btn-success', style: "float: right; width: 14%; height: 85px;" %>
+                <% else %>
+                  <%= form.text_area :recurso_entrevista, size: '1x3', class: 'form-control', disabled: true %>
+                  <b>Resposta:</b>
+                  <% if form.object.resposta_recurso_entrevista.nil? %>
+                    <p>Recurso apresentado. Em breve responderemos.</p>
+                  <% else %>
+                    <p><%= form.object.resposta_recurso_entrevista %></p>
+                  <% end %>
+                <% end %>
+                <%= form.hidden_field :slug, value: @id %>
+              <% else %>
+                <div class="alert alert-info" role="alert" style="margin-bottom: 0;padding: 0.75rem 0.75rem 0;margin: 6px 0px 0px 0px;">
+                  <h5 style="text-align: center">Prazo para recurso da avaliação da pontuação encerrado</h5>
+                </div>
+              <% end %>
+              <!-- FIM -->
+            </td>
+          </tr>
+        <% elsif form.object.status_acompanhamento == 'Finalizado' or form.object.status_acompanhamento == 'Correção de dados' %> 
+          <tr style="height: 130px; border-top: dashed 2px #d9d9d9;">
+            <td>
+              <%= image_tag('monitor_curriculo_deferido_off.png') %>
+            </td>
+            <td style="width: 250px;"><%= image_tag('monitor_off.png') %></td>
+            <td><%= image_tag('monitor_off2.png') %></td>
+          </tr>
+        <% end %>
+      </table>
+      <br><br>
+      <% if Time.now.to_date >= configuracao.data_apresetacao_dados_lideranca %>
+        <%= render 'dados_pessoais', inscricao_lideranca: inscricao_lideranca %>
+        <%= render 'curriculo', inscricao_lideranca: inscricao_lideranca %>
       <% end %>
-    </table>
-    <br><br>
-
-    <%= render 'dados_pessoais', inscricao_lideranca: inscricao_lideranca %>
-    <%= render 'curriculo', inscricao_lideranca: inscricao_lideranca %>
   <% end %>
 <br><br>
 

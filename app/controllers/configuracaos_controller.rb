@@ -69,6 +69,6 @@ class ConfiguracaosController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def configuracao_params
-      params.require(:configuracao).permit(:data_inicio_selecao, :data_termino_selecao, :data_termino_recurso, :data_inicio_recurso, :data_inicio_recurso_pontuacao, :data_termino_recurso_pontuacao, :data_inicio_selecao_lideranca, :data_termino_selecao_lideranca, :data_inicio_recurso_lideranca, :data_termino_recurso_lideranca, :data_inicio_entrevista_lideranca, :data_termino_entrevista_lideranca, :status)
+      params.require(:configuracao).permit(:data_inicio_selecao, :data_termino_selecao, :data_termino_recurso, :data_inicio_recurso, :data_inicio_recurso_pontuacao, :data_termino_recurso_pontuacao, :data_inicio_selecao_lideranca, :data_termino_selecao_lideranca, :data_inicio_recurso_lideranca, :data_termino_recurso_lideranca, :data_inicio_entrevista_lideranca, :data_termino_entrevista_lideranca, :data_apresetacao_dados_lideranca, :status)
     end
 end

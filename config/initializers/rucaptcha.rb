@@ -11,7 +11,7 @@ RuCaptcha.configure do
   # 但如果是 [:null_store, :memory_store, :file_store] 之类的，你可以通过下面的配置项单独给 RuCaptcha 配置 cache_store
   
   # DESCOMENTAR CASO FOR USAR UM GERANCIADOR DE CACHE COMO O memcache
-  self.cache_store = :mem_cache_store
+  # self.cache_store = :mem_cache_store
 
   # 如果想要 disable cache_store 的 warning，就设置为 true，default false
   # self.skip_cache_store_check = true

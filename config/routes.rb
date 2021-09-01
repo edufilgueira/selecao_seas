@@ -48,6 +48,8 @@ Rails.application.routes.draw do
   resources :inscricao_liderancas do
     collection do
       match :edit_correcao, via: [:get, :post]
+      match :entrevista, via: [:get, :post]
+      match :salvar_entrevista, via: [:get, :post]
       get :selecionar_vagas
       get :cpf
       post :buscar_por_cpf
@@ -62,6 +64,7 @@ Rails.application.routes.draw do
       get :nao_finalizados
       get :deletar_regiao
       get :mostrar_lideranca
+      get :recurso
     end
   end
   

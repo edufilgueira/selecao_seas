@@ -34,6 +34,67 @@
   <% end %>
 
 
+
+
+
+<div class="accordion" id="accordionExample">
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h2 class="mb-0">
+        <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Análise dos dados
+        </button>
+      </h2>
+    </div>
+
+    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+      <div class="card-body">
+
+
+
+
+  <%= render 'show', inscricao_lideranca: form.object %>
+
+  <b><%= label_tag "Análise da inscrição" %></b>
+  <% if form.object.observacao.nil? %>
+    <%= form.text_area :observacao, class: "form-control" %>
+  <% else %>
+    <%= form.text_area :observacao, class: "form-control", disabled: false %>
+    <%#= @inscricao_lideranca.observacao %>
+  <% end %>
+  <br>
+  <div class="alert alert-info" role="alert">
+    <h5>Situação da inscrição</h5>
+    <i class="fas fa-exclamation-triangle" style="color: #eccf00;"></i>
+    <% if form.object.status_acompanhamento == "Desclassificado" %>
+      <%= radio_button_tag :desclassificar, "Deferir" %> <label for="desclassificar_Deferir">Deferir inscrição</label>
+      <%= radio_button_tag :desclassificar, "Indeferir", true %> <label for="desclassificar_Indeferir">Indeferir inscrição</label>
+    <% else %>
+      <%= radio_button_tag :desclassificar, "Deferir", true %> <label for="desclassificar_Deferir">Deferir inscrição</label>
+      <%= radio_button_tag :desclassificar, "Indeferir" %> <label for="desclassificar_Indeferir">Indeferir inscrição</label>
+    <% end %>
+  </div>
+
+
+
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingTwo">
+      <h2 class="mb-0">
+        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          Análise da entrevista
+        </button>
+      </h2>
+    </div>
+    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+      <div class="card-body">
+
+
+
+
+
   <h2>Dados Curricular</h2>
   <% if !@inscricao_lideranca.usuario_corrigiu_entrevista.nil? %>
     <% usuario = Usuario.find(@inscricao_lideranca.usuario_corrigiu_entrevista) %>
@@ -331,12 +392,26 @@
       <td style="width: 50px;text-align: center; font-weight: bold; background-color: #ddd; font-size: 20px;"></td>
     </tr>
   </table>
+
+
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
   <br>
   <div class="actions" style="text-align: center">
   <% if !form.object.new_record? %>
     <%#= link_to '<i class="fas fa-edit"></i> Editar Inscrição'.html_safe, edit_inscricao_lideranca_path(inscricao_lideranca.slug), class: 'btn btn-lg btn-warning', id:"botao_editar_inscricao_lideranca", disabled: true %>
   <% end %>
-  <%#= link_to '<i class="fas fa-backward"></i> Voltar'.html_safe, mostrar_lideranca_inscricao_liderancas_path(id: form.object.slug), class: 'btn btn-lg btn-warning' %>
+  <%= link_to '<i class="fas fa-backward"></i> Voltar'.html_safe, inscricao_liderancas_path, class: 'btn btn-lg btn-warning' %>
   <%= form.submit "Finalizar Correção", class: 'btn btn-lg btn-success', disabled: false, id:"botao_salvar_inscricao_lideranca", data: {disable_with: "teste"} %><br><br>
     <% if(!@id.nil?)%>
       <% if !params[:fase].nil? and params[:fase] == "revisao" %>
@@ -352,6 +427,7 @@
     <% end %>
   </div>
   <br><br>
+
 
 <script>
 

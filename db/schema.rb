@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_23_192625) do
+ActiveRecord::Schema.define(version: 2021_08_30_162656) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -62,6 +62,7 @@ ActiveRecord::Schema.define(version: 2021_08_23_192625) do
     t.date "data_termino_recurso_lideranca"
     t.date "data_inicio_entrevista_lideranca"
     t.date "data_termino_entrevista_lideranca"
+    t.date "data_apresetacao_dados_lideranca"
   end
 
   create_table "inscricao_liderancas", force: :cascade do |t|
@@ -171,6 +172,13 @@ ActiveRecord::Schema.define(version: 2021_08_23_192625) do
     t.integer "experiencia_profissional_02_resposta"
     t.integer "experiencia_profissional_03_resposta"
     t.integer "usuario_corrigiu_entrevista"
+    t.decimal "avaliacao_entrevista_01"
+    t.decimal "avaliacao_entrevista_02"
+    t.decimal "avaliacao_entrevista_03"
+    t.decimal "avaliacao_entrevista_04"
+    t.decimal "avaliacao_entrevista_05"
+    t.string "avaliacao_entrevista_obs"
+    t.integer "usuario_corrigiu_pontuacao"
     t.index ["cargo_id"], name: "index_inscricao_liderancas_on_cargo_id"
     t.index ["deleted_at"], name: "index_inscricao_liderancas_on_deleted_at"
   end
