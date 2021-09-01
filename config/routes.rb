@@ -69,5 +69,6 @@ Rails.application.routes.draw do
   end
   
   resources :inscricao_servidors, param: :slug
-  root to: 'inscricao_servidors#cpf'
+  #root to: 'inscricao_servidors#cpf'
+  root to: 'inscricao_liderancas#cpf'
 end

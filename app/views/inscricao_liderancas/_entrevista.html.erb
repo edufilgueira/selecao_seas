@@ -38,31 +38,31 @@
         <td>1</td>
         <td>Clareza e coerência na explanação das ideias.</td>
         <td>5 pontos</td>
-        <td><%= f.text_field :avaliacao_entrevista_01, class: 'form-control', required: true, value: @entrevista_01 %></td>
+        <td><%= f.number_field :avaliacao_entrevista_01, class: 'form-control', required: true, value: @entrevista_01, onblur: "valor_maximo(5, this)" %></td>
       </tr>
       <tr>
         <td>2</td>
         <td> Liderança, comunicabilidade e criatividade.</td>
         <td>5 pontos</td>
-        <td><%= f.text_field :avaliacao_entrevista_02, class: 'form-control', required: true, value: @entrevista_02  %></td>
+        <td><%= f.number_field :avaliacao_entrevista_02, class: 'form-control', required: true, value: @entrevista_02, onblur: "valor_maximo(5, this)"  %></td>
       </tr>
       <tr>
         <td>3</td>
         <td>Compreensão acerca da função que vai exercer.</td>
         <td>10 pontos</td>
-        <td><%= f.text_field :avaliacao_entrevista_03, class: 'form-control', required: true, value: @entrevista_03  %></td>
+        <td><%= f.number_field :avaliacao_entrevista_03, class: 'form-control', required: true, value: @entrevista_03, onblur: "valor_maximo(10, this)"  %></td>
       </tr>
       <tr>
         <td>4</td>
         <td>Conhecimento acerca dos instrumentos de gestão.</td>
         <td>10 pontos</td>
-        <td><%= f.text_field :avaliacao_entrevista_04, class: 'form-control', required: true, value: @entrevista_04  %></td>
+        <td><%= f.number_field :avaliacao_entrevista_04, class: 'form-control', required: true, value: @entrevista_04, onblur: "valor_maximo(10, this)"  %></td>
       </tr>
       <tr>
         <td>5</td>
         <td>Conhecimento sobre o Sistema Socioeducativo.</td>
         <td>20 pontos</td>
-        <td><%= f.text_field :avaliacao_entrevista_05, class: 'form-control', required: true, value: @entrevista_05  %></td>
+        <td><%= f.number_field :avaliacao_entrevista_05, class: 'form-control', required: true, value: @entrevista_05, onblur: "valor_maximo(20, this)"  %></td>
       </tr>
       <tr>
         <td style="text-align: right; font-weight: bold; background-color: #ddd; font-size: 20px;"></td>
@@ -77,6 +77,7 @@
   <%= f.label "Observação" %>
   <%= f.text_area :avaliacao_entrevista_obs, class:"form-control", value: @entrevista_obs  %>
   <%= f.hidden_field :id, value: @id %>
+  <%= f.hidden_field :soma_total, value: @soma_total %>
   <br>
   <div class="actions" style="text-align: center">
     <%= link_to '<i class="fas fa-backward"></i> Voltar'.html_safe, inscricao_liderancas_path, class: 'btn btn-lg btn-warning' %>
@@ -84,3 +85,16 @@
   </div>
   <br>
 <% end %>
+
+<script>
+
+function valor_maximo(max, objeto){
+  valor = $("#"+objeto.id).val();
+  if(valor > max){
+    $("#"+objeto.id).focus();
+  }
+  soma = parseInt($("#frm_avaliacao_entrevista_01").val()) + parseInt($("#frm_avaliacao_entrevista_02").val()) + parseInt($("#frm_avaliacao_entrevista_03").val()) + parseInt($("#frm_avaliacao_entrevista_04").val()) + parseInt($("#frm_avaliacao_entrevista_05").val());
+  $("#frm_soma_total").val(soma);
+}
+
+</script>

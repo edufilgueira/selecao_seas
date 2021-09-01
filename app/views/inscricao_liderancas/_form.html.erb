@@ -92,7 +92,7 @@
             <%= f.collection_select :local_contratacao_id, LocalContratacao.all, :id, :descricao, {include_blank: '--Selecione uma região--'}, class: 'form-control', required: true %>
           </div>
           <div class="col-md-2">
-            <%= f.select :ordem, [1, 2, 3], {prompt: "Ordem"}, class: 'form-control', required: true %>
+            <%#= f.select :ordem, [1, 2, 3], {prompt: "Ordem"}, class: 'form-control', required: true %>
           </div>
           <div class="col-md-1">
             <% if !f.object.id.nil? %>
@@ -232,7 +232,7 @@
     <br>
 
     <% if(!form.object.documentos.blank?) %>
-      <label class='required'>Anexar Documento Pessoal com foto, conforme item 8.1 do Edital (PDF máximo 5Mb)</label>
+      <label class='required'>Anexar Documento Pessoal com foto, conforme item 3.2 do Edital (PDF máximo 5Mb)</label>
       <br><small>Em caso de dois ou mais documentos, escaneie e anexe-os em um único arquivo.</small>
       <%= form.file_field :documentos, class: 'form-control' %><br>
       <%= form.hidden_field :documentos_cache %>
@@ -665,19 +665,19 @@
           <tr style="height: 130px; border-top: dashed 2px #d9d9d9;">
             <% if form.object.recurso_candidato_dados.nil? %>
               <td>
-                <%= image_tag('monitor_deferido.png') %>
+                <%= image_tag('monitor_deferido_lideranca.png') %>
               </td>
               <td colspan="2">
                 <span class="badge badge-success">Deferido</span><br>
-                Os dados pessoais foram analisados. Aguarde nossa equipe analisar os currículos. <a href="#visualize_dados">Visualize os dados</a>
+                Os dados pessoais foram analisados. Aguarde nossa equipe analisar os currículos.
               </td>
             <% else %>
               <td>
-                <%= image_tag('monitor_deferido.png') %>
+                <%= image_tag('monitor_deferido_lideranca.png') %>
               </td>
               <td style="width: 250px;">
                 <span class="badge badge-success">Deferido</span><br>
-                Os dados pessoais foram analisados. Aguarde nossa equipe analisar os currículos. <a href="#visualize_dados">Visualize os dados</a>
+                Os dados pessoais foram analisados. Aguarde nossa equipe analisar os currículos.
               </td>
               <td style="width:61%">
                 <!--ABRIR RECURSO DA CONFERÊNCIA DOS DADOS-->
@@ -760,7 +760,7 @@
         <% elsif form.object.status_acompanhamento == 'Finalizado'%>
           <tr style="height: 130px; border-top: dashed 2px #d9d9d9;">
             <td>
-              <%= image_tag('monitor_deferido_off.png') %>
+              <%= image_tag('monitor_deferido_lideranca_off.png') %>
             </td>
             <td style="width: 250px;"><%= image_tag('monitor_off.png') %></td>
             <td><%= image_tag('monitor_off2.png') %></td>
@@ -770,7 +770,7 @@
           <tr style="height: 130px; border-top: dashed 2px #d9d9d9;">
             <td>
               <% if form.object.status_acompanhamento %>
-                <%= image_tag('monitor_curriculo_deferido.png') %>
+                <%= image_tag('monitor_curriculo_deferido_lideranca.png') %>
               <% end %>
             </td>
             <td style="width: 250px;">
@@ -779,7 +779,7 @@
               <% elsif form.object.reclassificar_recurso_entrevista == false %>
                 <span class="badge badge-danger">Recurso Indeferido</span><br>
               <% end %>
-              A pontuação curricular foi analisada. <a href="#visualize_curriculo">Visualize a análise</a>
+              A pontuação curricular foi analisada.
             </td>
             <td>
               <!-- ABRIR RECURSO DA PONTUAÇÃO -->
@@ -818,7 +818,7 @@
         <% elsif form.object.status_acompanhamento == 'Finalizado' or form.object.status_acompanhamento == 'Correção de dados' %> 
           <tr style="height: 130px; border-top: dashed 2px #d9d9d9;">
             <td>
-              <%= image_tag('monitor_curriculo_deferido_off.png') %>
+              <%= image_tag('monitor_curriculo_deferido_lideranca_off.png') %>
             </td>
             <td style="width: 250px;"><%= image_tag('monitor_off.png') %></td>
             <td><%= image_tag('monitor_off2.png') %></td>
@@ -829,6 +829,11 @@
       <% if Time.now.to_date >= configuracao.data_apresetacao_dados_lideranca %>
         <%= render 'dados_pessoais', inscricao_lideranca: inscricao_lideranca %>
         <%= render 'curriculo', inscricao_lideranca: inscricao_lideranca %>
+      <% else %>
+        <div class="alert alert-info" role="alert" style="center;color:#2b2b2b;background-color:#fff7db;border-color: #f2dd88;">
+          <h1>Aguarte o resultado da avaliação no dia <%= configuracao.data_apresetacao_dados_lideranca&.strftime('%d/%m/%Y') %></h1>
+          <p>Esta data pode ser alterada!</p>
+        </div>
       <% end %>
   <% end %>
 <br><br>
