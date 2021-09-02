@@ -1,0 +1,38 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Total de não inscrito <span class="badge badge-secondary"><%= @inscricao_liderancas.length %></span></h1>
+
+<br><br>
+<table class="table table-holver sortable">
+  <thead>
+    <tr>
+      <th style="width: 33px;">#</th>
+      <th>CPF</th>
+      <th>Nome</th>
+      <th style="width: 85px;">Sexo</th>
+    </tr>
+  </thead>
+
+<tbody>
+    <% cont = 0 %>
+    <% @inscricao_liderancas.each do |inscricao_lideranca| %>
+      <% cont += 1 %>
+        <tr>
+        <td><%= cont %></td>
+        <td><%= inscricao_lideranca.cpf %></td>
+        <td><%= inscricao_lideranca.nome_completo %></td>
+        <td>
+          <% if inscricao_lideranca&.sexo == "Masculino" %>
+            <span style="display:none">M</span><span class="btn btn-sm btn-circle" style="background-color:#2785d4;border-radius: 20px;width: 30px;height: 30px;"><i class="fa fa-male" aria-hidden="true" style="color: white;"></i></span>
+          <% elsif inscricao_lideranca&.sexo == "Feminino" %>
+            <span style="display:none">F</span><span class="btn btn-sm btn-circle" style="background-color:#e86cff;border-radius: 20px;width: 30px;height: 30px;"><i class="fa fa-female" aria-hidden="true" style="color: white;"></i></span>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%#= link_to 'New Inscricao Servidor', new_inscricao_servidor_path %>

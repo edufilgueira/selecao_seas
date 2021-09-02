@@ -1,4 +1,5 @@
 <%= form_with(model: inscricao_lideranca, local: true, html: { multipart: true }) do |form| %>
+
   <% configuracao = Configuracao.where(status: true).last %>
   <% if Time.now.to_date < configuracao.data_inicio_selecao_lideranca %>
     <%= render partial: 'abertura' %>
@@ -29,7 +30,7 @@
   <% end %>
   <br>
 
-  <% if inscricao_lideranca.errors.any? %>
+  <% if inscricao_lideranca.errors&.any? %>
     <div id="error_explanation">
       <!--<h2><%#= pluralize(inscricao_servidor.errors.count, "error") %> prohibited this inscricao_servidor from being saved:</h2>-->
       <div class="alert alert-danger" role="alert">
@@ -668,7 +669,7 @@
                 <%= image_tag('monitor_deferido_lideranca.png') %>
               </td>
               <td colspan="2">
-                <span class="badge badge-success">Deferido</span><br>
+                <span class="badge badge-success">Classificado</span><br>
                 Os dados pessoais foram analisados. Aguarde nossa equipe analisar os currículos.
               </td>
             <% else %>
@@ -676,7 +677,7 @@
                 <%= image_tag('monitor_deferido_lideranca.png') %>
               </td>
               <td style="width: 250px;">
-                <span class="badge badge-success">Deferido</span><br>
+                <span class="badge badge-success">Classificado</span><br>
                 Os dados pessoais foram analisados. Aguarde nossa equipe analisar os currículos.
               </td>
               <td style="width:61%">
@@ -720,7 +721,7 @@
               <%= image_tag('monitor_indeferido.png') %>
             </td>
             <td style="width: 250px;">
-              <span class="badge badge-danger">Indeferido na análise dos dados</span><br>
+              <span class="badge badge-danger">Desclassificado na análise dos dados</span><br>
               <%= form.object.observacao %>
             </td>
             <td style="width:61%">

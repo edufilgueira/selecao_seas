@@ -62,9 +62,9 @@
               <% else %>
                 <br>
                 <% if @inscricao_lideranca.reclassificar_recurso_candidato_dados? %>
-                  <span class="badge badge-success">Candidato deferido no recurso</span>
+                  <span class="badge badge-success">Candidato reclassificado no recurso</span>
                 <% else %>
-                  <span class="badge badge-danger">Candidato indeferido no recurso</span>
+                  <span class="badge badge-danger">Candidato desclassificado no recurso</span>
                 <% end %>
               <% end %>
             </div>
@@ -73,7 +73,7 @@
           <!--RECURSO DE PONTUAÇÃO-->
           <% if !@inscricao_lideranca.recurso_entrevista.blank? %>
             <div class="div_borda">
-              <h5>Análise da Pontuação dos Currículos</h5><hr>
+              <h5>Análise da Pontuação da Entrevista</h5><hr>
               <p><b>Pedido de Recurso:</b><br>
               <span style="font-style: italic;"><%= @inscricao_lideranca.recurso_entrevista %></span></p>
               <p><b>Resposta:</b><br>
