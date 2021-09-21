@@ -336,7 +336,7 @@ chmod +x snx_install_linux30.sh
 ./snx_install_linux30.sh
 ```
 
-### Acessando a VPN
+### Acessando a VPN VICEGOV
 
 Digite no terminal o comando a baixo
 ```
@@ -346,7 +346,7 @@ Usuário: seas
 Senha: 
 s@as2021!@#
 
-### Acessando a maquina via SSH
+### Acessando a maquina via SSH VICEGOV
 
 Digite no terminal
 ```
