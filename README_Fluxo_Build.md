@@ -411,4 +411,4 @@ INSERT INTO selecao_prod.usuarios(email, created_at, updated_at, encrypted_passw
 VALUES ('email@seas.ce.gov.br', now(), now(), '$2a$11$ZF24HrUc5b4hmo6wkfxEk.hZVQwqf4tmCM46E8sZHgLgwYoAOsgoO');
 ```
 
-
+pr89e5p1onjiU
