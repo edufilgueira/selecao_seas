@@ -8,8 +8,8 @@ class InscricaoLiderancasController < ApplicationController
   def index 
     @inscricao_liderancas = InscricaoLideranca.select("inscricao_liderancas.id serv_id, lc.descricao regiao, inscricao_liderancas.*, c.descricao nome_cargo").joins(
       "INNER JOIN cargos c ON c.id = inscricao_liderancas.cargo_id
-       INNER JOIN selecao_homolog.regiaos r ON r.inscricao_lideranca_id = inscricao_liderancas.id
-       INNER JOIN selecao_homolog.local_contratacaos lc ON lc.id = r.local_contratacao_id")
+       INNER JOIN regiaos r ON r.inscricao_lideranca_id = inscricao_liderancas.id
+       INNER JOIN local_contratacaos lc ON lc.id = r.local_contratacao_id")
       .where("finalizar = true")
       .order("total_geral_correcao desc, experiencia_profissional_01_correcao desc, experiencia_profissional_02_correcao desc, experiencia_profissional_03_correcao desc")
       
@@ -97,8 +97,8 @@ class InscricaoLiderancasController < ApplicationController
     
     @inscricao_liderancas = InscricaoLideranca.select("inscricao_liderancas.id serv_id, lc.descricao regiao, inscricao_liderancas.*, c.descricao nome_cargo").joins(
       "LEFT JOIN cargos c ON c.id = inscricao_liderancas.cargo_id
-       INNER JOIN selecao_homolog.regiaos r ON r.inscricao_lideranca_id = inscricao_liderancas.id
-       INNER JOIN selecao_homolog.local_contratacaos lc ON lc.id = r.local_contratacao_id")
+       INNER JOIN regiaos r ON r.inscricao_lideranca_id = inscricao_liderancas.id
+       INNER JOIN local_contratacaos lc ON lc.id = r.local_contratacao_id")
       .where("finalizar = true" + sql)
       .order("total_geral_correcao desc, experiencia_profissional_01_correcao desc, experiencia_profissional_02_correcao desc, experiencia_profissional_03_correcao desc")
 
