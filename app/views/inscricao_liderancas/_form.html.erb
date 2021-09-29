@@ -941,6 +941,7 @@ function carregar_descricoes(){
   $("#total_maximo").html(total_maximo + " Pontos");
 }
 
+calcular_formacao_academica();
 function calcular_formacao_academica(){
 	val1 = Number($('#inscricao_lideranca_formacao_academica_01_candidato').val());
 	val2 = Number($('#inscricao_lideranca_formacao_academica_02_candidato').val());
@@ -962,6 +963,7 @@ function calcular_formacao_academica(){
   //$("#inscricao_lideranca_total_geral_correcao").val(total_geral);
 }
 
+calcular_qualificacao_profissional();
 function calcular_qualificacao_profissional(){
 	val1 = Number($('#inscricao_lideranca_qualificacao_profissional_01_candidato').val());
 	val2 = Number($('#inscricao_lideranca_qualificacao_profissional_02_candidato').val());
